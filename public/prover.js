@@ -1,18 +1,34 @@
 const snarkjs = require("snarkjs");
-const fs = require("fs");
+const { readFileSync, writeFile } = require("fs");
 const path = require("path");
+const wc  = require("../circuits/build/multiplier_js/witness_calculator.js");
+
+async function prove() {
+  const a_char = document.getElementById("a").value;
+  const b_char = document.getElementById("b").value;
+  const a = parseInt(a_char);
+  const b = parseInt(b_char);
+
+  witness = await generateWitness(a, b);
+  console.log(witness);
+}
 
 async function generateWitness(a, b) {
-  const wasmUrl = "../circuits/build/multiplier_js/multiplier.wasm";
+  console.log("Current directory:", __dirname);
+  const wasmUrl = "../circuits/build/multiplier_js/multiplier2.wasm";
 
   const input = {
-    a: parseInt(inputFile),
-    b: parseInt(bFile),
+    "a": a,
+    "b": b
   };
 
-  // Fetch and instantiate the WASM file
   const response = await fetch(wasmUrl);
   const wasmBuffer = await response.arrayBuffer();
+
+  // logs, just in wrong format (ascii, we wan't hex)
+  console.log(typeof wasmBuffer);
+  console.log(wasmBuffer);
+
   const wasm = await WebAssembly.compile(wasmBuffer);
   const instance = await WebAssembly.instantiate(wasm);
 
@@ -20,18 +36,20 @@ async function generateWitness(a, b) {
   return witness;
 }
 
-async function generateProof() {
-  const proof = await snarkjs.groth16.prove(zkey, witness);
+document.getElementById("prove-button").addEventListener("click", prove);
 
-  // Display the proof
-  document.getElementById("result").textContent = JSON.stringify(
-    proof,
-    null,
-    2
-  );
-  return proof;
-}
+// async function generateProof() {
+//   const proof = await snarkjs.groth16.prove(zkey, witness);
 
-async function verifyProof() {
-  // TODO
-}
+//   // Display the proof
+//   document.getElementById("result").textContent = JSON.stringify(
+//     proof,
+//     null,
+//     2
+//   );
+//   return proof;
+// }
+
+// async function verifyProof() {
+//   // TODO
+// }
