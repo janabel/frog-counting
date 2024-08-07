@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Website</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <header>
-        <h1>Frog Counting</h1>
+      <h1>Frog Counting</h1>
     </header>
 
     <main>
-        <section>
-            <h2>Input witness</h2>
-            <!-- <p id="content">Input witness.wtns for a,b and we will thumbs up if ab = c. </p> -->
-            <input type="number" id="a" placeholder="a">
-            <input type="number" id="b" placeholder="b">
-        </section>
-        <section>
-            <!-- <button onclick="changeTextColor()">Change Text Color</button> -->
-            <button onclick="prove()">Prove</button>
-        </section>
+      <section>
+        <h2>Input witness</h2>
+        <!-- <p id="content">Input witness.wtns for a,b and we will thumbs up if ab = c. </p> -->
+        <input type="number" id="a" placeholder="a" />
+        <input type="number" id="b" placeholder="b" />
+      </section>
+      <section>
+        <!-- <button onclick="changeTextColor()">Change Text Color</button> -->
+        <button onclick="prove()">Prove</button>
+      </section>
+
+      <div id="verify">
+        <input type="text" id="proof" placeholder="Paste your proof here" />
+        <button onclick="verify()">Verify Proof</button>
+      </div>
     </main>
 
     <footer>
-        <p>© 0xPARC </p>
+      <p>© 0xPARC</p>
     </footer>
 
-    <script src="script.js"></script>
-</body>
+    <script src="prover.js"></script>
+    <script src="verify.js"></script>
+  </body>
 </html>
