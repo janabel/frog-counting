@@ -16,3 +16,5 @@ circuits/*.zkey
 circuits/ptau/
 circuits/build/
 # circuits/build_16/
+dist/
+.parcel-cache/

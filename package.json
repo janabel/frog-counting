@@ -20,6 +20,8 @@
     "snarkjs": "^0.7.4"
   },
   "devDependencies": {
+    "constants-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1"
   }
 >>>>>>> 56512305a2465b475c4fbf09c671b251ab38020e
