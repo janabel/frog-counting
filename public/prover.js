@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 async function generateWitness(a, b) {
-  const wasmUrl = "../circuits/build/basic-circuit_js/basic-circuit.wasm";
+  const wasmUrl = "../circuits/build/multiplier_js/multiplier.wasm";
 
   const input = {
     a: parseInt(inputFile),
