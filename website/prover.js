@@ -2,7 +2,7 @@ const snarkjs = require("snarkjs");
 const fs = require("fs");
 const path = require("path");
 
-async function generateWitness(a, b) {
+export async function generateWitness(a, b) {
   const wasmUrl = "../circuits/build/basic-circuit_js/basic-circuit.wasm";
   
   const input = {
@@ -36,3 +36,9 @@ async function generateProof() {
 async function verifyProof() {
   // TODO
 }
+
+// module.exports = {
+//   generateWitness,
+//   generateProof,
+//   verifyProof
+// };

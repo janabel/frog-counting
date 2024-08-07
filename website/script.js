@@ -1,4 +1,4 @@
-const prover = require("../prover.js");
+const prover = require("prover.js");
 
 function changeTextColor() {
     const content = document.getElementById("content");
