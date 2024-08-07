@@ -4,7 +4,8 @@
   "description": "Application allowing you to generate proofs about having n PODS using folding schemes and the Sonobe library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx parcel public/index.html --port 1234"
   },
   "keywords": [],
   "author": "",
