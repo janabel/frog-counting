@@ -1,27 +1,18 @@
-// export async function verify() {
-//   const proof = document.getElementById("proof").value;
-//   console.log(proof);
-// }
+const snarkjs = require("snarkjs");
+const path = require("path");
+const vkeyPath = require("./multiplier_vkey.json");
+// const publicPath = "./public.json";
+const axios = require("axios").default;
 
 document
   .getElementById("verify-proof-button")
   .addEventListener("click", async function () {
-    const proof = document.getElementById("proof").value;
+    const rawProof = document.getElementById("proof").value;
+    const proof = JSON.parse(rawProof);
     // console.log(proof);
 
-    const zkeyPath = "path/to/circuit.zkey";
-    const proofPath = "path/to/proof.json";
-    const publicPath = "path/to/public.json";
-
-    const zkey = JSON.parse(fs.readFileSync(zkeyPath, "utf8"));
-    const publicInputs = JSON.parse(fs.readFileSync(publicPath, "utf8"));
-
-    // Verify the proof
-    const isValid = await snarkjs.groth16.verify(zkey, publicInputs, proof);
-
-    if (isValid) {
-      console.log("Proof is valid!");
-    } else {
-      console.log("Proof is invalid.");
-    }
+    const vkey = require("./multiplier_vkey.json");
+    console.log(vkey);
+    const public = require("./public.json");
+    console.log(public);
   });
