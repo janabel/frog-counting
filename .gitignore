@@ -1,5 +1,11 @@
 package-lock.json
+
+# parcel
 .parcel-cache/
+dist
+
+# debugging
+temp/
 
 # env
 .env
