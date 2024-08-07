@@ -1,4 +1,5 @@
 package-lock.json
+.parcel-cache/
 
 # env
 .env
