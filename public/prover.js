@@ -4,7 +4,7 @@ const path = require("path");
 
 async function generateWitness(a, b) {
   const wasmUrl = "../circuits/build/basic-circuit_js/basic-circuit.wasm";
-  
+
   const input = {
     a: parseInt(inputFile),
     b: parseInt(bFile),
@@ -32,7 +32,8 @@ async function generateProof() {
   return proof;
 }
 
-
 async function verifyProof() {
   // TODO
 }
+
+console.log(snarkjs);
