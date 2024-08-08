@@ -12,6 +12,8 @@ circuits/build/
 circuits/ptau/
 temp
 
+package-lock.json
+
 dist
 dist-ssr
 *.local
