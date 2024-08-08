@@ -18,13 +18,11 @@ if [ ! -d "$BUILD_DIR" ]; then
 fi
 
 
-# circuit compilation and zkey/vkey generation
+# Compile circuit and generate zkey/vkey
 
 echo "****COMPILING CIRCUIT****"
 start=`date +%s`
-# set -x
 circom "$CIRCUITS_DIR"/"$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_DIR"
-# { set +x; } 2>/dev/null
 end=`date +%s`
 echo "DONE ($((end-start))s)"
  
@@ -53,22 +51,22 @@ end=`date +%s`
 echo "DONE ($((end-start))s)"
 
 
-# generating and verifying proof
+# Generate and verify proof
 
-# echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
-# start=`date +%s`
-# node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.js "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_multiplier.json" "$BUILD_DIR"/witness.wtns
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
+start=`date +%s`
+node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.js "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_multiplier.json" "$BUILD_DIR"/witness.wtns
+end=`date +%s`
+echo "DONE ($((end-start))s)"
 
-# echo "****GENERATING PROOF FOR SAMPLE INPUT****"
-# start=`date +%s`
-# npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public.json
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****GENERATING PROOF FOR SAMPLE INPUT****"
+start=`date +%s`
+npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public.json
+end=`date +%s`
+echo "DONE ($((end-start))s)"
 
-# echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
-# start=`date +%s`
-# npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public.json "$BUILD_DIR"/proof.json
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
+start=`date +%s`
+npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public.json "$BUILD_DIR"/proof.json
+end=`date +%s`
+echo "DONE ($((end-start))s)"
