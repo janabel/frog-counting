@@ -3,8 +3,7 @@ import { groth16 } from "snarkjs";
 let proof = undefined;
 let publicSignals = undefined;
 
-document
-  .getElementById("prove-button")
+document.getElementById("prove-button")
   .addEventListener("click", async function () {
     const a_char = document.getElementById("a").value;
     const b_char = document.getElementById("b").value;
@@ -40,8 +39,7 @@ const vkey = await vkeyResponse.json();
 // const publicSignalsResponse = await fetch("./public.json");
 // const publicSignals = await publicSignalsResponse.json();
 
-document
-  .getElementById("verify-proof-button")
+document.getElementById("verify-proof-button")
   .addEventListener("click", async function () {
     if (!publicSignals) {
       console.log("did not provide input values yet");
@@ -88,9 +86,8 @@ document
     }
   });
 
-//
-//
-//
+
+
 
 function isValidProof(parsed) {
   // Check if the object has the required properties and their types
