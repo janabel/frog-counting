@@ -1,24 +1,19 @@
 {
   "name": "pod-counting",
-  "version": "1.0.0",
-  "description": "Application allowing you to generate proofs about having n PODS using folding schemes and the Sonobe library",
-  "main": "index.js",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel public/index.html --port 1234",
-    "devtest": "npx parcel temp/index.html --port 1235"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.7.3",
-    "circomlib": "^2.0.5",
-    "snarkjs": "^0.7.4"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "constants-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
-    "path-browserify": "^1.0.1"
+    "vite": "^5.4.0",
+    "vite-plugin-require-transform": "^1.0.21"
+  },
+  "dependencies": {
+    "axios": "^1.7.3",
+    "snarkjs": "^0.7.4"
   }
 }

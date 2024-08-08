@@ -4,6 +4,8 @@ CIRCUITS_DIR=../circuits
 PHASE1=../circuits/ptau/powersOfTau28_hez_final_20.ptau
 BUILD_DIR=../circuits/build
 CIRCUIT_NAME=multiplier
+PUBLIC_DIR=../public
+SRC_DIR=../src
  
 if [ -f "$PHASE1" ]; then
     echo "Found Phase 1 ptau file"
