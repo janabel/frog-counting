@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Website</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Frog Counting</h1>
+    </header>
+
+    <main>
+      <div class="row-container">
+        <div id="input-witness" class="row-block">
+          <h2>Input Witness</h2>
+          <!-- <p id="content">Input witness.wtns for a,b and we will thumbs up if ab = c. </p> -->
+          <input type="number" id="a" placeholder="a" />
+          <input type="number" id="b" placeholder="b" />
+          <button id="prove-button">Prove</button>
+          <div id="proof-result" class="proof-output"></div>
+        </div>
+
+        <div id="verify" class="row-block">
+          <h2>Verify Proof</h2>
+          <input type="text" id="proof" placeholder="Paste your proof here" />
+          <button id="verify-proof-button">Verify Proof</button>
+          <div id="verify-result"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 0xPARC</p>
+    </footer>
+
+    <script src="prove_verify.js" type="module"></script>
+  </body>
+</html>
