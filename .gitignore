@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 circuits/build/
-circuits/ptau/
+circuits/powersOfTau28_hez_final_20.ptau
 temp
 
 package-lock.json

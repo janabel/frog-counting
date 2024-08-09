@@ -1,10 +1,16 @@
+import { generateSnarkMessageHash, hexToBigInt, fromHexString } from "@pcd/util";
+import { buildEddsa } from 'circomlibjs';
 import { groth16 } from "snarkjs";
+import { Buffer } from 'buffer';
 
 let proof = undefined;
 let publicSignals = undefined;
 
-const vkeyResponse = await fetch("./multiplier_vkey.json");
+const vkeyResponse = await fetch("./frog_vkey.json");
 const vkey = await vkeyResponse.json();
+const STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER = generateSnarkMessageHash(
+  "hard-coded-zk-eddsa-frog-pcd-nullifier"
+);
 
 // Check if the object has the required properties and their types
 function isValidProof(parsed) {
@@ -29,15 +35,15 @@ function isValidProof(parsed) {
 }
 
 // Custom assert that logs to console?
-function assert(condition, message) {
+function assert(condition, message = "Assertion failed") {
   console.log(condition);
   if (!condition) {
-    throw new Error(message || "Assertion failed");
+    throw new Error(message);
   }
 }
 
 // Parse serialized frog to one-frog.circom input
-function parseFrog(rawFrog){
+function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   /* INPUT = {
     "frogId": "10",
     "timestampSigned": "1723063971239",
@@ -63,19 +69,55 @@ function parseFrog(rawFrog){
     "reservedField3": "0"
   } */
 
-  return {
-    "a": 3,
-    "b": 11
-  }
+  console.log("semaphoreIDtrapdoor", semaphoreIDtrapdoor)
+  const rawJSON = JSON.parse(rawFrog)
+
+  assert(rawJSON.type == "eddsa-frog-pcd")
+  const frogPCD = rawJSON.pcd
+  const frogJSON = JSON.parse(frogPCD)
+  const eddsaPCD = frogJSON.eddsaPCD
+  const frogData = frogJSON.data
+  const { name, description, imageUrl,...frogInfo } = frogData;
+
+  const pcdJSON= JSON.parse(eddsaPCD.pcd)
+  
+  assert(pcdJSON.type == "eddsa-pcd")
+  const signature = pcdJSON.proof.signature
+
+  const eddsa = buildEddsa().then((eddsa) => {
+      const rawSig = eddsa.unpackSignature(
+          fromHexString(signature)
+      );
+      const frogSignatureR8x = eddsa.F.toObject(rawSig.R8[0]).toString();
+      const frogSignatureR8y = eddsa.F.toObject(rawSig.R8[1]).toString();
+      const frogSignatureS = rawSig.S.toString();
+
+      return {...frogInfo, 
+        "frogSignerPubkeyAx": hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
+        "frogSignerPubkeyAy": hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
+        "semaphoreIdentityTrapdoor": semaphoreIDtrapdoor,
+        "semaphoreIdentityNullifier": semaphoreIDnullifier,
+        "watermark": "2718", // ?
+        "frogSignatureR8x": frogSignatureR8x,
+        "frogSignatureR8y": frogSignatureR8y,
+        "frogSignatureS": frogSignatureS,
+        "externalNullifier": STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER,
+        "reservedField1": "0",
+        "reservedField2": "0",
+        "reservedField3": "0"
+      }
+  })
 }
 
 document.getElementById("prove-button").addEventListener("click", async function () {
-  const frog_input = document.getElementById("frog-input").value;
+  const frogInput = document.getElementById("frog-input").value;
+  const semaphoreID0 = document.getElementById("id-trapdoor").value;
+  const semaphoreID1 = document.getElementById("id-nullifier").value;
 
   ({ proof, publicSignals } = await groth16.fullProve(
-    parseFrog(frog_input),
-    "./multiplier.wasm",
-    "./multiplier_final.zkey"
+    parseFrog(frogInput, semaphoreID0, semaphoreID1),
+    "./frog.wasm",
+    "./frog_final.zkey"
   ));
   console.log(publicSignals);
   console.log(proof);
