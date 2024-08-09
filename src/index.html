@@ -15,16 +15,16 @@
       <div class="row-container">
         <div id="input-witness" class="row-block">
           <h2>Input Witness</h2>
-          <input type="text" id="frog-input" placeholder="Paste frog data from Zupass" />
-          <input type="text" id="id-trapdoor" placeholder="semaphoreIdentityTrapdoor (Chrome Dev Tools -> Local Storage)" />
-          <input type="text" id="id-nullifier" placeholder="semaphoreIdentityNullifier (Chrome Dev Tools -> Local Storage)" />
+          <textarea id="frog-input" placeholder="Enter frog data from Zupass" /></textarea>
+          <textarea id="id-trapdoor" placeholder="semaphoreIdentityTrapdoor" /></textarea> <br/>
+          <textarea id="id-nullifier" placeholder="semaphoreIdentityNullifier" /></textarea> <br/>
           <button id="prove-button">Prove</button>
           <div id="proof-result" class="proof-output"></div>
         </div>
 
         <div id="verify" class="row-block">
           <h2>Verify Proof</h2>
-          <input type="text" id="proof" placeholder="Paste your proof here" />
+          <textarea id="proof" placeholder="Enter your proof" /></textarea>
           <button id="verify-proof-button">Verify Proof</button>
           <div id="verify-result"></div>
         </div>

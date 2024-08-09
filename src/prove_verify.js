@@ -132,17 +132,27 @@ document.getElementById("prove-button").addEventListener("click", async function
   let resultHeader = document.createElement("h2");
   resultHeader.innerText = "Result";
 
-  let proofBox = document.createElement("text-box");
-  proofBox.innerText =
+  let oldProofBox = document.createElement("text-box");
+  oldProofBox.innerText =
     "Proof: " +
     JSON.stringify(proof) +
     "\n" +
     "Public Signals: " +
     publicSignals.toString();
 
+  let proofBox = document.createElement("textarea");
+  proofBox.innerHTML = JSON.stringify(proof, null, 2);
+
+  let publicSignalsBox = document.createElement("textarea");
+  publicSignalsBox.innerHTML = JSON.stringify(publicSignals, null, 2);
+
   const proofResult = document.getElementById("proof-result");
   proofResult.appendChild(resultHeader);
+  // proofResult.appendChild(document.createTextNode("Proof:\n\n"));
   proofResult.appendChild(proofBox);
+  // proofResult.appendChild(document.createTextNode("Public Signals:\n"));
+  proofResult.appendChild(publicSignalsBox);
+  // proofResult.appendChild(oldProofBox);
 });
 
 
