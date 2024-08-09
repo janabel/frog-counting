@@ -44,7 +44,7 @@ footer {
   display: flex;
   align-items: top;
   justify-content: center;
-  background-color: rgb(185, 230, 173);
+  /* background-color: rgb(185, 230, 173); */
   box-sizing: border-box;
   flex-grow: 1;
   flex-direction: row;

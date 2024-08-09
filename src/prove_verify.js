@@ -11,6 +11,8 @@ const vkey = await vkeyResponse.json();
 const STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER = generateSnarkMessageHash(
   "hard-coded-zk-eddsa-frog-pcd-nullifier"
 );
+const CZ_SEMPAHORE_ID_TRAPDOOR = "135040283343710365777958365424694852760089427911973547434460426204380274744";
+const CZ_SEMPAHORE_ID_NULLIFIER = "358655312360435269311557940631516683613039221013826685666349061378483316589";
 
 // Check if the object has the required properties and their types
 function isValidProof(parsed) {
@@ -43,7 +45,7 @@ function assert(condition, message = "Assertion failed") {
 }
 
 // Parse serialized frog to one-frog.circom input
-function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
+async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   /* INPUT = {
     "frogId": "10",
     "timestampSigned": "1723063971239",
@@ -84,44 +86,49 @@ function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   assert(pcdJSON.type == "eddsa-pcd")
   const signature = pcdJSON.proof.signature
 
-  const eddsa = buildEddsa().then((eddsa) => {
-      const rawSig = eddsa.unpackSignature(
-          fromHexString(signature)
-      );
-      const frogSignatureR8x = eddsa.F.toObject(rawSig.R8[0]).toString();
-      const frogSignatureR8y = eddsa.F.toObject(rawSig.R8[1]).toString();
-      const frogSignatureS = rawSig.S.toString();
+  const eddsa = await buildEddsa();
+  const rawSig = eddsa.unpackSignature(
+      fromHexString(signature)
+  );
+  const frogSignatureR8x = eddsa.F.toObject(rawSig.R8[0]).toString();
+  const frogSignatureR8y = eddsa.F.toObject(rawSig.R8[1]).toString();
+  const frogSignatureS = rawSig.S.toString();
 
-      return {...frogInfo, 
-        "frogSignerPubkeyAx": hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
-        "frogSignerPubkeyAy": hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
-        "semaphoreIdentityTrapdoor": semaphoreIDtrapdoor,
-        "semaphoreIdentityNullifier": semaphoreIDnullifier,
-        "watermark": "2718", // ?
-        "frogSignatureR8x": frogSignatureR8x,
-        "frogSignatureR8y": frogSignatureR8y,
-        "frogSignatureS": frogSignatureS,
-        "externalNullifier": STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER,
-        "reservedField1": "0",
-        "reservedField2": "0",
-        "reservedField3": "0"
-      }
-  })
+  return {...frogInfo, 
+    "frogSignerPubkeyAx": hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
+    "frogSignerPubkeyAy": hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
+    "semaphoreIdentityTrapdoor": semaphoreIDtrapdoor,
+    "semaphoreIdentityNullifier": semaphoreIDnullifier,
+    "watermark": "2718", // ?
+    "frogSignatureR8x": frogSignatureR8x,
+    "frogSignatureR8y": frogSignatureR8y,
+    "frogSignatureS": frogSignatureS,
+    "externalNullifier": STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER,
+    "reservedField1": "0",
+    "reservedField2": "0",
+    "reservedField3": "0"
+  }
 }
 
 document.getElementById("prove-button").addEventListener("click", async function () {
   const frogInput = document.getElementById("frog-input").value;
-  const semaphoreID0 = document.getElementById("id-trapdoor").value;
-  const semaphoreID1 = document.getElementById("id-nullifier").value;
+  const semaphoreTrap = document.getElementById("id-trapdoor").value || CZ_SEMPAHORE_ID_TRAPDOOR;
+  const semaphoreNull = document.getElementById("id-nullifier").value || CZ_SEMPAHORE_ID_NULLIFIER;
+  console.log("semaphoreID0", semaphoreTrap)
 
+
+  const circuitInputs = await parseFrog(frogInput, semaphoreTrap, semaphoreNull);
+
+  console.log("circuitInputs", circuitInputs);
   ({ proof, publicSignals } = await groth16.fullProve(
-    parseFrog(frogInput, semaphoreID0, semaphoreID1),
+    circuitInputs,
     "./frog.wasm",
     "./frog_final.zkey"
   ));
-  console.log(publicSignals);
-  console.log(proof);
+  console.log("publicSignals", publicSignals);
+  console.log("proof", proof);
 
+  
   let resultHeader = document.createElement("h2");
   resultHeader.innerText = "Result";
 
@@ -171,6 +178,7 @@ document.getElementById("verify-proof-button").addEventListener("click", async f
   // trying to verify the proof, throws and error if groth16.verify throws and error
   let verify = undefined;
   try {
+    console.log("vkey", vkey, "publicSignals", publicSignals, "proof", proof);
     verify = await groth16.verify(vkey, publicSignals, proof);
     console.log("successfully verified...");
   } catch (error) {
