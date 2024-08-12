@@ -120,13 +120,19 @@ document.getElementById("prove-button").addEventListener("click", async function
   const circuitInputs = await parseFrog(frogInput, semaphoreTrap, semaphoreNull);
 
   console.log("circuitInputs", circuitInputs);
-  ({ proof, publicSignals } = await groth16.fullProve(
-    circuitInputs,
-    "./frog.wasm",
-    "./frog_final.zkey"
-  ));
-  console.log("publicSignals", publicSignals);
-  console.log("proof", proof);
+
+  try {
+    ({ proof, publicSignals } = await groth16.fullProve(
+      circuitInputs,
+      "./frog.wasm",
+      "./frog_final.zkey"
+    ));
+    console.log("publicSignals", publicSignals);
+    console.log("proof", proof);
+  } catch (error) {
+    alert(`Invalid signature or frog.\n${error.message}`);
+  }
+  
 
   
   let resultHeader = document.createElement("h2");
