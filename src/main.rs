@@ -56,14 +56,16 @@ fn main() {
 
     // initialize the Circom circuit
     let r1cs_path = PathBuf::from(
-        "../circuits/isZeroIVC.r1cs"
+        "./circuits/isZeroIVC.r1cs"
     );
     let wasm_path = PathBuf::from(
-        "../circuits/isZeroIVC_js/isZeroIVC.wasm",
+        "./circuits/isZeroIVC_js/isZeroIVC.wasm",
     );
 
     let f_circuit_params = (r1cs_path, wasm_path, 1, 2);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
+
+    println!("{}", "created circuit!");
 
     pub type N =
         Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
@@ -86,11 +88,16 @@ fn main() {
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
     let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap();
 
+    println!("{}", "prepared nova prover and verifier params!");
+
     // initialize the folding scheme engine, in our case we use Nova
     let mut nova = N::init(&nova_params, f_circuit.clone(), z_0).unwrap();
 
+    println!("{}", "initialized folding scheme!");
+
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    println!("{}", "prepared deciver prover & verifier params!");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -100,8 +107,32 @@ fn main() {
         println!("Nova::prove_step {}: {:?}", i, start.elapsed());
     }
 
+    println!("{}", "finished folding!");
+
     let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+//     use std::fmt;
+//     impl<C1, CS1, S> fmt::Debug for Proof<C1, CS1, S>
+// where
+//     C1: CurveGroup + fmt::Debug,
+//     CS1: CommitmentScheme<C1, ProverChallenge = C1::ScalarField, Challenge = C1::ScalarField> + fmt::Debug,
+//     S: SNARK<C1::ScalarField> + fmt::Debug,
+//     S::Proof: fmt::Debug,
+//     CS1::Proof: fmt::Debug,
+//     C1::ScalarField: fmt::Debug,
+// {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         // Format the fields as needed
+//         f.debug_struct("Proof")
+//             .field("snark_proof", &self.snark_proof)
+//             .field("kzg_proofs", &self.kzg_proofs)
+//             .field("cmT", &self.cmT)
+//             .field("r", &self.r)
+//             .field("kzg_challenges", &self.kzg_challenges)
+//             .finish()
+//     }
+// }
+//     println!("proof: {:?}", proof);
     println!("generated Decider proof: {:?}", start.elapsed());
 
     let verified = D::verify(
@@ -157,5 +188,3 @@ fn main() {
     let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
     fs::write("./examples/solidity-calldata.inputs", s.join(",\n")).expect("");
 }
-
-main();

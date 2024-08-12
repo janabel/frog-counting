@@ -2,6 +2,6 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::upper_case_acronyms)]
 
-mod is_zero;
+// mod main;
 // mod keccak_chain;
 mod utils;
