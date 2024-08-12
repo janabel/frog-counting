@@ -1,11 +1,11 @@
 # rm previous files
-rm -r ./circuit/isZero_js
-rm circuit/isZero.r1cs
-rm circuit/isZero.sym
+rm -r ./circuits/isZero_js
+rm circuits/isZero.r1cs
+rm circuits/isZero.sym
 
-cd circuit
+cd circuits
 npm install
 cd ..
 
 # circom ./circuit/keccak-chain.circom --r1cs --sym --wasm --prime bn128 --output ./circuit/
-circom ./circuit/isZeroIVC.circom --r1cs --sym --wasm --prime bn128 --output ./circuit/
+circom ./circuits/isZeroIVC.circom --r1cs --sym --wasm --prime bn128 --output ./circuits/

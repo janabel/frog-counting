@@ -1,0 +1,6 @@
+1,1,1,main.ivc_output[0]
+2,2,1,main.ivc_input[0]
+3,3,1,main.external_inputs[0]
+4,-1,0,main.check_input.out
+5,-1,0,main.check_input.in
+6,4,0,main.check_input.inv

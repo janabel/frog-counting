@@ -17,3 +17,8 @@ To run circuit build scripts, cd into the circuit-scripts directory. Put all cir
 
 - figure out why parcel isn't serving static files in public...
 - hmmmm
+
+Assuming rust and circom have been installed:
+
+- `sh circuit-scripts/build-is-zero.sh`
+- `cargo test --release is_zero -- --nocapture`
