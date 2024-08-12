@@ -56,10 +56,10 @@ fn main() {
 
     // initialize the Circom circuit
     let r1cs_path = PathBuf::from(
-        "../circuit/isZeroIVC.r1cs"
+        "../circuits/isZeroIVC.r1cs"
     );
     let wasm_path = PathBuf::from(
-        "../circuit/isZeroIVC_js/isZeroIVC.wasm",
+        "../circuits/isZeroIVC_js/isZeroIVC.wasm",
     );
 
     let f_circuit_params = (r1cs_path, wasm_path, 1, 2);
@@ -157,3 +157,5 @@ fn main() {
     let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
     fs::write("./examples/solidity-calldata.inputs", s.join(",\n")).expect("");
 }
+
+main();
