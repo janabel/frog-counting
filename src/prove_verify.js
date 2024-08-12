@@ -110,6 +110,16 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   }
 }
 
+async function parseFrogs(jsonString, semaphoreTrap, semaphoreNull) {
+  const jsonObject = JSON.parse(jsonString);
+
+  frogs = []
+  jsonObject.forEach((frog_data, i) => {
+      frogs.appendChild(parseFrog(frog_data, semaphoreTrap, semaphoreNull));
+  });
+  return frogs;
+}
+
 document.getElementById("prove-button").addEventListener("click", async function () {
   const frogInput = document.getElementById("frog-input").value;
   const semaphoreTrap = document.getElementById("id-trapdoor").value || CZ_SEMPAHORE_ID_TRAPDOOR;
@@ -117,7 +127,7 @@ document.getElementById("prove-button").addEventListener("click", async function
   console.log("semaphoreID0", semaphoreTrap)
 
 
-  const circuitInputs = await parseFrog(frogInput, semaphoreTrap, semaphoreNull);
+  const circuitInputs = await parseFrogs(frogInput, semaphoreTrap, semaphoreNull);
 
   console.log("circuitInputs", circuitInputs);
 

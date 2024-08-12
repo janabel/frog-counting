@@ -11,10 +11,11 @@ lerna-debug.log*
 node_modules
 package-lock.json
 
-# circuit builds
+# circuit stuff
 circuits/build/
 circuits/powersOfTau28_hez_final_20.ptau
 circuits/ptau
+circuits/dummy.circom
 
 # temp folder for testing
 temp
