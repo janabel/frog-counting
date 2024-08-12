@@ -7,14 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# some npm stuff
 node_modules
+package-lock.json
+
+# circuit builds
 circuits/build/
 circuits/powersOfTau28_hez_final_20.ptau
 circuits/ptau
+
+# temp folder for testing
 temp
 
-package-lock.json
+# some cargo rust stuff
+Cargo.lock
+/target
 
+# some vite deploying local server stuff
 dist
 dist-ssr
 *.local
