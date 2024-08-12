@@ -1,7 +1,7 @@
 # rm previous files
-rm -r ./circuits/isZero_js
-rm circuits/isZero.r1cs
-rm circuits/isZero.sym
+rm -r ./circuits/isZeroIVC_js
+rm circuits/isZeroIVC.r1cs
+rm circuits/isZeroIVC.sym
 
 cd circuits
 npm install
