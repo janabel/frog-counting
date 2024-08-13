@@ -19,11 +19,11 @@ use folding_schemes::{
     transcript::poseidon::poseidon_canonical_config,
     Decider, Error, FoldingScheme,
 };
-use solidity_verifiers::{
-    utils::get_function_selector_for_nova_cyclefold_verifier,
-    verifiers::nova_cyclefold::get_decider_template_for_cyclefold_decider,
-    NovaCycleFoldVerifierKey,
-};
+// use solidity_verifiers::{
+//     utils::get_function_selector_for_nova_cyclefold_verifier,
+//     verifiers::nova_cyclefold::get_decider_template_for_cyclefold_decider,
+//     NovaCycleFoldVerifierKey,
+// };
 
 use crate::utils::tests::*;
 
@@ -174,56 +174,4 @@ fn full_flow() {
     .unwrap();
     assert!(verified);
     println!("Decider proof verification: {}", verified);
-
-    // generate the Solidity code that verifies this Decider final proof
-    let function_selector =
-        get_function_selector_for_nova_cyclefold_verifier(nova.z_0.len() * 2 + 1);
-
-    let calldata: Vec<u8> = prepare_calldata(
-        function_selector,
-        nova.i,
-        nova.z_0,
-        nova.z_i,
-        &nova.U_i,
-        &nova.u_i,
-        proof,
-    )
-    .unwrap();
-
-    // prepare the setup params for the solidity verifier
-    let nova_cyclefold_vk = NovaCycleFoldVerifierKey::from((decider_vp, f_circuit.state_len()));
-
-    // generate the solidity code
-    let decider_solidity_code = get_decider_template_for_cyclefold_decider(nova_cyclefold_vk);
-
-    /*
-        * Note: since we're proving the Keccak256 (ie. 32 byte size, 256 bits), the number of
-        * inputs is too big for the contract. In a real world use case we would convert the binary
-        * representation into a couple of field elements which would be inputs of the Decider
-        * circuit, and in-circuit we would obtain the binary representation to be used for the
-        * final proof check.
-        *
-        * The following code is commented out for that reason.
-    // verify the proof against the solidity code in the EVM
-    use solidity_verifiers::evm::{compile_solidity, Evm};
-    let nova_cyclefold_verifier_bytecode =
-        compile_solidity(&decider_solidity_code, "NovaDecider");
-    let mut evm = Evm::default();
-    let verifier_address = evm.create(nova_cyclefold_verifier_bytecode);
-    let (_, output) = evm.call(verifier_address, calldata.clone());
-    assert_eq!(*output.last().unwrap(), 1);
-        */
-
-    // save smart contract and the calldata
-    println!("storing nova-verifier.sol and the calldata into files");
-    use std::fs;
-    fs::create_dir_all("./solidity").unwrap();
-    fs::write(
-        "./solidity/nova-verifier.sol",
-        decider_solidity_code.clone(),
-    )
-    .unwrap();
-    fs::write("./solidity/solidity-calldata.calldata", calldata.clone()).unwrap();
-    let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
-    fs::write("./solidity/solidity-calldata.inputs", s.join(",\n")).expect("");
 }
