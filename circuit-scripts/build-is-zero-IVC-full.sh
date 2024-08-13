@@ -1,21 +1,9 @@
-# # rm previous files
-# rm -r ./circuits/isZeroIVC_js
-# rm circuits/isZeroIVC.r1cs
-# rm circuits/isZeroIVC.sym
-
-# cd circuits
-# npm install
-# cd ..
-
-# # circom ./circuit/keccak-chain.circom --r1cs --sym --wasm --prime bn128 --output ./circuit/
-# circom ./circuits/isZeroIVC.circom --r1cs --sym --wasm --prime bn128 --output ./circuits/
-
 #!/bin/bash
  
 CIRCUITS_DIR=../circuits
 PHASE1=../circuits/ptau/powersOfTau28_hez_final_20.ptau
 BUILD_DIR=../circuits/build
-CIRCUIT_NAME=isZero
+CIRCUIT_NAME=isZeroIVC
 PUBLIC_DIR=../public
 SRC_DIR=../src
  
@@ -67,17 +55,17 @@ fi
 
 # Generate and verify proof
 
-# echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
-# start=`date +%s`
-# node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.cjs "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_isZero.json" "$BUILD_DIR"/witness.wtns
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
+start=`date +%s`
+node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.cjs "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_isZeroIVC.json" "$BUILD_DIR"/witness.wtns
+end=`date +%s`
+echo "DONE ($((end-start))s)"
 
-# echo "****GENERATING PROOF FOR SAMPLE INPUT****"
-# start=`date +%s`
-# npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public.json
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****GENERATING PROOF FOR SAMPLE INPUT****"
+start=`date +%s`
+npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public.json
+end=`date +%s`
+echo "DONE ($((end-start))s)"
 
 echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
 start=`date +%s`
