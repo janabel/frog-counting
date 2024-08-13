@@ -1,0 +1,6 @@
+node_modules
+hello-wasm
+# Cargo.lock
+# package-lock.json
+circuits/powersOfTau28_hez_final_20.ptau
+# target
