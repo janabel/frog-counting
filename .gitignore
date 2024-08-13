@@ -8,3 +8,4 @@ circuits/build
 keccak-circuit/node_modules
 keccak-circuit/package-lock.json
 keccak-circuit/keccak-chain.sym
+dist
