@@ -1,7 +1,10 @@
 node_modules
 hello-wasm/target
-# Cargo.lock
+Cargo.lock
 # package-lock.json
 circuits/powersOfTau28_hez_final_20.ptau
 circuits/build
 # target
+keccak-circuit/node_modules
+keccak-circuit/package-lock.json
+keccak-circuit/keccak-chain.sym
