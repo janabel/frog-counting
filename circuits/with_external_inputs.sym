@@ -1,0 +1,9 @@
+1,1,1,main.ivc_output[0]
+2,2,1,main.ivc_input[0]
+3,3,1,main.external_inputs[0]
+4,4,1,main.external_inputs[1]
+5,5,1,main.temp1
+6,6,1,main.temp2
+7,-1,0,main.check_input.out
+8,-1,0,main.check_input.in
+9,7,0,main.check_input.inv

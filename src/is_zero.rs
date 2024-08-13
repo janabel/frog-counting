@@ -36,35 +36,36 @@ use solidity_verifiers::{
 
 fn main() {
     // set the initial state
-    let z_0 = vec![Fr::from(3_u32)];
+    // initialize z_0 to 0 because it's a counter of how many 0s we have in external inputs
+    let z_0 = vec![Fr::from(0_u32)]; 
 
     // set the external inputs to be used at each step of the IVC, it has length of 10 since this
     // is the number of steps that we will do
     let external_inputs = vec![
-        vec![Fr::from(6u32), Fr::from(7u32)],
-        vec![Fr::from(8u32), Fr::from(9u32)],
-        vec![Fr::from(10u32), Fr::from(11u32)],
-        vec![Fr::from(12u32), Fr::from(13u32)],
-        vec![Fr::from(14u32), Fr::from(15u32)],
-        vec![Fr::from(6u32), Fr::from(7u32)],
-        vec![Fr::from(8u32), Fr::from(9u32)],
-        vec![Fr::from(10u32), Fr::from(11u32)],
-        vec![Fr::from(12u32), Fr::from(13u32)],
-        vec![Fr::from(14u32), Fr::from(15u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
+        vec![Fr::from(0u32)],
     ];
 
     // initialize the Circom circuit
     let r1cs_path = PathBuf::from(
-        "./circuits/with_external_inputs.r1cs",
+        "./circuits/isZeroIVC.r1cs"
     );
     let wasm_path = PathBuf::from(
-        "./circuits/with_external_inputs_js/with_external_inputs.wasm",
+        "./circuits/isZeroIVC_js/isZeroIVC.wasm",
     );
 
     let f_circuit_params = (r1cs_path, wasm_path, 1, 2);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
-    println!("{}", "created circuit!");
 
+    println!("{}", "created circuit!");
 
     pub type N =
         Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
@@ -86,15 +87,17 @@ fn main() {
     // prepare the Nova prover & verifier params
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
     let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap();
-    println!("{}", "prepared nova prover & verifier params");
+
+    println!("{}", "prepared nova prover and verifier params!");
 
     // initialize the folding scheme engine, in our case we use Nova
     let mut nova = N::init(&nova_params, f_circuit.clone(), z_0).unwrap();
-    println!("{}", "initialized the folding scheme engine");
+
+    println!("{}", "initialized folding scheme!");
 
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
-    println!("{}", "prepared the Decider prover & verifier params");
+    println!("{}", "prepared deciver prover & verifier params!");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -104,8 +107,32 @@ fn main() {
         println!("Nova::prove_step {}: {:?}", i, start.elapsed());
     }
 
+    println!("{}", "finished folding!");
+
     let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+//     use std::fmt;
+//     impl<C1, CS1, S> fmt::Debug for Proof<C1, CS1, S>
+// where
+//     C1: CurveGroup + fmt::Debug,
+//     CS1: CommitmentScheme<C1, ProverChallenge = C1::ScalarField, Challenge = C1::ScalarField> + fmt::Debug,
+//     S: SNARK<C1::ScalarField> + fmt::Debug,
+//     S::Proof: fmt::Debug,
+//     CS1::Proof: fmt::Debug,
+//     C1::ScalarField: fmt::Debug,
+// {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         // Format the fields as needed
+//         f.debug_struct("Proof")
+//             .field("snark_proof", &self.snark_proof)
+//             .field("kzg_proofs", &self.kzg_proofs)
+//             .field("cmT", &self.cmT)
+//             .field("r", &self.r)
+//             .field("kzg_challenges", &self.kzg_challenges)
+//             .finish()
+//     }
+// }
+//     println!("proof: {:?}", proof);
     println!("generated Decider proof: {:?}", start.elapsed());
 
     let verified = D::verify(
@@ -135,8 +162,6 @@ fn main() {
         proof,
     )
     .unwrap();
-
-    println!("generated solidity code whee");
 
     // prepare the setup params for the solidity verifier
     let nova_cyclefold_vk = NovaCycleFoldVerifierKey::from((decider_vp, f_circuit.state_len()));
