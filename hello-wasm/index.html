@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
@@ -6,10 +6,29 @@
   </head>
   <body>
     <script type="module">
-      import init, { greet } from "./pkg/hello_wasm.js";
+      import init, { greet, add } from "./pkg/hello_wasm.js";
       init().then(() => {
         greet("WebAssembly");
       });
+
+      const addButton = document.getElementById("add-button");
+      addButton.addEventListener("click", function () {
+        const input1 = document.getElementById("input1").value;
+        const input2 = document.getElementById("input2").value;
+
+        console.log(input1);
+
+        const sum = document.getElementById("sum");
+        sum.innerText += " " + add(input1, input2).toString();
+
+        console.log("set sum text");
+      });
     </script>
+    <script src="./pkg/" type="module"></script>
+
+    <input type="text" id="input1" />
+    <input type="text" id="input2" />
+    <button id="add-button">Add</button>
+    <div id="sum">Sum is:</div>
   </body>
 </html>
