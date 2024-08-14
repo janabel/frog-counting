@@ -61,14 +61,14 @@ fi
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
-# echo "****GENERATING PROOF FOR SAMPLE INPUT****"
-# start=`date +%s`
-# npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
-
-echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
+echo "****GENERATING PROOF FOR SAMPLE INPUT****"
 start=`date +%s`
-npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json "$BUILD_DIR"/proof.json
+npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/proof.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json
 end=`date +%s`
 echo "DONE ($((end-start))s)"
+
+# echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
+# start=`date +%s`
+# npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json "$BUILD_DIR"/proof.json
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
