@@ -31,6 +31,8 @@ To run circuit build scripts, cd into the circuit-scripts directory. Put all cir
 - [x] frog circuit working in browser with frog copy paste
 - [x] get original circom_full_flow in sonobe working
 - [x] substitute with an isZero circuit
-- [ ] substitute with the frog circuit
+- [x] substitute with the frog circuit
+- [ ] write javascript script for converting normal frog json into split frog json (following script.js logic)
 - [ ] run entire frogVerify rust code in browser (compile to wasm, fetch inputs)
+- [ ] figure out how to get proof as output
 - [ ] break frogVerify up, get proof and display from rust code for user to copy paste into verifier function
