@@ -1,13 +1,17 @@
-pragma circom 2.1.4;
+pragma circom 2.1.5;
 
-include "../../circomlib/circuits/poseidon.circom";
-include "../../circomlib/circuits/eddsaposeidon.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
+include "../node_modules/circomlib/circuits/eddsaposeidon.circom";
 
 // Claim being proved:
 // 1. The owner owns the frog: the owner's semaphore identity matches the
 // frog's ownerSemaphoreId. And the owner's identity will be kept private.
 // 2. The frog data is signed by a signer with the specified EdDSA pubkey.
 // 3. Additionally a nullfier is calculated.
+
+
+// really only need timestampSigned
+
 template EdDSAFrogPCD () {
     // Fields representing a frog
     signal input frogId;
@@ -88,22 +92,22 @@ template EdDSAFrogPCD () {
     signal watermarkSquared <== watermark * watermark;
 }
 
-component main { public [
-    frogId,
-    biome,
-    rarity,
-    temperament,
-    jump,
-    speed,
-    intelligence,
-    beauty,
-    timestampSigned,
-    ownerSemaphoreId,
-    reservedField1,
-    reservedField2,
-    reservedField3,
-    frogSignerPubkeyAx,
-    frogSignerPubkeyAy,
-    externalNullifier,
-    watermark
-] } = EdDSAFrogPCD();
+// component main { public [
+//     frogId,
+//     biome,
+//     rarity,
+//     temperament,
+//     jump,
+//     speed,
+//     intelligence,
+//     beauty,
+//     timestampSigned,
+//     ownerSemaphoreId,
+//     reservedField1,
+//     reservedField2,
+//     reservedField3,
+//     frogSignerPubkeyAx,
+//     frogSignerPubkeyAy,
+//     externalNullifier,
+//     watermark
+// ] } = EdDSAFrogPCD();

@@ -7,13 +7,26 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-circuits/build/
-circuits/powersOfTau28_hez_final_20.ptau
-temp
+# wasm stuff
+hello-wasm/
 
+# some npm stuff
+node_modules
 package-lock.json
 
+# circuit builds
+circuits/build/
+circuits/powersOfTau28_hez_final_20.ptau
+circuits/ptau
+
+# some cargo rust stuff
+Cargo.lock
+/target
+
+# some debugging stuff
+temp/
+
+# some vite deploying local server stuff
 dist
 dist-ssr
 *.local

@@ -3,7 +3,7 @@
 CIRCUITS_DIR=../circuits
 PHASE1=../circuits/ptau/powersOfTau28_hez_final_20.ptau
 BUILD_DIR=../circuits/build
-CIRCUIT_NAME=frog
+CIRCUIT_NAME=frogIVC
 PUBLIC_DIR=../public
 SRC_DIR=../src
  
@@ -55,11 +55,11 @@ fi
 
 # Generate and verify proof
 
-echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
-start=`date +%s`
-node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.cjs "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_"$CIRCUIT_NAME".json" "$BUILD_DIR"/witness.wtns
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
+# start=`date +%s`
+# node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.cjs "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm "$CIRCUITS_DIR"/"input_"$CIRCUIT_NAME".json" "$BUILD_DIR"/witness.wtns
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
 
 echo "****GENERATING PROOF FOR SAMPLE INPUT****"
 start=`date +%s`
@@ -67,8 +67,8 @@ npx snarkjs groth16 prove "$BUILD_DIR"/"$CIRCUIT_NAME"_final.zkey "$BUILD_DIR"/w
 end=`date +%s`
 echo "DONE ($((end-start))s)"
 
-echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
-start=`date +%s`
-npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json "$BUILD_DIR"/proof.json
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
+# start=`date +%s`
+# npx snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public_"$CIRCUIT_NAME".json "$BUILD_DIR"/proof.json
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
