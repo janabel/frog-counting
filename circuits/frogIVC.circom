@@ -35,18 +35,6 @@ template frogIVC () {
 
     // nullifierHash[0] <== frogVerify.nullifierHash;
 
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-    log(0);
-
     ivc_output[0] <== ivc_input[0] + 1;
 }
 

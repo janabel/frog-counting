@@ -8,6 +8,10 @@ include "../node_modules/circomlib/circuits/eddsaposeidon.circom";
 // frog's ownerSemaphoreId. And the owner's identity will be kept private.
 // 2. The frog data is signed by a signer with the specified EdDSA pubkey.
 // 3. Additionally a nullfier is calculated.
+
+
+// really only need timestampSigned
+
 template EdDSAFrogPCD () {
     // Fields representing a frog
     signal input frogId;

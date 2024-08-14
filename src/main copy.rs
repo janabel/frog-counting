@@ -196,6 +196,7 @@ fn str_to_fr(input_string: &str)-> Fr {
 
     let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+    let proof_copy = proof.clone();
 
     
 // fn debug_proof(proof: &Proof<Bn254>) {

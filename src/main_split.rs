@@ -3,7 +3,6 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::upper_case_acronyms)]
-use ark_ff::MontBackend;
 ///
 /// This example performs the full flow:
 /// - define the circuit to be folded
@@ -19,10 +18,6 @@ use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 
 use ark_groth16::{Groth16, Proof};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
-
-use num_bigint::BigInt;
-use num_traits::Num;
-use ark_ff::BigInteger256;
 
 use std::path::PathBuf;
 use std::time::Instant;
@@ -54,52 +49,30 @@ fn main() {
     // is the number of steps that we will do
     // dummy external_input is just two frogs, formatted correctly (pkeys etc split into 2 u128 numbers each)
     // TO CHANGE
-
-fn str_to_fr(input_string: &str)-> Fr {
-    let bigint = BigInt::from_str_radix(input_string, 10).unwrap();
-
-    // Convert BigInt to BigInteger256, which is the underlying representation used by Fr
-    let bigint_bytes = bigint.to_bytes_be().1;
-    let mut bytes_32 = vec![0_u8; 32];
-    bytes_32[(32 - bigint_bytes.len())..].copy_from_slice(&bigint_bytes);
-
-    let big_integer = BigInteger256::new([
-        u64::from_be_bytes(bytes_32[24..32].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[16..24].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[8..16].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[0..8].try_into().unwrap()),
-    ]);
-
-    // Convert BigInteger256 to Fr field element
-    // let fr_element = Fr::from(big_integer);
-    return Fr::from(big_integer);
-}
-
-    // get frog attributes as Fr elements
-    let ownerSemaphoreId = str_to_fr("9964141043217120936664326897183667118469716023855732146334024524079553329018");
-    let frogSignerPubkeyAx = str_to_fr("6827523554590803092735941342538027861463307969735104848636744652918854385131");
-    let frogSignerPubkeyAy = str_to_fr("19079678029343997910757768128548387074703138451525650455405633694648878915541");
-    let semaphoreIdentityTrapdoor = str_to_fr("135040283343710365777958365424694852760089427911973547434460426204380274744");
-    let semaphoreIdentityNullifier = str_to_fr("358655312360435269311557940631516683613039221013826685666349061378483316589");
-    let frogSignatureR8x = str_to_fr("1482350313869864254042595459421095897218687816166241224483874238825079857068");
-    let frogSignatureR8y = str_to_fr("21443280299859662584655395271110089155773803041593918291203552153143944893901");
-    let frogSignatureS = str_to_fr("1391256727295516554759691112683783404841502861038527717248540264088174477546");
-    let externalNullifier = str_to_fr("10661416524110617647338817740993999665252234336167220367090184441007783393");
     
     let external_inputs = vec![
         vec![
         Fr::from(10u128),
         Fr::from(1723063971239u128),
-        ownerSemaphoreId,
-        frogSignerPubkeyAx,
-        frogSignerPubkeyAy,
-        semaphoreIdentityTrapdoor,
-        semaphoreIdentityNullifier,
+        Fr::from(242540964306827918772044435538431719290u128),
+        Fr::from(29281978767745550479479093098799635563u128),
+        Fr::from(225754184667065099589268658398655020523u128),
+        Fr::from(20064288421318982316939866241040515168u128),
+        Fr::from(26243575505223386772563604788533682133u128),
+        Fr::from(56070134347504961625256726916577453093u128),
+        Fr::from(278797269441584481571747637135243878456u128),
+        Fr::from(396847725509931452686287725923691323u128),
+        Fr::from(8643358369179125308001081676912813933u128),
+        Fr::from(1053993233930236514092689643248672076u128),
         Fr::from(2718u128),
-        frogSignatureR8x,
-        frogSignatureR8y,
-        frogSignatureS,
-        externalNullifier,
+        Fr::from(100104813512449048013016113837251321772u128),
+        Fr::from(4356236049734175528556901829447135766u128),
+        Fr::from(114475550550734564822383888683126183373u128),
+        Fr::from(63016137138959701704038793347940342363u128),
+        Fr::from(183240394593624311792083557354088055018u128),
+        Fr::from(4088536058698458794210132237957472488u128),
+        Fr::from(86344438408772883716058491394134982113u128),
+        Fr::from(31331087239638548611211754232824005u128),
         Fr::from(3u128),
         Fr::from(1u128),
         Fr::from(11u128),
@@ -114,16 +87,25 @@ fn str_to_fr(input_string: &str)-> Fr {
     vec![
         Fr::from(10u128),
         Fr::from(1723063971239u128),
-        ownerSemaphoreId,
-        frogSignerPubkeyAx,
-        frogSignerPubkeyAy,
-        semaphoreIdentityTrapdoor,
-        semaphoreIdentityNullifier,
+        Fr::from(242540964306827918772044435538431719290u128),
+        Fr::from(29281978767745550479479093098799635563u128),
+        Fr::from(225754184667065099589268658398655020523u128),
+        Fr::from(20064288421318982316939866241040515168u128),
+        Fr::from(26243575505223386772563604788533682133u128),
+        Fr::from(56070134347504961625256726916577453093u128),
+        Fr::from(278797269441584481571747637135243878456u128),
+        Fr::from(396847725509931452686287725923691323u128),
+        Fr::from(8643358369179125308001081676912813933u128),
+        Fr::from(1053993233930236514092689643248672076u128),
         Fr::from(2718u128),
-        frogSignatureR8x,
-        frogSignatureR8y,
-        frogSignatureS,
-        externalNullifier,
+        Fr::from(100104813512449048013016113837251321772u128),
+        Fr::from(4356236049734175528556901829447135766u128),
+        Fr::from(114475550550734564822383888683126183373u128),
+        Fr::from(63016137138959701704038793347940342363u128),
+        Fr::from(183240394593624311792083557354088055018u128),
+        Fr::from(4088536058698458794210132237957472488u128),
+        Fr::from(86344438408772883716058491394134982113u128),
+        Fr::from(31331087239638548611211754232824005u128),
         Fr::from(3u128),
         Fr::from(1u128),
         Fr::from(11u128),
@@ -139,15 +121,15 @@ fn str_to_fr(input_string: &str)-> Fr {
 
     // initialize the Circom circuit
     let r1cs_path = PathBuf::from(
-        "./circuits/build/frogIVC.r1cs"
+        "./circuits/build/frogIVC_split.r1cs"
     );
     let wasm_path = PathBuf::from(
-        "./circuits/build/frogIVC_js/frogIVC.wasm",
+        "./circuits/build/frogIVC_split_js/frogIVC_split.wasm",
     );
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
     // TO CHANGE
-    let f_circuit_params = (r1cs_path, wasm_path, 1, 22);
+    let f_circuit_params = (r1cs_path, wasm_path, 1, 31);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
