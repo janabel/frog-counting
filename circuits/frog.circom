@@ -1,7 +1,7 @@
-pragma circom 2.1.4;
+pragma circom 2.1.5;
 
-include "../../circomlib/circuits/poseidon.circom";
-include "../../circomlib/circuits/eddsaposeidon.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
+include "../node_modules/circomlib/circuits/eddsaposeidon.circom";
 
 // Claim being proved:
 // 1. The owner owns the frog: the owner's semaphore identity matches the
@@ -88,22 +88,22 @@ template EdDSAFrogPCD () {
     signal watermarkSquared <== watermark * watermark;
 }
 
-component main { public [
-    frogId,
-    biome,
-    rarity,
-    temperament,
-    jump,
-    speed,
-    intelligence,
-    beauty,
-    timestampSigned,
-    ownerSemaphoreId,
-    reservedField1,
-    reservedField2,
-    reservedField3,
-    frogSignerPubkeyAx,
-    frogSignerPubkeyAy,
-    externalNullifier,
-    watermark
-] } = EdDSAFrogPCD();
+// component main { public [
+//     frogId,
+//     biome,
+//     rarity,
+//     temperament,
+//     jump,
+//     speed,
+//     intelligence,
+//     beauty,
+//     timestampSigned,
+//     ownerSemaphoreId,
+//     reservedField1,
+//     reservedField2,
+//     reservedField3,
+//     frogSignerPubkeyAx,
+//     frogSignerPubkeyAy,
+//     externalNullifier,
+//     watermark
+// ] } = EdDSAFrogPCD();
