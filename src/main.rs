@@ -1,3 +1,5 @@
+// FROG FOLDING!
+
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::upper_case_acronyms)]
@@ -9,9 +11,12 @@
 /// - generate the Solidity contract that verifies the proof
 /// - verify the proof in the EVM
 ///
+/// 
+
+// use ethereum_types::U256;
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 
-use ark_groth16::Groth16;
+use ark_groth16::{Groth16, Proof};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 
 use std::path::PathBuf;
@@ -41,54 +46,86 @@ fn main() {
 
     // set the external inputs to be used at each step of the IVC, it has length of 10 since this
     // is the number of steps that we will do
+    // dummy external_input is just two frogs, formatted correctly (pkeys etc split into 2 u128 numbers each)
     let external_inputs = vec![
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
-        vec![Fr::from(0u32)],
+        vec![
+        Fr::from(10u128),
+        Fr::from(1723063971239u128),
+        Fr::from(242540964306827918772044435538431719290u128),
+        Fr::from(29281978767745550479479093098799635563u128),
+        Fr::from(225754184667065099589268658398655020523u128),
+        Fr::from(20064288421318982316939866241040515168u128),
+        Fr::from(26243575505223386772563604788533682133u128),
+        Fr::from(56070134347504961625256726916577453093u128),
+        Fr::from(278797269441584481571747637135243878456u128),
+        Fr::from(396847725509931452686287725923691323u128),
+        Fr::from(8643358369179125308001081676912813933u128),
+        Fr::from(1053993233930236514092689643248672076u128),
+        Fr::from(2718u128),
+        Fr::from(100104813512449048013016113837251321772u128),
+        Fr::from(4356236049734175528556901829447135766u128),
+        Fr::from(114475550550734564822383888683126183373u128),
+        Fr::from(63016137138959701704038793347940342363u128),
+        Fr::from(183240394593624311792083557354088055018u128),
+        Fr::from(4088536058698458794210132237957472488u128),
+        Fr::from(86344438408772883716058491394134982113u128),
+        Fr::from(31331087239638548611211754232824005u128),
+        Fr::from(3u128),
+        Fr::from(1u128),
+        Fr::from(11u128),
+        Fr::from(1u128),
+        Fr::from(1u128),
+        Fr::from(0u128),
+        Fr::from(3u128),
+        Fr::from(0u128),
+        Fr::from(0u128),
+        Fr::from(0u128),
+    ],
+    vec![
+        Fr::from(10u128),
+        Fr::from(1723063971239u128),
+        Fr::from(242540964306827918772044435538431719290u128),
+        Fr::from(29281978767745550479479093098799635563u128),
+        Fr::from(225754184667065099589268658398655020523u128),
+        Fr::from(20064288421318982316939866241040515168u128),
+        Fr::from(26243575505223386772563604788533682133u128),
+        Fr::from(56070134347504961625256726916577453093u128),
+        Fr::from(278797269441584481571747637135243878456u128),
+        Fr::from(396847725509931452686287725923691323u128),
+        Fr::from(8643358369179125308001081676912813933u128),
+        Fr::from(1053993233930236514092689643248672076u128),
+        Fr::from(2718u128),
+        Fr::from(100104813512449048013016113837251321772u128),
+        Fr::from(4356236049734175528556901829447135766u128),
+        Fr::from(114475550550734564822383888683126183373u128),
+        Fr::from(63016137138959701704038793347940342363u128),
+        Fr::from(183240394593624311792083557354088055018u128),
+        Fr::from(4088536058698458794210132237957472488u128),
+        Fr::from(86344438408772883716058491394134982113u128),
+        Fr::from(31331087239638548611211754232824005u128),
+        Fr::from(3u128),
+        Fr::from(1u128),
+        Fr::from(11u128),
+        Fr::from(1u128),
+        Fr::from(1u128),
+        Fr::from(0u128),
+        Fr::from(3u128),
+        Fr::from(0u128),
+        Fr::from(0u128),
+        Fr::from(0u128),
+    ]
     ];
-
-    let external_inputs: Vec<&str> = vec![
-    "10",  // frogId
-    "3",   // biome
-    "1",   // rarity
-    "11",  // temperament
-    "1",   // jump
-    "1",   // speed
-    "0",   // intelligence
-    "3",   // beauty
-    "1723063971239",  // timestampSigned
-    "9964141043217120936664326897183667118469716023855732146334024524079553329018",  // ownerSemaphoreId
-    "0",   // reservedField1
-    "0",   // reservedField2
-    "0",   // reservedField3
-    "6827523554590803092735941342538027861463307969735104848636744652918854385131",  // frogSignerPubkeyAx
-    "19079678029343997910757768128548387074703138451525650455405633694648878915541",  // frogSignerPubkeyAy
-    "1482350313869864254042595459421095897218687816166241224483874238825079857068",  // frogSignatureR8x
-    "21443280299859662584655395271110089155773803041593918291203552153143944893901",  // frogSignatureR8y
-    "1391256727295516554759691112683783404841502861038527717248540264088174477546",  // frogSignatureS
-    "358655312360435269311557940631516683613039221013826685666349061378483316589",  // semaphoreIdentityNullifier
-    "135040283343710365777958365424694852760089427911973547434460426204380274744",  // semaphoreIdentityTrapdoor
-    "10661416524110617647338817740993999665252234336167220367090184441007783393",  // externalNullifier
-    "2718"  // watermark
-];
 
     // initialize the Circom circuit
     let r1cs_path = PathBuf::from(
-        "./circuits/build/isZeroIVC.r1cs"
+        "./circuits/build/frogIVC_split.r1cs"
     );
     let wasm_path = PathBuf::from(
-        "./circuits/build/isZeroIVC_js/isZeroIVC.wasm",
+        "./circuits/build/frogIVC_split_js/frogIVC_split.wasm",
     );
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
-    let f_circuit_params = (r1cs_path, wasm_path, 1, 1);
+    let f_circuit_params = (r1cs_path, wasm_path, 1, 31);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
@@ -137,28 +174,14 @@ fn main() {
 
     let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
-//     use std::fmt;
-//     impl<C1, CS1, S> fmt::Debug for Proof<C1, CS1, S>
-// where
-//     C1: CurveGroup + fmt::Debug,
-//     CS1: CommitmentScheme<C1, ProverChallenge = C1::ScalarField, Challenge = C1::ScalarField> + fmt::Debug,
-//     S: SNARK<C1::ScalarField> + fmt::Debug,
-//     S::Proof: fmt::Debug,
-//     CS1::Proof: fmt::Debug,
-//     C1::ScalarField: fmt::Debug,
-// {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         // Format the fields as needed
-//         f.debug_struct("Proof")
-//             .field("snark_proof", &self.snark_proof)
-//             .field("kzg_proofs", &self.kzg_proofs)
-//             .field("cmT", &self.cmT)
-//             .field("r", &self.r)
-//             .field("kzg_challenges", &self.kzg_challenges)
-//             .finish()
-//     }
+
+    
+// fn debug_proof(proof: &Proof<Bn254>) {
+//     format!("{:?}", proof.snark_proof)
 // }
-//     println!("proof: {:?}", proof);
+
+//     println!("proof: {}", debug_proof(&proof));
+    // println!("proof: {:?}", proof);
     println!("generated Decider proof: {:?}", start.elapsed());
 
     let verified = D::verify(
@@ -171,6 +194,8 @@ fn main() {
         &proof,
     )
     .unwrap();
+    println!("unwrapped verify: {:?}", start.elapsed());
+
     assert!(verified);
     println!("Decider proof verification: {}", verified);
 
@@ -206,11 +231,11 @@ fn main() {
     println!("storing nova-verifier.sol and the calldata into files");
     use std::fs;
     fs::write(
-        "./src/is-zero-nova-verifier.sol",
+        "./src/frogIVC_split-nova-verifier.sol",
         decider_solidity_code.clone(),
     )
     .unwrap();
-    fs::write("./src/is-zero-solidity-calldata.calldata", calldata.clone()).unwrap();
+    fs::write("./src/frogIVC_split-solidity-calldata.calldata", calldata.clone()).unwrap();
     let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
-    fs::write("./src/is-zero-solidity-calldata.inputs", s.join(",\n")).expect("");
+    fs::write("./src/frogIVC_split-solidity-calldata.inputs", s.join(",\n")).expect("");
 }
