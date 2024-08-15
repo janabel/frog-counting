@@ -49,6 +49,9 @@ template EdDSAFrogPCD () {
     // but included in the proof.
     signal input watermark;
 
+    var TWO_POWER_128;
+    TWO_POWER_128 = 340282366920938463463374607431768211456;
+
     // Calculate "message" representing the frog, which is a hash of the fields.
     signal frogMessageHash <== Poseidon(13)([
         frogId,
@@ -65,6 +68,24 @@ template EdDSAFrogPCD () {
         reservedField2,
         reservedField3
     ]);
+
+    signal output frogMessageHashSmall;
+    signal output frogMessageHashBig;
+
+    frogMessageHashSmall <-- frogMessageHash % TWO_POWER_128; // least signif 128 bits of frogMessageHash
+    frogMessageHashBig <-- frogMessageHash \ TWO_POWER_128; // most signif 128 bits of frogMessageHash
+
+    component lessThanSmall = LessThan(130);
+    lessThanSmall.in[0] <== frogMessageHashSmall;
+    lessThanSmall.in[1] <== TWO_POWER_128;
+    lessThanSmall.out === 1;
+
+    component lessThanBig = LessThan(130);
+    lessThanBig.in[0] <== frogMessageHashBig;
+    lessThanBig.in[1] <== TWO_POWER_128;
+    lessThanBig.out === 1;
+
+    frogMessageHash === frogMessageHashSmall + TWO_POWER_128 * frogMessageHashBig;
 
     // Verify frog signature
     EdDSAPoseidonVerifier()(

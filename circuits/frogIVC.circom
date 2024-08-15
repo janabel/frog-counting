@@ -1,13 +1,21 @@
 pragma circom 2.1.5;
 
 include "./frog.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
 
 // IVC formatted frogCounter circuit
 template frogIVC () {
-    signal input ivc_input[1];
+    // in javascript, already preprocessed external_inputs so that they are sorted by frog_msg_hash in INCREASING order.
+    // in javascript, also already removed duplicates.
+    // ivc_input = frog_msg_hash from previous frog. 
+    // circuit checks that new frog_msg_hash is greater, and then returns new hash as ivc_output. 
+
+    // can split frogMsgHash in base 2^128 before reading into ivc_input, i.e. 
+    // frogMsgHash = frogMsgHash_small_old + 2^128 * frogMsgHash_big_old
+    // ivc_input = [frogMsgHash_small_old, frogMsgHash_big_old];
+    signal input ivc_input[2];
     signal input external_inputs[22];
-    // signal output nullifierHash[1];
-    signal output ivc_output[1];
+    signal output ivc_output[2];
 
     component frogVerify = EdDSAFrogPCD();
     frogVerify.frogId <== external_inputs[0];
@@ -33,9 +41,38 @@ template frogIVC () {
     frogVerify.reservedField2 <== external_inputs[20];
     frogVerify.reservedField3 <== external_inputs[21];
 
-    // nullifierHash[0] <== frogVerify.nullifierHash;
+    signal frogMessageHashSmall;
+    frogMessageHashSmall <== frogVerify.frogMessageHashSmall;
+    signal frogMessageHashBig;
+    frogMessageHashBig <== frogVerify.frogMessageHashBig;
 
-    ivc_output[0] <== ivc_input[0] + 1;
+    // now check that old ivc_output < new frogMessageHash. just check strictly < b/c javascript will do dedup for us.
+    // do a lessThan check bc greater than circuit is just using the lessThan circuit. to be as direct as possible.
+    // compute (ivc_input[1] < frogMessageHashBig)  OR (frogMessageHashBig = ivc_input[1] AND ivc_input[0] < frogMessageHashSmall)
+
+    component bigLessThan = LessThan(130);
+    bigLessThan.in[0] <== ivc_input[1];
+    bigLessThan.in[1] <== frogMessageHashBig;
+    signal bigLessThanResult <== bigLessThan.out;
+
+    component bigEqual = IsEqual();
+    bigEqual.in[0] <== frogMessageHashBig;
+    bigEqual.in[1] <== ivc_input[1];
+    signal bigEqualResult <== bigEqual.out;
+
+    component smallLessThan = LessThan(130);
+    smallLessThan.in[0] <== ivc_input[0];
+    smallLessThan.in[1] <== frogMessageHashSmall;
+    signal smallLessThanResult <== smallLessThan.out;
+
+    // bigLessThanResult OR (bigEqualResult AND smallLessThanResult)
+    signal bigEq_and_smallLess <== bigEqualResult * smallLessThanResult;
+    (1-bigLessThanResult)*(1-bigEq_and_smallLess) === 0;
+
+    // put in the new frogMessageHash as ivc_output
+    ivc_output[0] <== frogVerify.frogMessageHashSmall;
+    ivc_output[1] <== frogVerify.frogMessageHashBig;
+
 }
 
 component main {public [ivc_input]} = frogIVC();
