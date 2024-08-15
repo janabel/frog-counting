@@ -45,35 +45,42 @@ use solidity_verifiers::{
 };
 
 fn main() {
+
+    // helper function to turn strings into Fr elements to feed into folding/circuits
+    fn str_to_fr(input_string: &str)-> Fr {
+        let bigint = BigInt::from_str_radix(input_string, 10).unwrap();
+    
+        let bigint_bytes = bigint.to_bytes_be().1;
+        let mut bytes_32 = vec![0_u8; 32];
+        bytes_32[(32 - bigint_bytes.len())..].copy_from_slice(&bigint_bytes);
+    
+        let big_integer = BigInteger256::new([
+            u64::from_be_bytes(bytes_32[24..32].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[16..24].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[8..16].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[0..8].try_into().unwrap()),
+        ]);
+    
+        return Fr::from(big_integer);
+    }
+
+    // // frogMessageHash2_str is smaller, so put frog2 first and into z_0.
+    // let frogMessageHash1_str = "13345530209821331975430602286579617572336268754766287259267125426531538163144"; // real frog
+    // let frogMessageHash2_str = "4032616180505556881627768098255662609056414241697615806269120604910650430220"; // fake frog
+    // let frogMessageHash2Small_str: &str = "275996460728711348657393009918747906828"; // fake frog = starting frog
+    // let frogMessageHash2Big_str: &str = "11850793848047080419048448012748798457"; // fake frog = starting frog
+    // let frogMessageHash1_fr = str_to_fr(frogMessageHash1_str);
+    // let frogMessageHash2Small_fr = str_to_fr(frogMessageHash2Small_str);
+    // let frogMessageHash2Big_fr = str_to_fr(frogMessageHash2Big_str);
+
     // set the initial state
-    // initialize z_0 to 0 because it's a counter of how many 0s we have in external inputs
+    // initialize z_0 to [0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
     // TO CHANGE
-    let z_0 = vec![Fr::from(0_u32)]; 
+    let z_0 = vec![Fr::from(0_u32), Fr::from(0_u32)]; 
 
-    // set the external inputs to be used at each step of the IVC, it has length of 10 since this
-    // is the number of steps that we will do
-    // dummy external_input is just two frogs, formatted correctly (pkeys etc split into 2 u128 numbers each)
+    // set the external inputs to be used at each step of the IVC
+    // external_input is just two frogs, formatted correctly
     // TO CHANGE
-
-fn str_to_fr(input_string: &str)-> Fr {
-    let bigint = BigInt::from_str_radix(input_string, 10).unwrap();
-
-    // Convert BigInt to BigInteger256, which is the underlying representation used by Fr
-    let bigint_bytes = bigint.to_bytes_be().1;
-    let mut bytes_32 = vec![0_u8; 32];
-    bytes_32[(32 - bigint_bytes.len())..].copy_from_slice(&bigint_bytes);
-
-    let big_integer = BigInteger256::new([
-        u64::from_be_bytes(bytes_32[24..32].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[16..24].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[8..16].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[0..8].try_into().unwrap()),
-    ]);
-
-    // Convert BigInteger256 to Fr field element
-    // let fr_element = Fr::from(big_integer);
-    return Fr::from(big_integer);
-}
 
     // get frog attributes as Fr elements
     let ownerSemaphoreId = str_to_fr("9964141043217120936664326897183667118469716023855732146334024524079553329018");
@@ -86,8 +93,10 @@ fn str_to_fr(input_string: &str)-> Fr {
     let frogSignatureS = str_to_fr("1391256727295516554759691112683783404841502861038527717248540264088174477546");
     let externalNullifier = str_to_fr("10661416524110617647338817740993999665252234336167220367090184441007783393");
     
+    // frog2, then frog 1 in order (based on hash sizes)
     let external_inputs = vec![
-        vec![
+
+    vec![
         Fr::from(10u128),
         Fr::from(1723063971239u128),
         ownerSemaphoreId,
@@ -100,7 +109,7 @@ fn str_to_fr(input_string: &str)-> Fr {
         frogSignatureR8y,
         frogSignatureS,
         externalNullifier,
-        Fr::from(3u128),
+        Fr::from(4u128),
         Fr::from(1u128),
         Fr::from(11u128),
         Fr::from(1u128),
@@ -134,7 +143,7 @@ fn str_to_fr(input_string: &str)-> Fr {
         Fr::from(0u128),
         Fr::from(0u128),
         Fr::from(0u128),
-    ]
+    ],
     ];
 
     // initialize the Circom circuit
@@ -147,7 +156,7 @@ fn str_to_fr(input_string: &str)-> Fr {
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
     // TO CHANGE
-    let f_circuit_params = (r1cs_path, wasm_path, 1, 22);
+    let f_circuit_params = (r1cs_path, wasm_path, 2, 22);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
@@ -188,7 +197,7 @@ fn str_to_fr(input_string: &str)-> Fr {
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
         let start = Instant::now();
         nova.prove_step(rng, external_inputs_at_step.clone(), None)
-            .unwrap();
+            .unwrap(); //////////////////////////////////////////////////////////////////////////////////////////
         println!("Nova::prove_step {}: {:?}", i, start.elapsed());
     }
 
@@ -196,14 +205,8 @@ fn str_to_fr(input_string: &str)-> Fr {
 
     let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+    // println!("{:?}", proof);
 
-    
-// fn debug_proof(proof: &Proof<Bn254>) {
-//     format!("{:?}", proof.snark_proof)
-// }
-
-//     println!("proof: {}", debug_proof(&proof));
-    // println!("proof: {:?}", proof);
     println!("generated Decider proof: {:?}", start.elapsed());
 
     let verified = D::verify(
