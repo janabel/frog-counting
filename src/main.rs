@@ -52,28 +52,26 @@ fn main() {
 
     // set the external inputs to be used at each step of the IVC, it has length of 10 since this
     // is the number of steps that we will do
-    // dummy external_input is just two frogs, formatted correctly (pkeys etc split into 2 u128 numbers each)
+    // dummy external_input is just two frogs, formatted correctly
     // TO CHANGE
 
-fn str_to_fr(input_string: &str)-> Fr {
-    let bigint = BigInt::from_str_radix(input_string, 10).unwrap();
+    fn str_to_fr(input_string: &str)-> Fr {
+        let bigint = BigInt::from_str_radix(input_string, 10).unwrap();
 
-    // Convert BigInt to BigInteger256, which is the underlying representation used by Fr
-    let bigint_bytes = bigint.to_bytes_be().1;
-    let mut bytes_32 = vec![0_u8; 32];
-    bytes_32[(32 - bigint_bytes.len())..].copy_from_slice(&bigint_bytes);
+        // Convert BigInt to BigInteger256, which is the underlying representation used by Fr
+        let bigint_bytes = bigint.to_bytes_be().1;
+        let mut bytes_32 = vec![0_u8; 32];
+        bytes_32[(32 - bigint_bytes.len())..].copy_from_slice(&bigint_bytes);
 
-    let big_integer = BigInteger256::new([
-        u64::from_be_bytes(bytes_32[24..32].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[16..24].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[8..16].try_into().unwrap()),
-        u64::from_be_bytes(bytes_32[0..8].try_into().unwrap()),
-    ]);
+        let big_integer = BigInteger256::new([
+            u64::from_be_bytes(bytes_32[24..32].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[16..24].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[8..16].try_into().unwrap()),
+            u64::from_be_bytes(bytes_32[0..8].try_into().unwrap()),
+        ]);
 
-    // Convert BigInteger256 to Fr field element
-    // let fr_element = Fr::from(big_integer);
-    return Fr::from(big_integer);
-}
+        return Fr::from(big_integer);
+    }
 
     // get frog attributes as Fr elements
     let ownerSemaphoreId = str_to_fr("9964141043217120936664326897183667118469716023855732146334024524079553329018");
@@ -198,12 +196,6 @@ fn str_to_fr(input_string: &str)-> Fr {
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
 
     
-// fn debug_proof(proof: &Proof<Bn254>) {
-//     format!("{:?}", proof.snark_proof)
-// }
-
-//     println!("proof: {}", debug_proof(&proof));
-    // println!("proof: {:?}", proof);
     println!("generated Decider proof: {:?}", start.elapsed());
 
     let verified = D::verify(
@@ -254,11 +246,11 @@ fn str_to_fr(input_string: &str)-> Fr {
     println!("storing nova-verifier.sol and the calldata into files");
     use std::fs;
     fs::write(
-        "./src/frogIVC_split-nova-verifier.sol",
+        "./src/frogIVC-nova-verifier.sol",
         decider_solidity_code.clone(),
     )
     .unwrap();
-    fs::write("./src/frogIVC_split-solidity-calldata.calldata", calldata.clone()).unwrap();
+    fs::write("./src/frogIVC-solidity-calldata.calldata", calldata.clone()).unwrap();
     let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
-    fs::write("./src/frogIVC_split-solidity-calldata.inputs", s.join(",\n")).expect("");
+    fs::write("./src/frogIVC-solidity-calldata.inputs", s.join(",\n")).expect("");
 }
