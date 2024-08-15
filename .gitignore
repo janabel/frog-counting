@@ -41,3 +41,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# scratchwork
+jbelscratch.txt
