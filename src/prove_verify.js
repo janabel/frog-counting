@@ -93,10 +93,9 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   const eddsaPCD = frogJSON.eddsaPCD;
   const frogData = frogJSON.data;
   const { name, description, imageUrl, ...frogInfo } = frogData;
-
-  assert(pcdJSON.type == "eddsa-pcd");
-  const signature = pcdJSON.proof.signature;
   const pcdJSON = JSON.parse(eddsaPCD.pcd);
+  const signature = pcdJSON.proof.signature;
+  assert(pcdJSON.type == "eddsa-pcd");
 
   const eddsa = await buildEddsa();
   const rawSig = eddsa.unpackSignature(fromHexString(signature));
