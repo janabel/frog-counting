@@ -3,9 +3,17 @@ import {
   hexToBigInt,
   fromHexString,
 } from "@pcd/util";
-import { buildEddsa } from "circomlibjs";
+import { buildEddsa, buildPoseidon } from "circomlibjs";
 import { groth16 } from "snarkjs";
 import { Buffer } from "buffer";
+import { parse } from "path-browserify";
+// import { fs } from "fs";
+
+import {
+  poseidonEncrypt,
+  poseidonDecrypt,
+  poseidonDecryptWithoutCheck,
+} from "@zk-kit/poseidon-cipher";
 
 let proof = undefined;
 let publicSignals = undefined;
@@ -20,7 +28,7 @@ const CZ_SEMPAHORE_ID_TRAPDOOR =
 const CZ_SEMPAHORE_ID_NULLIFIER =
   "358655312360435269311557940631516683613039221013826685666349061378483316589";
 
-// Check if the object has the required properties and their types
+// check if the object has the required properties and their types
 // TODO: probably remove this in the end because want to abstract away proof from user.
 function isValidProof(parsed) {
   return (
@@ -88,10 +96,9 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   const frogData = frogJSON.data;
   const { name, description, imageUrl, ...frogInfo } = frogData;
 
-  const pcdJSON = JSON.parse(eddsaPCD.pcd);
-
   assert(pcdJSON.type == "eddsa-pcd");
   const signature = pcdJSON.proof.signature;
+  const pcdJSON = JSON.parse(eddsaPCD.pcd);
 
   const eddsa = await buildEddsa();
   const rawSig = eddsa.unpackSignature(fromHexString(signature));
@@ -99,7 +106,7 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   const frogSignatureR8y = eddsa.F.toObject(rawSig.R8[1]).toString();
   const frogSignatureS = rawSig.S.toString();
 
-  let frogCircuitInputs = {
+  return {
     ...frogInfo,
     frogSignerPubkeyAx: hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
     frogSignerPubkeyAy: hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
@@ -109,71 +116,108 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
     frogSignatureR8x: frogSignatureR8x,
     frogSignatureR8y: frogSignatureR8y,
     frogSignatureS: frogSignatureS,
-    externalNullifier: STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER,
+    externalNullifier: STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER.toString(),
     reservedField1: "0",
     reservedField2: "0",
     reservedField3: "0",
   };
+}
 
-  console.log(frogCircuitInputs);
-  return frogCircuitInputs;
+// function for downloading json from website (can't use fs in browser)
+function downloadJSON(jsonObject, fileName) {
+  const jsonString = JSON.stringify(jsonObject, null, 2);
+  const blob = new Blob([jsonString], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// function for parsing an array of serializedFrogs
+async function parseFrogs(serializedFrogs) {
+  const promises = serializedFrogs.map(async (serializedFrog) => {
+    const result = await parseFrog(serializedFrog);
+    return result;
+  });
+
+  const results = await Promise.all(promises);
+  return results;
+}
+
+// function for computing poseidon hash on input array
+async function computePoseidonHash(inputArray) {
+  const poseidon = await buildPoseidon();
+  const hash = poseidon.F.toString(poseidon(inputArray));
+  return hash;
+}
+
+async function getFrogHashInput(parsedFrog) {
+  console.log("parsedFrog length", parsedFrog.length);
+  return [
+    BigInt(parsedFrog.frogId),
+    BigInt(parsedFrog.biome),
+    BigInt(parsedFrog.rarity),
+    BigInt(parsedFrog.temperament),
+    BigInt(parsedFrog.jump),
+    BigInt(parsedFrog.speed),
+    BigInt(parsedFrog.intelligence),
+    BigInt(parsedFrog.beauty),
+    BigInt(parsedFrog.timestampSigned),
+    BigInt(parsedFrog.ownerSemaphoreId),
+    BigInt(parsedFrog.reservedField1),
+    BigInt(parsedFrog.reservedField2),
+    BigInt(parsedFrog.reservedField3),
+  ];
 }
 
 document
   .getElementById("prove-button")
   .addEventListener("click", async function () {
-    const frogInput = document.getElementById("frog-input").value;
+    // getting semaphore ID from user input
     const semaphoreTrap =
       document.getElementById("id-trapdoor").value || CZ_SEMPAHORE_ID_TRAPDOOR;
     const semaphoreNull =
       document.getElementById("id-nullifier").value ||
       CZ_SEMPAHORE_ID_NULLIFIER;
-    console.log("semaphoreID0", semaphoreTrap);
 
-    const circuitInputs = await parseFrog(
-      frogInput,
-      semaphoreTrap,
-      semaphoreNull
+    // serializedFrogs = array of serialized frogs
+    const serializedFrogs = document
+      .getElementById("frog-input")
+      .value.split("\n\n");
+
+    // create array of parsed frogs
+    let parsedFrogs = await parseFrogs(serializedFrogs);
+    console.log("parsedFrogs", parsedFrogs);
+
+    // create an array of [frogMsgHash, parsedfrog]
+    let frogHash_and_frog_array = await Promise.all(
+      parsedFrogs.map(async (parsedFrog) => {
+        const frogHashInput = await getFrogHashInput(parsedFrog);
+        const frogMsgHash = await computePoseidonHash(frogHashInput);
+        return [frogMsgHash, parsedFrog];
+      })
     );
 
-    console.log("circuitInputs", circuitInputs);
+    frogHash_and_frog_array.sort((a, b) => a[0] - b[0]);
+    console.log("sorted frogHash_and_frog_array", frogHash_and_frog_array);
 
-    try {
-      ({ proof, publicSignals } = await groth16.fullProve(
-        circuitInputs,
-        "./frog.wasm",
-        "./frog_final.zkey"
-      ));
-      console.log("publicSignals", publicSignals);
-      console.log("proof", proof);
-    } catch (error) {
-      alert(`Invalid signature or frog.\n${error.message}`);
-    }
+    let sortedFrogArray = frogHash_and_frog_array.map((item) => item[1]); // just the frog objects, no more hashes
+    console.log("sorted sortedFrogArray", sortedFrogArray);
 
-    let resultHeader = document.createElement("h2");
-    resultHeader.innerText = "Result";
+    const frogsJSon = sortedFrogArray.reduce(
+      (accumulator, currentValue, index) => {
+        accumulator[index + 1] = currentValue;
+        return accumulator;
+      },
+      {}
+    );
 
-    let oldProofBox = document.createElement("text-box");
-    oldProofBox.innerText =
-      "Proof: " +
-      JSON.stringify(proof) +
-      "\n" +
-      "Public Signals: " +
-      publicSignals.toString();
-
-    let proofBox = document.createElement("textarea");
-    proofBox.innerHTML = JSON.stringify(proof, null, 2);
-
-    let publicSignalsBox = document.createElement("textarea");
-    publicSignalsBox.innerHTML = JSON.stringify(publicSignals, null, 2);
-
-    const proofResult = document.getElementById("proof-result");
-    proofResult.appendChild(resultHeader);
-    // proofResult.appendChild(document.createTextNode("Proof:\n\n"));
-    proofResult.appendChild(proofBox);
-    // proofResult.appendChild(document.createTextNode("Public Signals:\n"));
-    proofResult.appendChild(publicSignalsBox);
-    // proofResult.appendChild(oldProofBox);
+    console.log(frogsJSon);
+    // downloadJSON(frogsJSon, `frogCircuitInputs.json`);
   });
 
 document
@@ -200,6 +244,11 @@ document
       return;
     }
 
+    // checking that the proof is a JSON of the correct proof format
+    if (!isValidProof(proof)) {
+      verifyResult.innerText = "Please enter a valid proof!";
+      return;
+    }
     // checking that the proof is a JSON of the correct proof format
     if (!isValidProof(proof)) {
       verifyResult.innerText = "Please enter a valid proof!";
