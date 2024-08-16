@@ -18,7 +18,11 @@ circuits/ptau
 
 # some cargo rust stuff
 Cargo.lock
-/target
+hello-wasm/Cargo.lock
+hello-wasm/static/keccak-circuit/package.json
+hello-wasm/static/keccak-circuit/node_modules
+hello-wasm/static/keccak-circuit/keccak-chain.sym
+target
 
 # some debugging stuff
 temp/

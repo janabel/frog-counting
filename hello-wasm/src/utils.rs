@@ -1,5 +1,4 @@
-#[cfg(test)]
-pub mod tests {
+pub(crate) mod tests {
     use ark_ff::{BigInteger, BigInteger256, PrimeField};
     use folding_schemes::Error;
 
