@@ -4,7 +4,22 @@ import {
   fromHexString,
 } from "@pcd/util";
 import { buildEddsa, buildPoseidon } from "circomlibjs";
+import {
+  generateSnarkMessageHash,
+  hexToBigInt,
+  fromHexString,
+} from "@pcd/util";
+import { buildEddsa, buildPoseidon } from "circomlibjs";
 import { groth16 } from "snarkjs";
+import { Buffer } from "buffer";
+import { parse } from "path-browserify";
+// import { fs } from "fs";
+
+import {
+  poseidonEncrypt,
+  poseidonDecrypt,
+  poseidonDecryptWithoutCheck,
+} from "@zk-kit/poseidon-cipher";
 import { Buffer } from "buffer";
 import { parse } from "path-browserify";
 // import { fs } from "fs";
@@ -27,6 +42,10 @@ const CZ_SEMPAHORE_ID_TRAPDOOR =
   "135040283343710365777958365424694852760089427911973547434460426204380274744";
 const CZ_SEMPAHORE_ID_NULLIFIER =
   "358655312360435269311557940631516683613039221013826685666349061378483316589";
+// const CZ_SEMPAHORE_ID_TRAPDOOR =
+//   "135040283343710365777958365424694852760089427911973547434460426204380274744";
+// const CZ_SEMPAHORE_ID_NULLIFIER =
+//   "358655312360435269311557940631516683613039221013826685666349061378483316589";
 
 // check if the object has the required properties and their types
 // TODO: probably remove this in the end because want to abstract away proof from user.
