@@ -9,7 +9,24 @@
       import init, { greet, add, run_keccak } from "./pkg/hello_wasm.js";
 
       init().then(() => {
+<<<<<<< HEAD
         // greet("WebAssembly");
+=======
+        greet("WebAssembly");
+      });
+
+      const addButton = document.getElementById("add-button");
+      addButton.addEventListener("click", function () {
+        const input1 = document.getElementById("input1").value;
+        const input2 = document.getElementById("input2").value;
+
+        console.log(input1);
+
+        const sum = document.getElementById("sum");
+        sum.innerText += " " + add(input1, input2).toString();
+        console.log("set sum text");
+
+>>>>>>> 2b641c7874cdaafd9679f4ae2bf8c637c0c63020
         console.log("running keccak_chain.rs full_flow");
         run_keccak();
         console.log("finished running keccak_chain.rs full_flow");
