@@ -70,8 +70,8 @@ template frogIVC () {
     (1-bigLessThanResult)*(1-bigEq_and_smallLess) === 0;
 
     // put in the new frogMessageHash as ivc_output
-    ivc_output[0] <== frogVerify.frogMessageHashSmall;
-    ivc_output[1] <== frogVerify.frogMessageHashBig;
+    ivc_output[0] <== frogMessageHashSmall;
+    ivc_output[1] <== frogMessageHashBig;
 
 }
 
