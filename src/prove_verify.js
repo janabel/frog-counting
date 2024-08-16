@@ -4,31 +4,10 @@ import {
   fromHexString,
 } from "@pcd/util";
 import { buildEddsa, buildPoseidon } from "circomlibjs";
-import {
-  generateSnarkMessageHash,
-  hexToBigInt,
-  fromHexString,
-} from "@pcd/util";
-import { buildEddsa, buildPoseidon } from "circomlibjs";
 import { groth16 } from "snarkjs";
 import { Buffer } from "buffer";
 import { parse } from "path-browserify";
 // import { fs } from "fs";
-
-import {
-  poseidonEncrypt,
-  poseidonDecrypt,
-  poseidonDecryptWithoutCheck,
-} from "@zk-kit/poseidon-cipher";
-import { Buffer } from "buffer";
-import { parse } from "path-browserify";
-// import { fs } from "fs";
-
-import {
-  poseidonEncrypt,
-  poseidonDecrypt,
-  poseidonDecryptWithoutCheck,
-} from "@zk-kit/poseidon-cipher";
 
 let proof = undefined;
 let publicSignals = undefined;
