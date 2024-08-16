@@ -64,14 +64,13 @@ fn main() {
         return Fr::from(big_integer);
     }
 
+
+
     // // frogMessageHash2_str is smaller, so put frog2 first and into z_0.
     // let frogMessageHash1_str = "13345530209821331975430602286579617572336268754766287259267125426531538163144"; // real frog
-    // let frogMessageHash2_str = "4032616180505556881627768098255662609056414241697615806269120604910650430220"; // fake frog
-    // let frogMessageHash2Small_str: &str = "275996460728711348657393009918747906828"; // fake frog = starting frog
-    // let frogMessageHash2Big_str: &str = "11850793848047080419048448012748798457"; // fake frog = starting frog
     // let frogMessageHash1_fr = str_to_fr(frogMessageHash1_str);
-    // let frogMessageHash2Small_fr = str_to_fr(frogMessageHash2Small_str);
-    // let frogMessageHash2Big_fr = str_to_fr(frogMessageHash2Big_str);
+    // let frogMessageHash2_str = "19922957967242918696262285668014865019771324803111546006992398360310387592243";
+
 
     // set the initial state
     // initialize z_0 to [0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
@@ -82,16 +81,52 @@ fn main() {
     // external_input is just two frogs, formatted correctly
     // TO CHANGE
 
+
+    // {
+    //     "beauty": 6,
+    //     "biome": 3,
+    //     "externalNullifier": "10661416524110617647338817740993999665252234336167220367090184441007783393",
+    //     "frogId": 26,
+    //     "frogSignatureR8x": "3905193423010470989125634343912498114238974029402349774171177533113727872021",
+    //     "frogSignatureR8y": "4220667839388476583517614235006410826454621394498244403361240346004021155209",
+    //     "frogSignatureS": "2166162042551067351421606700226595766359806346872972800506681888202929856816",
+    //     "frogSignerPubkeyAx": "6827523554590803092735941342538027861463307969735104848636744652918854385131",
+    //     "frogSignerPubkeyAy": "19079678029343997910757768128548387074703138451525650455405633694648878915541",
+    //     "intelligence": 6,
+    //     "jump": 6,
+    //     "ownerSemaphoreId": "21711510168635182051334357427785411794318044815986410056285364391413272857225",
+    //     "rarity": 1,
+    //     "reservedField1": "0",
+    //     "reservedField2": "0",
+    //     "reservedField3": "0",
+    //     "semaphoreIdentityNullifier": "46501085880889723880043204259130159126257178560019589221443961884550616786",
+    //     "semaphoreIdentityTrapdoor": "19203180509052113016252601264864235852564023528134367070099013180198396222",
+    //     "speed": 4,
+    //     "temperament": 10,
+    //     "timestampSigned": 1723064403633,
+    //     "watermark": "2718"
+    //   }
+
+    let frog_2_ownerSemaphoreId = str_to_fr("21711510168635182051334357427785411794318044815986410056285364391413272857225");
+    let frog_2_frogSignerPubkeyAx = str_to_fr("6827523554590803092735941342538027861463307969735104848636744652918854385131");
+    let frog_2_frogSignerPubkeyAy = str_to_fr("19079678029343997910757768128548387074703138451525650455405633694648878915541");
+    let frog_2_semaphoreIdentityTrapdoor = str_to_fr("19203180509052113016252601264864235852564023528134367070099013180198396222");
+    let frog_2_semaphoreIdentityNullifier = str_to_fr("46501085880889723880043204259130159126257178560019589221443961884550616786");
+    let frog_2_frogSignatureR8x = str_to_fr("3905193423010470989125634343912498114238974029402349774171177533113727872021");
+    let frog_2_frogSignatureR8y = str_to_fr("4220667839388476583517614235006410826454621394498244403361240346004021155209");
+    let frog_2_frogSignatureS = str_to_fr("2166162042551067351421606700226595766359806346872972800506681888202929856816");
+    let frog_2_externalNullifier = str_to_fr("10661416524110617647338817740993999665252234336167220367090184441007783393");
+
     // get frog attributes as Fr elements
-    let ownerSemaphoreId = str_to_fr("9964141043217120936664326897183667118469716023855732146334024524079553329018");
-    let frogSignerPubkeyAx = str_to_fr("6827523554590803092735941342538027861463307969735104848636744652918854385131");
-    let frogSignerPubkeyAy = str_to_fr("19079678029343997910757768128548387074703138451525650455405633694648878915541");
-    let semaphoreIdentityTrapdoor = str_to_fr("135040283343710365777958365424694852760089427911973547434460426204380274744");
-    let semaphoreIdentityNullifier = str_to_fr("358655312360435269311557940631516683613039221013826685666349061378483316589");
-    let frogSignatureR8x = str_to_fr("1482350313869864254042595459421095897218687816166241224483874238825079857068");
-    let frogSignatureR8y = str_to_fr("21443280299859662584655395271110089155773803041593918291203552153143944893901");
-    let frogSignatureS = str_to_fr("1391256727295516554759691112683783404841502861038527717248540264088174477546");
-    let externalNullifier = str_to_fr("10661416524110617647338817740993999665252234336167220367090184441007783393");
+    let frog_1_ownerSemaphoreId = str_to_fr("9964141043217120936664326897183667118469716023855732146334024524079553329018");
+    let frog_1_frogSignerPubkeyAx = str_to_fr("6827523554590803092735941342538027861463307969735104848636744652918854385131");
+    let frog_1_frogSignerPubkeyAy = str_to_fr("19079678029343997910757768128548387074703138451525650455405633694648878915541");
+    let frog_1_semaphoreIdentityTrapdoor = str_to_fr("135040283343710365777958365424694852760089427911973547434460426204380274744");
+    let frog_1_semaphoreIdentityNullifier = str_to_fr("358655312360435269311557940631516683613039221013826685666349061378483316589");
+    let frog_1_frogSignatureR8x = str_to_fr("1482350313869864254042595459421095897218687816166241224483874238825079857068");
+    let frog_1_frogSignatureR8y = str_to_fr("21443280299859662584655395271110089155773803041593918291203552153143944893901");
+    let frog_1_frogSignatureS = str_to_fr("1391256727295516554759691112683783404841502861038527717248540264088174477546");
+    let frog_1_externalNullifier = str_to_fr("10661416524110617647338817740993999665252234336167220367090184441007783393");
     
     // frog2, then frog 1 in order (based on hash sizes)
     let external_inputs = vec![
@@ -99,17 +134,17 @@ fn main() {
     vec![
         Fr::from(10u128),
         Fr::from(1723063971239u128),
-        ownerSemaphoreId,
-        frogSignerPubkeyAx,
-        frogSignerPubkeyAy,
-        semaphoreIdentityTrapdoor,
-        semaphoreIdentityNullifier,
+        frog_1_ownerSemaphoreId,
+        frog_1_frogSignerPubkeyAx,
+        frog_1_frogSignerPubkeyAy,
+        frog_1_semaphoreIdentityTrapdoor,
+        frog_1_semaphoreIdentityNullifier,
         Fr::from(2718u128),
-        frogSignatureR8x,
-        frogSignatureR8y,
-        frogSignatureS,
-        externalNullifier,
-        Fr::from(4u128),
+        frog_1_frogSignatureR8x,
+        frog_1_frogSignatureR8y,
+        frog_1_frogSignatureS,
+        frog_1_externalNullifier,
+        Fr::from(3u128),
         Fr::from(1u128),
         Fr::from(11u128),
         Fr::from(1u128),
@@ -120,29 +155,29 @@ fn main() {
         Fr::from(0u128),
         Fr::from(0u128),
     ],
-    vec![
-        Fr::from(10u128),
-        Fr::from(1723063971239u128),
-        ownerSemaphoreId,
-        frogSignerPubkeyAx,
-        frogSignerPubkeyAy,
-        semaphoreIdentityTrapdoor,
-        semaphoreIdentityNullifier,
-        Fr::from(2718u128),
-        frogSignatureR8x,
-        frogSignatureR8y,
-        frogSignatureS,
-        externalNullifier,
-        Fr::from(3u128),
-        Fr::from(1u128),
-        Fr::from(11u128),
-        Fr::from(1u128),
-        Fr::from(1u128),
-        Fr::from(0u128),
-        Fr::from(3u128),
-        Fr::from(0u128),
-        Fr::from(0u128),
-        Fr::from(0u128),
+        vec![
+        Fr::from(26u8), // frogId
+        Fr::from(1723064403633u128), // timestampSigned
+        frog_2_ownerSemaphoreId, // ownerSemaphoreId
+        frog_2_frogSignerPubkeyAx, // frogSignerPubkeyAx
+        frog_2_frogSignerPubkeyAy, // frogSignerPubkeyAy
+        frog_2_semaphoreIdentityTrapdoor, // semaphoreIdentityTrapdoor
+        frog_2_semaphoreIdentityNullifier, // semaphoreIdentityNullifier
+        Fr::from(2718u128), // watermark
+        frog_2_frogSignatureR8x, // frogSignatureR8x
+        frog_2_frogSignatureR8y, // frogSignatureR8y
+        frog_2_frogSignatureS, // frogSignatureS
+        frog_2_externalNullifier, // externalNullifier
+        Fr::from(3u8), // biome
+        Fr::from(1u8), // rarity
+        Fr::from(10u8), // temperament
+        Fr::from(6u8), // jump
+        Fr::from(4u8), // speed
+        Fr::from(6u8), // intelligence
+        Fr::from(6u8), // beauty
+        Fr::from(0u8), // reservedField1
+        Fr::from(0u8), // reservedField2
+        Fr::from(0u8), // reservedField3
     ],
     ];
 

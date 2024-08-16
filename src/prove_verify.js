@@ -99,7 +99,7 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   const frogSignatureR8y = eddsa.F.toObject(rawSig.R8[1]).toString();
   const frogSignatureS = rawSig.S.toString();
 
-  return {
+  let frogCircuitInputs = {
     ...frogInfo,
     frogSignerPubkeyAx: hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
     frogSignerPubkeyAy: hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
@@ -114,6 +114,9 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
     reservedField2: "0",
     reservedField3: "0",
   };
+
+  console.log(frogCircuitInputs);
+  return frogCircuitInputs;
 }
 
 document
