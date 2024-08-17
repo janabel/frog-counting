@@ -2,7 +2,10 @@
 
 {"type":"eddsa-frog-pcd","pcd":"{\"id\":\"6b37ca8d-8dd6-4dfc-b5bb-52d0df597fd2\",\"eddsaPCD\":{\"type\":\"eddsa-pcd\",\"pcd\":\"{\\\"type\\\":\\\"eddsa-pcd\\\",\\\"id\\\":\\\"aac9a8b2-3659-40e9-a29e-5165068f3bbc\\\",\\\"claim\\\":{\\\"message\\\":[\\\"6\\\",\\\"1\\\",\\\"1\\\",\\\"a\\\",\\\"7\\\",\\\"6\\\",\\\"0\\\",\\\"4\\\",\\\"1912ea05072\\\",\\\"3000477e9507331b8e73fb6d3b3b705e22b02021ff40c19965c5b9dc82a8ca89\\\",\\\"0\\\",\\\"0\\\",\\\"0\\\"],\\\"publicKey\\\":[\\\"0f183dcba06341a4549d78c3f8ca0060a9d6aca795103cb6957d1e2973b5fdeb\\\",\\\"2a2eb70efeebb5facca2f3668ca5642513be542bab285055ccdcbc18cc125fd5\\\"]},\\\"proof\\\":{\\\"signature\\\":\\\"b46a1b5e04f93aec301098c4b10f33b4d3c6f638b4281b4a728fcd3428277c28ae52bb6b66a01cdd9b4d6f4175021f3a829493d06bd30c2155914d570b876602\\\"}}\"},\"data\":{\"name\":\"Giant Leaf Frog\",\"description\":\"The giant leaf frog, known for its remarkable leaf-shaped appearance, is native to the rainforests of Central and South America. Its vibrant green coloration and unusual leaf-like body make it a master of camouflage, allowing it to blend seamlessly into the lush vegetation of its habitat.\",\"imageUrl\":\"https://api.zupass.org/frogcrypto/images/91fed32f-4753-4b4d-9d96-94e1ad648003\",\"frogId\":6,\"biome\":1,\"rarity\":1,\"temperament\":10,\"jump\":7,\"speed\":6,\"intelligence\":0,\"beauty\":4,\"timestampSigned\":1723064143986,\"ownerSemaphoreId\":\"21711510168635182051334357427785411794318044815986410056285364391413272857225\"}}"}
 
+oops close your eyes plzz ><
+
 const JX_SEMPAHORE_ID_TRAPDOOR =
   "19203180509052113016252601264864235852564023528134367070099013180198396222";
 const JX_SEMPAHORE_ID_NULLIFIER =
   "46501085880889723880043204259130159126257178560019589221443961884550616786";
+

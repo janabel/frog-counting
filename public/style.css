@@ -14,7 +14,7 @@ header {
 
 main {
   padding: 20px;
-  background-color: #fff;
+  background-color: #acf08f;
 }
 
 button {
@@ -74,7 +74,6 @@ footer {
   background-color: #3d3c87;
 }
 
-
 /* pre {
   background-color: #f4f4f4;
   padding: 10px;
@@ -101,11 +100,11 @@ textarea {
   word-wrap: break-word; /* Allows long lines to be wrapped */
 }
 
-#id-nullifier{
+#id-nullifier {
   height: 17px;
   /* background-color: black; */
 }
 
-#id-trapdoor{
+#id-trapdoor {
   height: 17px;
 }

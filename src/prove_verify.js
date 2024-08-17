@@ -104,12 +104,15 @@ async function parseFrog(rawFrog, semaphoreIDtrapdoor, semaphoreIDnullifier) {
   const frogSignatureS = rawSig.S.toString();
 
   return {
-    ...frogInfo,
+    // ...frogInfo,
+    ...Object.fromEntries(
+      Object.entries(frogInfo).map(([key, value]) => [key, value.toString()])
+    ),
     frogSignerPubkeyAx: hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
     frogSignerPubkeyAy: hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
     semaphoreIdentityTrapdoor: semaphoreIDtrapdoor,
     semaphoreIdentityNullifier: semaphoreIDnullifier,
-    watermark: "2718", // ?
+    watermark: "2718",
     frogSignatureR8x: frogSignatureR8x,
     frogSignatureR8y: frogSignatureR8y,
     frogSignatureS: frogSignatureS,
@@ -135,9 +138,17 @@ function downloadJSON(jsonObject, fileName) {
 }
 
 // function for parsing an array of serializedFrogs
-async function parseFrogs(serializedFrogs) {
+async function parseFrogs(
+  serializedFrogs,
+  semaphoreIDtrapdoor,
+  semaphoreIDnullifier
+) {
   const promises = serializedFrogs.map(async (serializedFrog) => {
-    const result = await parseFrog(serializedFrog);
+    const result = await parseFrog(
+      serializedFrog,
+      semaphoreIDtrapdoor,
+      semaphoreIDnullifier
+    );
     return result;
   });
 
@@ -186,8 +197,14 @@ document
       .getElementById("frog-input")
       .value.split("\n\n");
 
+    // console.log(serializedFrogs);
+
     // create array of parsed frogs
-    let parsedFrogs = await parseFrogs(serializedFrogs);
+    let parsedFrogs = await parseFrogs(
+      serializedFrogs,
+      semaphoreTrap,
+      semaphoreNull
+    );
     console.log("parsedFrogs", parsedFrogs);
 
     // create an array of [frogMsgHash, parsedfrog]
@@ -214,7 +231,7 @@ document
     );
 
     console.log(frogsJSon);
-    // downloadJSON(frogsJSon, `frogCircuitInputs.json`);
+    downloadJSON(frogsJSon, `frog_inputs.json`);
   });
 
 document
