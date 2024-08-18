@@ -3,7 +3,7 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::upper_case_acronyms)]
-use ark_ff::MontBackend;
+// use ark_ff::MontBackend;
 ///
 /// This example performs the full flow:
 /// - define the circuit to be folded
@@ -17,7 +17,8 @@ use ark_ff::MontBackend;
 // use ethereum_types::U256;
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 
-use ark_groth16::{Groth16, Proof};
+use ark_groth16::Groth16;
+// use ark_groth16::{Groth16, Proof};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 
 use num_bigint::BigInt;
@@ -80,13 +81,14 @@ fn main() {
 
     println!("\nlet's 🐸 fold 🐸 some 🐸 frogs 🐸🐸🐸🐸🐸\n");
     // Path to the JSON file
-    let file_path = "./src/frog_inputs.json";
+    let file_path = "./src/frog_inputs (4).json";
 
     // Read the file contents into a string
     let contents = fs::read_to_string(file_path);
 
     // Parse the JSON string into a HashMap
     let frogs: HashMap<String, Frog> = serde_json::from_str(&contents.unwrap()).unwrap();
+
     // let num_frogs = frogs.len();
     // println!("{:?}", frogs.len());
     // let parsed_json: Frog = serde_json::from_str(&contents.unwrap()).unwrap();
@@ -146,11 +148,20 @@ fn main() {
     }
 
     let mut external_inputs: Vec<Vec<Fr>> = Vec::new();
+    let n = frogs.len();
 
-    for (key, frog) in &frogs {
-        let frog_fr_vector = frog_to_fr_vector(frog);
+    for i in 1..=n {
+        let i_string = i.to_string();
+        let frog = &frogs[&i_string];
+        let frog_fr_vector = frog_to_fr_vector(&frog);
         external_inputs.push(frog_fr_vector);
     }
+
+    // for (key, frog) in frogs {
+    //     let index = key.parse()
+    //     let frog_fr_vector = frog_to_fr_vector(&frog);
+    //     external_inputs[key] = frog_fr_vector;
+    // }
 
     // println!("printing external_inputs...");
     // println!("{:?}", external_inputs);
@@ -214,6 +225,11 @@ fn main() {
         nova.prove_step(rng, external_inputs_at_step.clone(), None)
             .unwrap(); //////////////////////////////////////////////////////////////////////////////////////////
         println!("🐸 Nova::prove_step {}: {:?}", i, start.elapsed());
+        println!(
+            "state at last step (after {} iterations): {:?}",
+            i,
+            nova.state()
+        )
     }
 
     println!("{}", "finished folding!");
@@ -273,11 +289,11 @@ fn main() {
     // save smart contract and the calldata
     println!("storing nova-verifier.sol and the calldata into files");
     fs::write(
-        "./src/frogIVC_split-nova-verifier.sol",
+        "./src/nova_solidity_outputs/frogIVC_split-nova-verifier.sol",
         decider_solidity_code.clone(),
     )
     .unwrap();
-    fs::write("./src/frogIVC_split-solidity-calldata.calldata", calldata.clone()).unwrap();
+    fs::write("./src/nova_solidity_outputs/frogIVC_split-solidity-calldata.calldata", calldata.clone()).unwrap();
     let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
-    fs::write("./src/frogIVC_split-solidity-calldata.inputs", s.join(",\n")).expect("");
+    fs::write("./src/nova_solidity_outputs/frogIVC_split-solidity-calldata.inputs", s.join(",\n")).expect("");
 }
