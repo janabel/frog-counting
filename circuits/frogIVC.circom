@@ -7,15 +7,15 @@ include "../node_modules/circomlib/circuits/comparators.circom";
 template frogIVC () {
     // in javascript, already preprocessed external_inputs so that they are sorted by frog_msg_hash in INCREASING order.
     // in javascript, also already removed duplicates.
-    // ivc_input = frog_msg_hash from previous frog. 
+    // ivc_input = frog_msg_hash (from previous frog) & counter of # frogs so far.  
     // circuit checks that new frog_msg_hash is greater, and then returns new hash as ivc_output. 
 
     // can split frogMsgHash in base 2^128 before reading into ivc_input, i.e. 
     // frogMsgHash = frogMsgHash_small_old + 2^128 * frogMsgHash_big_old
-    // ivc_input = [frogMsgHash_small_old, frogMsgHash_big_old];
-    signal input ivc_input[2];
+    // ivc_input = [frogMsgHash_small_old, frogMsgHash_big_old, frogCounter];
+    signal input ivc_input[3];
     signal input external_inputs[22];
-    signal output ivc_output[2];
+    signal output ivc_output[3];
 
     component frogVerify = EdDSAFrogPCD();
     frogVerify.frogId <== external_inputs[0];
@@ -72,6 +72,7 @@ template frogIVC () {
     // put in the new frogMessageHash as ivc_output
     ivc_output[0] <== frogMessageHashSmall;
     ivc_output[1] <== frogMessageHashBig;
+    ivc_output[2] <== ivc_input[2] + 1;
 
 }
 

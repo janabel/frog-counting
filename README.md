@@ -1,10 +1,11 @@
-# POD-counting
+# FROG-counting
 
-Application allowing you to generate proofs about having n PODS using folding schemes and the Sonobe library
+Application allowing you to generate proofs about having n frogs using folding schemes and the Sonobe library
 
 ## Development
 
 Start by running:
+`npm init -y`
 `npm install`
 
 To initialize a Vite bundler for opening the webpage on a local host, run the following command:
@@ -17,7 +18,7 @@ OR
 
 Check that you have installed properly by running:
 `solc --version`
-which should print a solc version. Otherwise you may need to configure your path manually
+which should print a solc version. Otherwise you may need to configure your path manually.
 
 ## Building circuits
 
@@ -32,7 +33,6 @@ To run circuit build scripts, cd into the circuit-scripts directory. Put all cir
 - [x] get original circom_full_flow in sonobe working
 - [x] substitute with an isZero circuit
 - [x] substitute with the frog circuit
-- [ ] write javascript script for converting normal frog json into split frog json (following script.js logic)
-- [ ] run entire frogVerify rust code in browser (compile to wasm, fetch inputs)
-- [ ] figure out how to get proof as output
+- [x] write javascript script for converting normal frog json into split frog json (following script.js logic)
 - [ ] break frogVerify up, get proof and display from rust code for user to copy paste into verifier function
+- [ ] run entire frogVerify rust code in browser (compile to wasm, fetch inputs)

@@ -80,21 +80,10 @@ struct Frog {
 fn main() {
 
     println!("\nlet's 🐸 fold 🐸 some 🐸 frogs 🐸🐸🐸🐸🐸\n");
-    // Path to the JSON file
+
     let file_path = "./src/frog_inputs (4).json";
-
-    // Read the file contents into a string
     let contents = fs::read_to_string(file_path);
-
-    // Parse the JSON string into a HashMap
     let frogs: HashMap<String, Frog> = serde_json::from_str(&contents.unwrap()).unwrap();
-
-    // let num_frogs = frogs.len();
-    // println!("{:?}", frogs.len());
-    // let parsed_json: Frog = serde_json::from_str(&contents.unwrap()).unwrap();
-    
-    // println!("{:?}", frogs.get("1").unwrap());
-    // println!("{:?}", frogs.get("2").unwrap());
 
     // helper function to turn strings into Fr elements to feed into folding/circuits
     fn str_to_fr(input_string: &str)-> Fr {
@@ -157,18 +146,12 @@ fn main() {
         external_inputs.push(frog_fr_vector);
     }
 
-    // for (key, frog) in frogs {
-    //     let index = key.parse()
-    //     let frog_fr_vector = frog_to_fr_vector(&frog);
-    //     external_inputs[key] = frog_fr_vector;
-    // }
-
     // println!("printing external_inputs...");
     // println!("{:?}", external_inputs);
 
     // set the initial state
-    // initialize z_0 to [0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
-    let z_0 = vec![Fr::from(0_u32), Fr::from(0_u32)]; 
+    // initialize z_0 to [0,0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
+    let z_0 = vec![Fr::from(0_u32), Fr::from(0_u32), Fr::from(0_u32)]; 
 
     // set the external inputs to be used at each step of the IVC
     // external_input is just two frogs, formatted correctly
@@ -182,7 +165,7 @@ fn main() {
     );
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
-    let f_circuit_params = (r1cs_path, wasm_path, 2, 22);
+    let f_circuit_params = (r1cs_path, wasm_path, 3, 22);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
