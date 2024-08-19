@@ -213,7 +213,7 @@ document
         const frogHashInput = await getFrogHashInput(parsedFrog);
         const frogMsgHash = await computePoseidonHash(frogHashInput);
         return [frogMsgHash, parsedFrog];
-      })
+      })  
     );
 
     frogHash_and_frog_array.sort((a, b) => a[0] - b[0]);
@@ -232,58 +232,4 @@ document
 
     console.log(frogsJSon);
     downloadJSON(frogsJSon, `frog_inputs.json`);
-  });
-
-document
-  .getElementById("verify-proof-button")
-  .addEventListener("click", async function () {
-    if (!publicSignals) {
-      console.log("did not provide input values yet");
-      return;
-    }
-    const verifyResult = document.getElementById("verify-result");
-
-    console.log("button clicked!");
-    const rawProof = document.getElementById("proof").value;
-
-    // checking that the proof is a JSON
-    let proof = undefined;
-    try {
-      proof = JSON.parse(rawProof);
-      console.log(proof);
-      console.log("got valid json");
-    } catch (error) {
-      verifyResult.innerText = "Please enter a valid proof!";
-      console.log("caught an error:", error.message);
-      return;
-    }
-
-    // checking that the proof is a JSON of the correct proof format
-    if (!isValidProof(proof)) {
-      verifyResult.innerText = "Please enter a valid proof!";
-      return;
-    }
-    // checking that the proof is a JSON of the correct proof format
-    if (!isValidProof(proof)) {
-      verifyResult.innerText = "Please enter a valid proof!";
-      return;
-    }
-
-    // trying to verify the proof, throws and error if groth16.verify throws and error
-    let verify = undefined;
-    try {
-      console.log("vkey", vkey, "publicSignals", publicSignals, "proof", proof);
-      verify = await groth16.verify(vkey, publicSignals, proof);
-      console.log("successfully verified...");
-    } catch (error) {
-      verifyResult.innerText = "Error verifying proof...";
-      return;
-    }
-
-    // update text of verifyResult div with status of verification
-    if (verify) {
-      verifyResult.innerText = "Proof was verified!";
-    } else {
-      verifyResult.innerText = "Proof was rejected :(";
-    }
   });
