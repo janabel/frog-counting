@@ -33,7 +33,7 @@ ark-std = "0.4.0"
 color-eyre = "0.6.2"
 num-bigint = "0.4.3"
 
-folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", branch="feat/wasm_compat", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
+folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
 
 serde = "1.0.198"
 serde_json = "1.0.116"
