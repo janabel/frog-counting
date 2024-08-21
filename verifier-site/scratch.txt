@@ -1,0 +1,74 @@
+current verify in deciderETH
+
+fn verify(
+        vp: Self::VerifierParam,
+        i: C1::ScalarField,
+        z_0: Vec<C1::ScalarField>,
+        z_i: Vec<C1::ScalarField>,
+        running_instance: &Self::CommittedInstance,
+        incoming_instance: &Self::CommittedInstance,
+        proof: &Self::Proof,
+    ) -> Result<bool, Error> {
+        if i <= C1::ScalarField::one() {
+            return Err(Error::NotEnoughSteps);
+        }
+
+        let (pp_hash, snark_vk, cs_vk): (C1::ScalarField, S::VerifyingKey, CS1::VerifierParams) =
+            vp;
+
+        // compute U = U_{d+1}= NIFS.V(U_d, u_d, cmT)
+        let U = NIFS::<C1, CS1>::verify(proof.r, running_instance, incoming_instance, &proof.cmT);
+
+        let (cmE_x, cmE_y) = NonNativeAffineVar::inputize(U.cmE)?;
+        let (cmW_x, cmW_y) = NonNativeAffineVar::inputize(U.cmW)?;
+        let (cmT_x, cmT_y) = NonNativeAffineVar::inputize(proof.cmT)?;
+
+        let public_input: Vec<C1::ScalarField> = vec![
+            vec![pp_hash, i],
+            z_0,
+            z_i,
+            vec![U.u],
+            U.x.clone(),
+            cmE_x,
+            cmE_y,
+            cmW_x,
+            cmW_y,
+            proof.kzg_challenges.to_vec(),
+            vec![
+                proof.kzg_proofs[0].eval, // eval_W
+                proof.kzg_proofs[1].eval, // eval_E
+            ],
+            cmT_x,
+            cmT_y,
+            vec![proof.r],
+        ]
+        .concat();
+
+        use std::io::{self, Write};
+        println!("printing public_input...");
+        println!("{:?}", public_input);
+        io::stdout().flush().unwrap();  // Forces the output to flush immediately
+
+
+        let snark_v = S::verify(&snark_vk, &public_input, &proof.snark_proof)
+            .map_err(|e| Error::Other(e.to_string()))?;
+        if !snark_v {
+            return Err(Error::SNARKVerificationFail);
+        }
+
+        // we're at the Ethereum EVM case, so the CS1 is KZG commitments
+        CS1::verify_with_challenge(
+            &cs_vk,
+            proof.kzg_challenges[0],
+            &U.cmW,
+            &proof.kzg_proofs[0],
+        )?;
+        CS1::verify_with_challenge(
+            &cs_vk,
+            proof.kzg_challenges[1],
+            &U.cmE,
+            &proof.kzg_proofs[1],
+        )?;
+
+        Ok(true)
+    }
