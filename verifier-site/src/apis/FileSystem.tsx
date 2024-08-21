@@ -87,7 +87,10 @@ export function FileSystem(): ReactNode {
           <TryIt
             onClick={async () => {
               try {
-                await z.fs.put("/Testing", JSON.parse(sampleSerializedPCD));
+                await z.fs.put(
+                  "/FrogWhisperer",
+                  JSON.parse(sampleSerializedPCD)
+                );
                 setPCDAdded(true);
               } catch (e) {
                 console.log(e);

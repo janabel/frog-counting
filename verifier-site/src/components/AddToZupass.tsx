@@ -57,7 +57,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
           className="btn btn-primary"
           onClick={async () => {
             try {
-              await z.fs.put("/Testing", serializedPodPCD);
+              await z.fs.put("/FrogWhisperer", serializedPodPCD);
               setPCDAdded(true);
             } catch (e) {
               console.log(e);
@@ -66,17 +66,6 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
         >
           Add POD
         </button>
-        {/* <TryIt
-          onClick={async () => {
-            try {
-              await z.fs.put("/Testing", serializedPodPCD);
-              setPCDAdded(true);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
-          label="Add PCD"
-        /> */}
       </div>
       <div>
         {pcdAdded && (
