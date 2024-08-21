@@ -1,38 +1,14 @@
-# FROG-counting
+# ZApp Template
 
-Application allowing you to generate proofs about having n frogs using folding schemes and the Sonobe library
+This Vite + React template provides a minimal setup to get a ZApp working with a POD client (like Zupass).
 
-## Development
+To get started in development mode:
 
-Start by running:
-`npm init -y`
-`npm install`
+```
+pnpm install
+pnpm dev
+```
 
-To initialize a Vite bundler for opening the webpage on a local host, run the following command:
-`npm create vite@latest ./`
+Go ahead and try out the various Zupass API functions as specified in the page.
 
-Then install Solidity via the following command:
-`brew install solidity`
-OR
-`npm install -g solc`
-
-Check that you have installed properly by running:
-`solc --version`
-which should print a solc version. Otherwise you may need to configure your path manually.
-
-## Building circuits
-
-To run circuit build scripts, cd into the circuit-scripts directory. Put all circuits in the circuits directory.
-`sh circuit-scripts/build-is-zero.sh`
-
-## TODOS:
-
-- [x] basic website with circom circuit prove/verify
-- [x] frog circuit working with manual inputs
-- [x] frog circuit working in browser with frog copy paste
-- [x] get original circom_full_flow in sonobe working
-- [x] substitute with an isZero circuit
-- [x] substitute with the frog circuit
-- [x] write javascript script for converting normal frog json into split frog json (following script.js logic)
-- [ ] break frogVerify up, get proof and display from rust code for user to copy paste into verifier function
-- [ ] run entire frogVerify rust code in browser (compile to wasm, fetch inputs)
+![](/screenshot.png)
