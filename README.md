@@ -17,7 +17,7 @@ The user first navigates to Frog Counter (also built on Zupass). Frog Counter wi
   - User pastes in the following inputs:
     - `semaphoreIdentityTrapdoor`, `semaphoreIdentityNullifier` [?] is there a way around this [?]
     - `watermark` from the Frog Whisperer website
-- Generates ZK proof with the circuit inputs above
+- Generates ZK proof with the circuit inputs above (using the Sonobe library for folding schemes)
 - Outputs the Sonobe `proof`, which has entries:
   - `public_inputs` (= public outputs), includes N = number of frogs) [?]
   - `vkey` = `nova_cyclefold_vk`
