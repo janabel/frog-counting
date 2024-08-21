@@ -57,7 +57,6 @@ export function IssuePOD() {
         zupass_image_url: {
           type: "string",
           value:
-            // "https://upload.wikimedia.org/wikipedia/commons/a/a7/Perereca-macaco_-_Phyllomedusa_rohdei.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/6/64/Zhuangzi.gif",
         },
         zupass_title: { type: "string", value: "frog whisperer" },
