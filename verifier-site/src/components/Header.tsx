@@ -7,8 +7,8 @@ export function Header() {
     <div>
       {connected && (
         <p>
-          🐸 Verify your frog-counting proof and get your Frog Master POD here!
-          🐸
+          🐸 Verify your frog-counting proof and get your Frog Whisperer POD
+          here! 🐸
         </p>
       )}
       {!connected && (

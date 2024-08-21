@@ -50,7 +50,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
     <div className="flex flex-col gap-4 my-4">
       <div>
         <h1 className="text-xl font-bold mb-2">
-          Add your Frog Master PCD to Zupass
+          Add your Frog Whisperer POD to Zupass
         </h1>
 
         <button
@@ -64,7 +64,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
             }
           }}
         >
-          Add PCD
+          Add POD
         </button>
         {/* <TryIt
           onClick={async () => {

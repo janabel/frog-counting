@@ -1,7 +1,7 @@
 // import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SerializedPCD } from "@pcd/pcd-types";
-import frogMasterImg from "../assets/frogmaster.png";
+import frogWhispererImg from "../assets/frogwhisperer.png";
 import { Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
@@ -60,7 +60,7 @@ export function IssuePOD() {
             // "https://upload.wikimedia.org/wikipedia/commons/a/a7/Perereca-macaco_-_Phyllomedusa_rohdei.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/6/64/Zhuangzi.gif",
         },
-        zupass_title: { type: "string", value: "frog master" },
+        zupass_title: { type: "string", value: "frog whisperer" },
         zupass_description: {
           type: "string",
           value: "gotta catch 'em all",
@@ -120,11 +120,11 @@ export function IssuePOD() {
     <div className="flex flex-col gap-4 my-4">
       <div>
         <h1 className="text-xl font-bold mb-2">
-          ‧₊˚Congratulations, you are now a Frog Master ‧₊˚
+          ‧₊˚Congratulations, you are now a Frog Whisperer ‧₊˚
         </h1>
         <img
-          src={frogMasterImg}
-          alt="Frog Master Image"
+          src={frogWhispererImg}
+          alt="Frog Whisperer Image"
           style={{ width: "300px", height: "auto" }}
         />
         {/* <pre>[POD displayed here]</pre> */}

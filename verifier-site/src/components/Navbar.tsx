@@ -24,7 +24,7 @@ export function Navbar(): ReactNode {
     <div className="navbar bg-base-100 w-full">
       <div className="flex-none">
         <a className="btn btn-ghost text-lg md:text-xl">
-          Frog Master Exchange 🧍‍♀️🐸
+          Frog Whisperer Exchange 🧍‍♀️🐸
         </a>
       </div>
       <div className="flex-1"></div>
