@@ -7,16 +7,14 @@ Frog Whisperer (built on Zupass) will ultimately issue the user `FrogWhisperer` 
 The user first navigates to Frog Counter (also built on Zupass). Frog Counter will allow the user to i) fetch their Frogs from Zupass and ii) generate a proof that says “I have N frogs” (where N can be very large, thanks to Sonobe/folding schemes). The website then:
 
 - Gets an array of `Frogs` from Zupass (using the new ZApp API!)
-- Gets circuit inputs:
-  - Website computes the following inputs:
-    - `Frogs` (automatically passed into circuit), which have entries:
-      - Frog attributes
-      - `ownerSemaphoreID` (user’s Semaphore ID)
-      - `frogSignerPubkey` of frog POD issuer
-      - `frogSignature` from frog POD issuer, signs (merkle root of) frog POD contents
-  - User pastes in the following inputs:
-    - `semaphoreIdentityTrapdoor`, `semaphoreIdentityNullifier` [?] is there a way around this [?]
-    - `watermark` from the Frog Whisperer website
+- Generate Circuit Inputs
+  - Create `Frogs` (automatically passed into circuit), which have entries:
+    - `ownerSemaphoreID` (user’s Semaphore ID)
+    - `frogSignerPubkey` of frog POD issuer
+    - `frogSignature` from frog POD issuer, signs (merkle root of) frog POD contents
+    - `semaphoreIdentityTrapdoor`, `semaphoreIdentityNullifier` fetched from user's identity PCD
+    - ...
+  - Hardcodes (not useful) `watermark=2718`, `reservedField{i}=0`, `externalNullifier=STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER`
 - Generates ZK proof with the circuit inputs above (using the Sonobe library for folding schemes)
 - Outputs the Sonobe `proof`, which has entries:
   - `public_inputs` (= public outputs), includes N = number of frogs) [?]
@@ -34,3 +32,11 @@ The user will then navigate back to the original Frog Rewards website and paste 
       - owner = `semaphoreID.commitment` (user’s public semaphore ID)
     - signature of POD content (PODEntries) with website’s `verifier_sk`
 - Put the POD in the user’s Zupass “FrogWhisperer” folder
+
+# Local Dev
+Run prover site with
+```
+cd prover-site
+pnpm install
+pnpm dev
+```
