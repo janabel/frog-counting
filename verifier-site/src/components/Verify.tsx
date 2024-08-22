@@ -36,9 +36,19 @@ export function Verify() {
         "proof",
         proof_input
       );
-      await groth16.verify(vkey_input, public_signals_input, proof_input);
-      setVerifyStatus(true);
-      console.log("successfully verified...");
+      const verify_result = await groth16.verify(
+        vkey_input,
+        public_signals_input,
+        proof_input
+      );
+      console.log(verify_result);
+
+      if (verify_result == true) {
+        setVerifyStatus(true);
+        console.log("successfully verified...");
+      } else {
+        console.log("proof invalid...");
+      }
     } catch (error) {
       console.log("Error verifying proof...", error);
       return;
