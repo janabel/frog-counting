@@ -6,6 +6,8 @@ import { groth16 } from "snarkjs";
 export function Verify() {
   const [verifyStatus, setVerifyStatus] = useState(false);
 
+  // todo - clean up react so that no longer using getElementById.
+  // e.g. have vkey_element be a state X, and userinput takes in prop function = setX
   const verify = async () => {
     const vkey_element = document.getElementById(
       "vkey-input"
