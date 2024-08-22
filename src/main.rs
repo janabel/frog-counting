@@ -201,6 +201,7 @@ fn main() {
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
     println!("{}", "prepared decider prover & verifier params!");
+    println!("{:?}", decider_vp.1);
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
