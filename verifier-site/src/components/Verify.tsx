@@ -1,22 +1,46 @@
 import { IssuePOD } from "./IssuePOD";
 import { UserInput } from "./UserInput";
 import { useState } from "react";
+import { groth16 } from "snarkjs";
 
 export function Verify() {
   const [verifyStatus, setVerifyStatus] = useState(false);
 
-  // dummy verify function that just verifies if nonempty
-  // TODO: implement real verify
-  const verify = () => {
-    const vkey_input = document.getElementById("vkey-input");
-    const public_signals_input = document.getElementById(
+  const verify = async () => {
+    const vkey_element = document.getElementById(
+      "vkey-input"
+    ) as HTMLInputElement | null;
+    const public_signals_element = document.getElementById(
       "public-signals-input"
-    );
-    const proof_input = document.getElementById("proof-input");
+    ) as HTMLInputElement | null;
+    const proof_element = document.getElementById(
+      "proof-input"
+    ) as HTMLInputElement | null;
 
-    if (vkey_input && public_signals_input && proof_input) {
+    if (!vkey_element || !public_signals_element || !proof_element) {
+      console.log("please provide vkey, public signals, and proof!");
+      return;
+    }
+
+    const vkey_input = JSON.parse(vkey_element.value);
+    const public_signals_input = JSON.parse(public_signals_element.value);
+    const proof_input = JSON.parse(proof_element.value);
+
+    // trying to verify the proof, throws an error if groth16.verify throws and error
+    try {
+      console.log(
+        "vkey",
+        vkey_input,
+        "publicSignals",
+        public_signals_input,
+        "proof",
+        proof_input
+      );
+      await groth16.verify(vkey_input, public_signals_input, proof_input);
       setVerifyStatus(true);
-    } else {
+      console.log("successfully verified...");
+    } catch (error) {
+      console.log("Error verifying proof...", error);
       return;
     }
   };
