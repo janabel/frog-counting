@@ -6,6 +6,7 @@ export function Verify() {
   const [verifyStatus, setVerifyStatus] = useState(false);
 
   // dummy verify function that just verifies if nonempty
+  // TODO: implement real verify
   const verify = () => {
     const vkey_input = document.getElementById("vkey-input");
     const public_signals_input = document.getElementById(
