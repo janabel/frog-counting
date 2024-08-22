@@ -4,6 +4,7 @@ mod utils;
 use wasm_bindgen::prelude::*;
 use keccak_chain::*;
 use web_sys::console;
+use console_error_panic_hook;
 
 #[wasm_bindgen]
 pub fn log_message(message: &str) {
@@ -41,9 +42,10 @@ extern "C" {
 // #[wasm_bindgen]
 // pub mod keccak_chain;
 
+
 #[wasm_bindgen]
-pub fn run_keccak(){
-    println!("running keccak");
-    // log_message(full_flow());
-    full_flow()
+pub fn run_keccak(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>) {
+    alert("running keccak");
+    let out = full_flow(r1cs_bytes, wasm_bytes);
+    alert(&out);
 }
