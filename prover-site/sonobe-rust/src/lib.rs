@@ -7,6 +7,7 @@ extern {
     pub fn alert(s: &str);
 }
 
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 
 use ark_groth16::Groth16;
@@ -61,6 +62,25 @@ struct Frog {
 
 #[wasm_bindgen]
 pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
+
+    pub type N =
+        Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
+    pub type D = DeciderEth<
+        G1,
+        GVar,
+        G2,
+        GVar2,
+        CircomFCircuit<Fr>,
+        KZG<'static, Bn254>,
+        Pedersen<G2>,
+        Groth16<Bn254>,
+        N,
+    >;
+
+    let poseidon_config = poseidon_canonical_config::<Fr>();
+    let mut rng = rand::rngs::OsRng;
+
+
     // return;
     println!("\nlet's 🐸 fold 🐸 some 🐸 frogs 🐸🐸🐸🐸🐸\n");
     alert("hi");
@@ -149,22 +169,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
 
     alert("created circuit!");
 
-    pub type N =
-        Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
-    pub type D = DeciderEth<
-        G1,
-        GVar,
-        G2,
-        GVar2,
-        CircomFCircuit<Fr>,
-        KZG<'static, Bn254>,
-        Pedersen<G2>,
-        Groth16<Bn254>,
-        N,
-    >;
-
-    let poseidon_config = poseidon_canonical_config::<Fr>();
-    let mut rng = rand::rngs::OsRng;
+    
 
     // prepare the Nova prover & verifier params
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
@@ -177,15 +182,10 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
 
     alert("initialized folding scheme!");
 
-    // prepare the Decider prover & verifier params
-    let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
-    alert("prepared decider prover & verifier params");
-    alert(&format!("{:?}", decider_vp.1));
-
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
         nova.prove_step(rng, external_inputs_at_step.clone(), None)
-            .unwrap(); //////////////////////////////////////////////////////////////////////////////////////////
+            .unwrap(); 
         alert(&format!("🐸 Nova::prove_step {}", i));
         alert(&format!(  
             "state at last step (after {} iterations): {:?}",
@@ -194,15 +194,20 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
         ))
     }
 
-    alert("finished folding!");
+    alert("finished folding!"); // works up to here in browser 8/23 12:17PM
 
+    rng = rand::rngs::OsRng;
+
+    let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+
+    // decider proof generation
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
-
     alert("generated Decider proof");
 
+    // decider proof verification
     let verified = D::verify(
         decider_vp.clone(),
-        nova.i,
+        nova.i.clone(),
         nova.z_0.clone(),
         nova.z_i.clone(),
         &nova.U_i,
@@ -210,9 +215,47 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
         &proof,
     )
     .unwrap();
-    alert("unwrapped verify");
 
-    alert(&format!("Decider proof verification: {}", verified));
+    alert(&format!("Decider proof verified: {:?}", verified));
 
-    alert("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
+    // The rest of this test will serialize the data and deserialize it back, and use it to
+    // verify the proof:
+
+    // serialize the verifier_params, proof and public inputs
+    let mut decider_vp_serialized = vec![];
+    decider_vp
+        .serialize_compressed(&mut decider_vp_serialized)
+        .unwrap();
+
+    alert(&format!("decider_vp_serialized: {:?}", decider_vp_serialized));
+    web_sys::console::log_1(&format!("decider_vp_serialized: {:?}", decider_vp_serialized).into());
+
+    let mut proof_serialized = vec![];
+    proof.serialize_compressed(&mut proof_serialized).unwrap();
+
+    alert(&format!("proof_serialized: {:?}", proof_serialized));
+    web_sys::console::log_1(&format!("proof_serialized: {:?}", proof_serialized).into());
+
+    // serialize the public inputs in a single packet
+    let mut public_inputs_serialized = vec![];
+    nova.i
+        .serialize_compressed(&mut public_inputs_serialized)
+        .unwrap();
+    nova.z_0
+        .serialize_compressed(&mut public_inputs_serialized)
+        .unwrap();
+    nova.z_i
+        .serialize_compressed(&mut public_inputs_serialized)
+        .unwrap();
+    nova.U_i
+        .serialize_compressed(&mut public_inputs_serialized)
+        .unwrap();
+    nova.u_i
+        .serialize_compressed(&mut public_inputs_serialized)
+        .unwrap();
+
+    alert(&format!("public_inputs_serialized: {:?}", public_inputs_serialized));
+    web_sys::console::log_1(&format!("public_inputs_serialized: {:?}", public_inputs_serialized).into());
+
+    alert("🎉");
 }
