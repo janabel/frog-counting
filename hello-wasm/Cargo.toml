@@ -35,7 +35,10 @@ color-eyre = "0.6.2"
 num-bigint = "0.4.3"
 
 # folding-schemes = { path="./sonobe/folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
-folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe",  branch = "feat/wasm-IO-compat", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
+
+# folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe",  branch = "feat/wasm-IO-compat", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
+
+folding-schemes = { git = "https://github.com/czhang2718/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "feat/wasm-IO-compat", default-features = false }
 
 serde = "1.0.198"
 serde_json = "1.0.116"
@@ -43,6 +46,9 @@ tiny-keccak = { version = "2.0", features = ["keccak"] }
 
 rand = "0.8.5"
 getrandom = { version = "0.2", features = ["js"] }
+ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false, features = ["wasm", "circom-2"] }
+
+num-traits = "0.2"
 
 [patch.crates-io]
 # patch ark_curves to use a cherry-picked version which contains
@@ -50,5 +56,4 @@ getrandom = { version = "0.2", features = ["js"] }
 # this will no longer be needed)
 ark-bn254 = { git = "https://github.com/arnaucube/ark-curves-cherry-picked", branch="cherry-pick"}
 ark-grumpkin = { git = "https://github.com/arnaucube/ark-curves-cherry-picked", branch="cherry-pick"}
-# ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false }
 ark-r1cs-std = { git = "https://github.com/winderica/r1cs-std", branch="cherry-pick" }
