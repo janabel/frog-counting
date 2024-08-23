@@ -1,0 +1,67 @@
+[package]
+name = "sonobe-rust"
+version = "0.1.0"
+authors = ["Claire Zhang <czhang2718@gmail.com>", "Janabel"]
+description = "A sample project with wasm-pack for frog-counting"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/janabel/POD-counting"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+
+ark-serialize = { version = "^0.4.0", default-features = false }
+
+web-sys = { version = "0.3", features = ["console"] }
+console_error_panic_hook = "0.1.6"
+
+wasm-bindgen = "0.2"
+
+ark-groth16 = { version = "^0.4.0" }
+ark-bn254 = { version = "0.4.0", features = ["r1cs"] }
+ark-grumpkin = {version="0.4.0", features=["r1cs"]}
+ark-ec = "0.4.1"
+ark-ff = { version = "=0.4.1", default-features = false, features = ["asm", "parallel"] }
+ark-r1cs-std = { version = "0.4.0", default-features = false }
+ark-relations = { version = "0.4.0", default-features = false }
+ark-snark = { version = "^0.4.0", default-features = false }
+ark-poly-commit = "^0.4.0"
+ark-crypto-primitives = { version = "^0.4.0", default-features = false, features = [
+    "r1cs",
+    "sponge",
+    "crh",
+] }
+ark-std = "0.4.0"
+color-eyre = "0.6.2"
+num-bigint = "0.4.3"
+
+# folding-schemes = { path="./sonobe/folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
+
+# folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe",  branch = "feat/wasm-IO-compat", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
+
+folding-schemes = { git = "https://github.com/czhang2718/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "nova-decider-serialization", default-features = false }
+
+# folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "nova-decider-serialization", default-features = false }
+
+# nova-decider-serialization
+# rev ee47397
+
+serde = "1.0.198"
+serde_json = "1.0.116"
+tiny-keccak = { version = "2.0", features = ["keccak"] }
+
+rand = "0.8.5"
+getrandom = { version = "0.2", features = ["js"] }
+ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false, features = ["wasm", "circom-2"] }
+
+num-traits = "0.2"
+
+[patch.crates-io]
+# patch ark_curves to use a cherry-picked version which contains
+# bn254::constraints & grumpkin for v0.4.0 (once arkworks v0.5.0 is released
+# this will no longer be needed)
+ark-bn254 = { git = "https://github.com/arnaucube/ark-curves-cherry-picked", branch="cherry-pick"}
+ark-grumpkin = { git = "https://github.com/arnaucube/ark-curves-cherry-picked", branch="cherry-pick"}
+ark-r1cs-std = { git = "https://github.com/winderica/r1cs-std", branch="cherry-pick" }
