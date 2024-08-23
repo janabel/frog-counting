@@ -198,7 +198,10 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
 
     rng = rand::rngs::OsRng;
 
+    alert("rng again");
+
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    alert("decider_pp and decider_vp");
 
     // decider proof generation
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
