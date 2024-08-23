@@ -12,6 +12,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 
+ark-serialize = { version = "^0.4.0", default-features = false }
+
 web-sys = { version = "0.3", features = ["console"] }
 console_error_panic_hook = "0.1.6"
 
@@ -39,7 +41,12 @@ num-bigint = "0.4.3"
 
 # folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe",  branch = "feat/wasm-IO-compat", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
 
-folding-schemes = { git = "https://github.com/czhang2718/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "feat/wasm-IO-compat", default-features = false }
+folding-schemes = { git = "https://github.com/czhang2718/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "nova-decider-serialization", default-features = false }
+
+# folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "nova-decider-serialization", default-features = false }
+
+# nova-decider-serialization
+# rev ee47397
 
 serde = "1.0.198"
 serde_json = "1.0.116"
