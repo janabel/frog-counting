@@ -7,12 +7,27 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-circuits/build/
-circuits/powersOfTau28_hez_final_20.ptau
-temp
-
+# some npm stuff
+node_modules
 package-lock.json
 
+# circuit builds
+circuits/build/
+circuits/powersOfTau28_hez_final_20.ptau
+circuits/ptau
+
+# some cargo rust stuff
+Cargo.lock
+hello-wasm/Cargo.lock
+hello-wasm/static/keccak-circuit/package.json
+hello-wasm/static/keccak-circuit/node_modules
+hello-wasm/static/keccak-circuit/keccak-chain.sym
+target
+
+# some debugging stuff
+temp/
+
+# some vite deploying local server stuff
 dist
 dist-ssr
 *.local
@@ -27,10 +42,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# prover files
-prover-site/pnpm-lock.yaml
-hello-wasm/target
-prover-site/node_modules
-# prover-site
-node_modules
