@@ -145,13 +145,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     let f_circuit_params = (r1cs_bytes.into(), wasm_bytes.into(), 3, 22);
     alert(&format!("f_circuit_params: {:?}", f_circuit_params));
     web_sys::console::log_1(&format!("f_circuit_params: {:?}", f_circuit_params).into());
-    let mut f_circuit = match CircomFCircuit::<Fr>::new(f_circuit_params) {
-        Ok(circuit) => circuit,
-        Err(e) => {
-            web_sys::console::error_1(&format!("Error CircomFCircuit::<Fr>::new(f_circuit_params): {:?}", e).into());
-            panic!("Failed to create circomfcircuit");
-        }
-    };    
+    let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     alert("created circuit!");
 

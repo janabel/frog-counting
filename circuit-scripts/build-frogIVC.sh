@@ -22,11 +22,11 @@ fi
 
 # # Compile circuit and generate zkey/vkey
 
-# echo "****COMPILING CIRCUIT****"
-# start=`date +%s`
-# circom "$CIRCUITS_DIR"/"$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_DIR"
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
+echo "****COMPILING CIRCUIT****"
+start=`date +%s`
+circom "$CIRCUITS_DIR"/"$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_DIR"
+end=`date +%s`
+echo "DONE ($((end-start))s)"
  
 # echo "****GENERATING ZKEY 0****"
 # start=`date +%s`
