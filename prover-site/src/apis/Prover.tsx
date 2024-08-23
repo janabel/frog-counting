@@ -5,6 +5,7 @@ import { TryIt } from "../components/TryIt";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 import { ZUPASS_URL } from "../constants";
 import { parseFrog } from "../utils/parseData";
+import { createProof } from "../utils/runSonobe";
 
 export function Prover(): ReactNode {
   const { z, connected } = useEmbeddedZupass();
@@ -30,25 +31,24 @@ export function Prover(): ReactNode {
 
   async function readData() {
     const result = await getID();
-    if (result) {
-      const [semaphoreIDtrapdoor, semaphoreIDnullifier] = result;
+    const [semaphoreIDtrapdoor, semaphoreIDnullifier] = result;
 
-      const frogPCDList = await z.fs.list("FrogCrypto");
-      const promises = frogPCDList.map(async (frogPCD: Object) => {
-          const frog = await z.fs.get(frogPCD.id);
-          console.log("frog", frog);
-          const result = await parseFrog(
-            frog,
-            semaphoreIDtrapdoor,
-            semaphoreIDnullifier
-          );
-          return result;
-      });
-    
-      const circuitInputs = await Promise.all(promises);
-      console.log("circuitInputs", circuitInputs);
-      setList(circuitInputs);
-    }
+    const frogPCDList = await z.fs.list("FrogCrypto");
+    const promises = frogPCDList.map(async (frogPCD: Object) => {
+        const frog = await z.fs.get(frogPCD.id);
+        console.log("frog", frog);
+        const result = await parseFrog(
+          frog,
+          semaphoreIDtrapdoor,
+          semaphoreIDnullifier
+        );
+        return result;
+    });
+  
+    const circuitInputs = await Promise.all(promises);
+    console.log("circuitInputs", circuitInputs);
+    setList(circuitInputs);
+    createProof(circuitInputs);
   }
 
   return !connected ? null : (

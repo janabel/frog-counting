@@ -124,25 +124,34 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     }
 
     alert("Vec<Frog> frogs created");
-    // set the external inputs to be used at each step of the IVC
-    let mut external_inputs: Vec<Vec<Fr>> = Vec::new();
-    let n = frogs.len();
+    alert(&format!("{:?}", frogs));
 
-    for i in 0..=n-1 {
-        let frog: &Frog = &frogs[i];
-        alert("frog");  
-        let frog_fr_vector = frog_to_fr_vector(frog);
-        external_inputs.push(frog_fr_vector);
-    }
+    // alert(frogs.get(0).frogId.as_str());
+
+    let external_inputs: Vec<Vec<Fr>> = frogs.iter()
+    .map(|frog| frog_to_fr_vector(frog))
+    .collect();
+
+    alert("external_inputs created");
+    alert(&format!("{:?}", external_inputs));
+    web_sys::console::log_1(&format!("external_inputs: {:?}", external_inputs).into());
 
     // set the initial state
     // initialize z_0 to [0,0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
     let z_0 = vec![Fr::from(0_u32), Fr::from(0_u32), Fr::from(0_u32)]; 
-
+    alert("z_0");
 
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let f_circuit_params = (r1cs_bytes.into(), wasm_bytes.into(), 3, 22);
-    let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
+    alert(&format!("f_circuit_params: {:?}", f_circuit_params));
+    web_sys::console::log_1(&format!("f_circuit_params: {:?}", f_circuit_params).into());
+    let mut f_circuit = match CircomFCircuit::<Fr>::new(f_circuit_params) {
+        Ok(circuit) => circuit,
+        Err(e) => {
+            web_sys::console::error_1(&format!("Error CircomFCircuit::<Fr>::new(f_circuit_params): {:?}", e).into());
+            panic!("Failed to create circomfcircuit");
+        }
+    };    
 
     alert("created circuit!");
 

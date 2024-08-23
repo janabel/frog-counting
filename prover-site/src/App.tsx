@@ -5,22 +5,15 @@ import { ZUPASS_URL } from "./constants";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Header } from "./components/Header";
 import { useEffect, useState } from "react";
-import init, { greet } from '../public/pkg/greet_rust_wasm';
 
 const zapp = {
   name: "test-client",
   permissions: ["read", "write"],
 };
 
-async function loadWasm() {
-  await init();
-  greet("hi");
-}
 
 function App() {
   const zupassUrl = localStorage.getItem("zupassUrl") || ZUPASS_URL;
-
-  loadWasm();
 
   return (
     <ChakraProvider>

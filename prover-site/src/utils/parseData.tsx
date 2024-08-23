@@ -4,7 +4,6 @@ import {
     fromHexString,
 } from "@pcd/util";
 import { buildEddsa, buildPoseidon } from "circomlibjs";
-import { groth16 } from "snarkjs";
 
 const STATIC_ZK_EDDSA_FROG_PCD_NULLIFIER = generateSnarkMessageHash(
 "hard-coded-zk-eddsa-frog-pcd-nullifier"
@@ -40,8 +39,8 @@ export async function parseFrog(rawJSON: Object, semaphoreIDtrapdoor: string, se
       ),
       frogSignerPubkeyAx: hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
       frogSignerPubkeyAy: hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
-      semaphoreIdentityTrapdoor: semaphoreIDtrapdoor,
-      semaphoreIdentityNullifier: semaphoreIDnullifier,
+      semaphoreIdentityTrapdoor: hexToBigInt(semaphoreIDtrapdoor).toString(),
+      semaphoreIdentityNullifier: hexToBigInt(semaphoreIDnullifier).toString(),
       watermark: "2718",
       frogSignatureR8x: frogSignatureR8x,
       frogSignatureR8y: frogSignatureR8y,
