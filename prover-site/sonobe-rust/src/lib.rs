@@ -174,7 +174,14 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
 
     alert("rng again");
 
-    let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    // let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    decider_vp = VerifierParam::<
+                    Projective,
+                    KZG<'static, Bn254>,
+                    <Groth16<Bn254> as SNARK<Fr>>::VerifyingKey,
+                >::deserialize_compressed(&mut decider_vp_serialized.as_slice()).unwrap();
+    decider_pp = PreprocessorParam::deserialize_compressed(&mut decider_pp_serialized.as_slice()).unwrap();
+
     alert("decider_pp and decider_vp");
 
     // decider proof generation
