@@ -81,24 +81,14 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     let mut rng = rand::rngs::OsRng;
 
 
-    // return;
-    println!("\nlet's 🐸 fold 🐸 some 🐸 frogs 🐸🐸🐸🐸🐸\n");
-    alert("hi");
-
-    // unwrap: option<T, error> -> T
-    // as_string: . -> String
-    // as_str: . -> &str
-    // format!(...) -> String
-    // alert(str)
+    println!("Start frog_nova");
 
     let frogs_str = frogs_js.as_string().unwrap(); // String
 
-    alert(format!("frogs_str: {}", &frogs_str).as_str());
 
     // Deserialize JSON string into Vec<Frog>
     let frogs: Vec<Frog> = serde_json::from_str(&frogs_str).expect("Failed to deserialize JSON");
     
-    // helper function to turn strings into Fr elements to feed into folding/circuits
     fn str_to_fr(input_string: &str)-> Fr {
         let bigint: BigInt = BigInt::from_str_radix(input_string, 10).unwrap();
     
@@ -143,28 +133,17 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
         ];
     }
 
-    alert("Vec<Frog> frogs created");
-    alert(&format!("{:?}", frogs));
-
-    // alert(frogs.get(0).frogId.as_str());
-
     let external_inputs: Vec<Vec<Fr>> = frogs.iter()
     .map(|frog| frog_to_fr_vector(frog))
     .collect();
 
     alert("external_inputs created");
-    alert(&format!("{:?}", external_inputs));
-    web_sys::console::log_1(&format!("external_inputs: {:?}", external_inputs).into());
 
-    // set the initial state
     // initialize z_0 to [0,0,0] (to compare against any first [frogMessageHash2Small_fr, frogMessageHash2Big_fr])
     let z_0 = vec![Fr::from(0_u32), Fr::from(0_u32), Fr::from(0_u32)]; 
-    alert("z_0");
 
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let f_circuit_params = (r1cs_bytes.into(), wasm_bytes.into(), 3, 22);
-    alert(&format!("f_circuit_params: {:?}", f_circuit_params));
-    web_sys::console::log_1(&format!("f_circuit_params: {:?}", f_circuit_params).into());
     let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     alert("created circuit!");
@@ -185,13 +164,8 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
         nova.prove_step(rng, external_inputs_at_step.clone(), None)
-            .unwrap(); 
-        alert(&format!("🐸 Nova::prove_step {}", i));
-        alert(&format!(  
-            "state at last step (after {} iterations): {:?}",
-            i,
-            nova.state()
-        ))
+            .unwrap();  
+        alert(&format!("Nova::prove_step {}", i));
     }
 
     alert("finished folding!"); // works up to here in browser 8/23 12:17PM

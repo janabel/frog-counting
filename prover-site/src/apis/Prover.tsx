@@ -46,8 +46,20 @@ export function Prover(): ReactNode {
     });
   
     const circuitInputs = await Promise.all(promises);
-    console.log("circuitInputs", circuitInputs);
-    setList(circuitInputs);
+
+    const transformedCircuitInputs: { [key: string]: { [key: string]: any } }  = {};
+
+    circuitInputs.forEach((item, index) => {
+        transformedCircuitInputs[(index + 1).toString()] = item;  // Adding 1 to make keys start from 1
+    });
+
+    console.log(transformedCircuitInputs);
+
+
+    // console.log("circuitInputs", circuitInputs);
+    setList([transformedCircuitInputs]);
+    console.log("stringify of circuit inputs", JSON.stringify(transformedCircuitInputs));
+    // console.log(transformedCircuitInputs);
     createProof(circuitInputs);
   }
 
@@ -55,7 +67,7 @@ export function Prover(): ReactNode {
   <div>
     <div className="prose">
       <div>
-        <TryIt onClick={readData} label="Generate Circuit Inputs" />
+        <TryIt onClick={readData} label="Generate Circuit Inputs + Prove" />
         {list.length > 0 && (
           <pre className="whitespace-pre-wrap">
             {JSON.stringify(list, null, 2)}
