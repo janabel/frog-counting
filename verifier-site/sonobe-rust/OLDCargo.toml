@@ -2,7 +2,7 @@
 name = "sonobe-rust"
 version = "0.1.0"
 authors = ["Claire Zhang <czhang2718@gmail.com>", "Janabel"]
-description = "A sample project WITHOUT wasm-pack for frog-counting"
+description = "A sample project with wasm-pack for frog-counting"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/janabel/POD-counting"
 edition = "2021"
@@ -21,7 +21,7 @@ ark-serialize = { version = "^0.4.0", default-features = false }
 web-sys = { version = "0.3", features = ["console"] }
 console_error_panic_hook = "0.1.6"
 
-wasm-bindgen = { version = "0.2", optional = true}
+# wasm-bindgen = { version = "0.2", optional = true }
 
 ark-groth16 = { version = "^0.4.0" }
 ark-bn254 = { version = "0.4.0", features = ["r1cs"] }
@@ -48,9 +48,11 @@ serde_json = "1.0.116"
 tiny-keccak = { version = "2.0", features = ["keccak"] }
 rand = "0.8.5"
 getrandom = { version = "0.2", features = ["js"] }
-# ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false, features = ["wasm", "circom-2"] }
-ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false, features = ["circom-2"] }
+ark-circom = { git = "https://github.com/arnaucube/circom-compat", rev = "18ca7f2", default-features = false, features = ["wasm", "circom-2"] }
 num-traits = "0.2"
+
+# [target.'cfg(target_arch = "wasm32")'.dependencies]
+# wasm-bindgen = { version = "0.2.93", features = ["js"] }
 
 [patch.crates-io]
 # patch ark_curves to use a cherry-picked version which contains

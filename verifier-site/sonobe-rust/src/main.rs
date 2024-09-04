@@ -25,7 +25,7 @@ use core::marker::PhantomData;
 ///
 /// 
 /// 
-use wasm_bindgen::prelude::wasm_bindgen;
+// use wasm_bindgen::prelude::wasm_bindgen;
 
 // use ethereum_types::U256;
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
@@ -59,7 +59,7 @@ use serde::Deserialize;
 // use serde_json::Value;
 use std::collections::HashMap;
 
-#[wasm_bindgen]
+// #[wasm_bindgen]
 pub fn verifyRust(decider_vp_serialized: Vec<u8>, proof_serialized: Vec<u8>, public_inputs_serialized: Vec<u8>) {
 
     pub type N =
