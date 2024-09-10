@@ -165,7 +165,7 @@ fn main() {
     );
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
-    let f_circuit_params = (r1cs_path, wasm_path, 3, 22);
+    let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 22);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
