@@ -263,9 +263,22 @@ fn main() {
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
     println!("{}", "prepared decider prover & verifier params!");
-    println!("{:?}", decider_vp.pp_hash);
-    println!("{:?}", decider_vp.snark_vp);
-    println!("{:?}", decider_vp.cs_vp);
+
+    // println!("{}", "decider_pp:");
+    // println!("{:?}", decider_pp);
+    // println!("{}", "\n");
+
+    // println!("{}", "decider_vp.pp_hash");
+    // println!("{:?}", decider_vp.pp_hash);
+    // println!("{}", "\n");
+
+    // println!("{}", "decider_vp.snark_vp");
+    // println!("{:?}", decider_vp.snark_vp);
+    // println!("{}", "\n");
+
+    // println!("{}", "decider_vp.cs_vp");
+    // println!("{:?}", decider_vp.cs_vp);
+    // println!("{}", "\n");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -306,42 +319,34 @@ fn main() {
     println!("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
     println!("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
 
-    // Now, let's generate the Solidity code that verifies this Decider final proof
-    // let function_selector =
-    //     get_function_selector_for_nova_cyclefold_verifier(nova.z_0.len() * 2 + 1);
+    let mut decider_vp_serialized = vec![];
+        decider_vp
+            .serialize_compressed(&mut decider_vp_serialized)
+            .unwrap();
+        let mut proof_serialized = vec![];
+        proof.serialize_compressed(&mut proof_serialized).unwrap();
+        // serialize the public inputs in a single packet
+        let mut public_inputs_serialized = vec![];
+        nova.i
+            .serialize_compressed(&mut public_inputs_serialized)
+            .unwrap();
+        nova.z_0
+            .serialize_compressed(&mut public_inputs_serialized)
+            .unwrap();
+        nova.z_i
+            .serialize_compressed(&mut public_inputs_serialized)
+            .unwrap();
+        nova.U_i
+            .serialize_compressed(&mut public_inputs_serialized)
+            .unwrap();
+        nova.u_i
+            .serialize_compressed(&mut public_inputs_serialized)
+            .unwrap();
 
-    // let calldata: Vec<u8> = prepare_calldata(
-    //     function_selector,
-    //     nova.i,
-    //     nova.z_0,
-    //     nova.z_i,
-    //     &nova.U_i,
-    //     &nova.u_i,
-    //     proof,
-    // )
-    // .unwrap();
+        println!("{}", "succesfully serialized proof and decider_vp");
 
-    // // prepare the setup params for the solidity verifier
-    // let nova_cyclefold_vk = NovaCycleFoldVerifierKey::from((decider_vp, f_circuit.state_len()));
+        println!("{:?}", decider_vp_serialized);
+        println!("{:?}", proof_serialized);
+        println!("{:?}", public_inputs_serialized);
 
-    // // generate the solidity code
-    // let decider_solidity_code = get_decider_template_for_cyclefold_decider(nova_cyclefold_vk);
-
-    // // verify the proof against the solidity code in the EVM
-    // let nova_cyclefold_verifier_bytecode = compile_solidity(&decider_solidity_code, "NovaDecider");
-    // let mut evm = Evm::default();
-    // let verifier_address = evm.create(nova_cyclefold_verifier_bytecode);
-    // let (_, output) = evm.call(verifier_address, calldata.clone());
-    // assert_eq!(*output.last().unwrap(), 1);
-
-    // // save smart contract and the calldata
-    // println!("storing nova-verifier.sol and the calldata into files");
-    // fs::write(
-    //     "./src/nova_solidity_outputs/frogIVC_split-nova-verifier.sol",
-    //     decider_solidity_code.clone(),
-    // )
-    // .unwrap();
-    // fs::write("./src/nova_solidity_outputs/frogIVC_split-solidity-calldata.calldata", calldata.clone()).unwrap();
-    // let s = solidity_verifiers::utils::get_formatted_calldata(calldata.clone());
-    // fs::write("./src/nova_solidity_outputs/frogIVC_split-solidity-calldata.inputs", s.join(",\n")).expect("");
 }
