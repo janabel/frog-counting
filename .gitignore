@@ -15,9 +15,9 @@ node_modules
 package-lock.json
 
 # circuit builds
-circuits/build/
+# circuits/build/ actually let's include this
 circuits/powersOfTau28_hez_final_20.ptau
-circuits/ptau
+# circuits/ptau
 
 # some cargo rust stuff
 Cargo.lock
