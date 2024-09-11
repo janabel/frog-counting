@@ -3,8 +3,8 @@ import { IssuePOD } from "./IssuePOD";
 import { UserInput } from "./UserInput";
 import { useState } from "react";
 // import { groth16 } from "snarkjs";
-import { binaryStringToUint8Array } from "../parseBinStringtoBytes";
-import { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
+import { stringToByteArray } from "../parseStringtoBytes.js";
+import init, { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
 
 export function VerifyRust() {
   const [verifyStatus, setVerifyStatus] = useState(false);
@@ -27,11 +27,16 @@ export function VerifyRust() {
       return;
     }
 
-    const vkey_input = binaryStringToUint8Array(vkey_element.value);
-    const public_signals_input = binaryStringToUint8Array(
+    const vkey_input = stringToByteArray(vkey_element.value);
+    const public_signals_input = stringToByteArray(
       public_signals_element.value
     );
-    const proof_input = binaryStringToUint8Array(proof_element.value);
+    const proof_input = stringToByteArray(proof_element.value);
+
+    console.log(vkey_input);
+    console.log(proof_input);
+
+    await init();
 
     // trying to verify the proof, throws an error if groth16.verify throws and error
     try {

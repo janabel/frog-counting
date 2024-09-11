@@ -1,6 +1,6 @@
 import { EmbeddedZupassProvider } from "./hooks/useEmbeddedZupass";
 import { Navbar } from "./components/Navbar";
-import { Verify } from "./components/Verify";
+import { VerifyRust } from "./components/VerifyRust";
 // import { GPC } from "./apis/GPC";
 // import { FileSystem } from "./apis/FileSystem";
 import { ZUPASS_URL } from "./constants";
@@ -25,7 +25,7 @@ function App() {
           <Header />
           <div className="flex flex-col gap-4 my-4">
             {/* <FileSystem /> */}
-            <Verify />
+            <VerifyRust />
             {/* <GPC />
             <Identity /> */}
           </div>
