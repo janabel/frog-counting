@@ -118,6 +118,13 @@ use std::io::Write;
 // use serde_json::Value;
 use std::collections::HashMap;
 
+// rng: we'll need to use a deterministic seed on both proof and verification
+// let's just set it to 0
+// need an rng that supports initializing from a seed ==> chacha20rng
+// it also implements RngCore and CryptoRng traits (which are required by nova/decider) yay :)
+use rand_chacha::ChaCha20Rng;
+use rand::SeedableRng;
+
 #[derive(Debug, Deserialize)]
 struct Frog {
     frogId: String,
@@ -252,7 +259,8 @@ fn main() {
     >;
 
     let poseidon_config = poseidon_canonical_config::<Fr>();
-    let mut rng = rand::rngs::OsRng;
+    // let mut rng = rand::rngs::OsRng;
+    let mut rng = ChaCha20Rng::from_seed([0u8; 32]);
 
     // prepare the Nova prover & verifier params
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
@@ -267,6 +275,9 @@ fn main() {
 
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    // println!("generated decider_pp: {:?}", decider_pp);
+    println!("generated decider_vp: {:?}", decider_vp);
+
     println!("{}", "prepared decider prover & verifier params!");
 
     // serialize the Nova params. These params are the trusted setup of the commitment schemes used
@@ -313,6 +324,13 @@ fn main() {
         file_nova_vp.write_all(&nova_vp_serialized).unwrap();
         println!("nova_vp written to nova_vp_output.bin");
 
+    // let mut file_rng = File::create("./serialized_outputs/rng_output.bin").unwrap();
+    //     let mut state = vec![0u8; rng.get_state().len()];
+    //     rng.fill_bytes(&mut state);
+    //     let serialized_rng_state = serde_json::to_string(&state).unwrap();
+    //     file_rng.write_all(serialized_rng_state.as_bytes()).unwrap();
+    //     println!("rng state written to rng_output.bin");
+
     // try immediately deserializing to see if it's a consistency issue????
     // ok it works, i just flipped the vk and pk ...
     // let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice()).unwrap();
@@ -324,7 +342,7 @@ fn main() {
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
         let start = Instant::now();
-        nova.prove_step(rng, external_inputs_at_step.clone(), None)
+        nova.prove_step(&mut rng, external_inputs_at_step.clone(), None)
             .unwrap(); //////////////////////////////////////////////////////////////////////////////////////////
         println!("🐸 Nova::prove_step {}: {:?}", i, start.elapsed());
         println!(
@@ -337,7 +355,7 @@ fn main() {
     println!("{}", "finished folding!");
 
     let start = Instant::now();
-    let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+    let proof = D::prove(&mut rng, decider_pp, nova.clone()).unwrap();
     // println!("{:?}", proof);
 
     println!("generated Decider proof: {:?}", start.elapsed());
