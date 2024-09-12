@@ -1,4 +1,5 @@
-// FROG FOLDING!
+// THIS FILE READs IN SERIALIZED PARAMS FROM BIN FILES AND USES THEM TO DO REST OF FOLDING
+// tested proving/verifier works end to end!
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};

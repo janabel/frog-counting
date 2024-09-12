@@ -1,58 +1,6 @@
-// // FROG FOLDING!
-
-// #![allow(non_snake_case)]
-// #![allow(non_camel_case_types)]
-// #![allow(clippy::upper_case_acronyms)]
-// // use ark_ff::MontBackend;
-// ///
-// /// This example performs the full flow:
-// /// - define the circuit to be folded
-// /// - fold the circuit with Nova+CycleFold's IVC
-// /// - generate a DeciderEthCircuit final proof
-// /// - generate the Solidity contract that verifies the proof
-// /// - verify the proof in the EVM
-// ///
-// /// 
-
-// // use ethereum_types::U256;
-// use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
-
-// use ark_groth16::Groth16;
-// // use ark_groth16::{Groth16, Proof};
-// use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
-
-// use num_bigint::BigInt;
-// use num_traits::Num;
-// use ark_ff::BigInteger256;
-
-// use std::path::PathBuf;
-// use std::time::Instant;
-
-// use folding_schemes::{
-//     commitment::{kzg::KZG, pedersen::Pedersen},
-//     folding::nova::{
-//         decider_eth::{prepare_calldata, Decider as DeciderEth},
-//         Nova, PreprocessorParam,
-//     },
-//     frontend::{circom::CircomFCircuit, FCircuit},
-//     transcript::poseidon::poseidon_canonical_config,
-//     Decider, FoldingScheme,
-// };
-// use solidity_verifiers::{
-//     evm::{compile_solidity, Evm},
-//     utils::get_function_selector_for_nova_cyclefold_verifier,
-//     verifiers::nova_cyclefold::get_decider_template_for_cyclefold_decider,
-//     NovaCycleFoldVerifierKey,
-// };
-
-// use std::fs;
-// // use std::io::Result;
-// use serde::Deserialize;
-// // use serde_json::Value;
-// use std::collections::HashMap;
-
-
-// FROG FOLDING!
+// THIS FILE ORIGINALLY TESTED SERIALIZATION OF proof, decider_vp, AND public_inputs (just printed, didn't write to files yet)
+// ON BRANCH verifier-site, TESTED FEEDING THESE SERIALIZED INTO THE VERIFIER WORKS
+// NOW IT IS USED FOR SERIALIZING PP/VP AND WRITING TO FILES
 
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
