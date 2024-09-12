@@ -1,0 +1,2 @@
+cargo:rerun-if-changed=src/noir_parser.lalrpop
+processing file `src/noir_parser.lalrpop`

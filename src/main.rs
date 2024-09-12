@@ -110,6 +110,9 @@ use folding_schemes::{
 use std::fs;
 // use std::io::Result;
 use serde::Deserialize;
+use serde::Serialize;
+use std::fs::File;
+use std::io::Write;
 // use serde_json::Value;
 use std::collections::HashMap;
 
@@ -251,7 +254,7 @@ fn main() {
 
     // prepare the Nova prover & verifier params
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
-    let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap();
+    let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap(); // calls KZG10 trusted setup
 
     println!("{}", "prepared nova prover and verifier params!");
 
@@ -263,6 +266,50 @@ fn main() {
     // prepare the Decider prover & verifier params
     let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
     println!("{}", "prepared decider prover & verifier params!");
+
+    // serialize the Nova params. These params are the trusted setup of the commitment schemes used
+    // (ie. KZG & Pedersen in this case)
+
+            // let pp_hash = nova_vp.pp_hash()?;
+            // let pp = (g16_pk, nova_pp.cs_pp);
+            //     let vp = Self::VerifierParam {
+            //         pp_hash,
+            //         snark_vp: g16_vk,
+            //         cs_vp: nova_vp.cs_vp,
+            //     };
+
+    // serialize nova_pp and nova_vp
+    let mut nova_pp_serialized = vec![];
+        nova_params
+            .0
+            .serialize_compressed(&mut nova_pp_serialized)
+            .unwrap();
+        let mut nova_vp_serialized = vec![];
+        nova_params
+            .1
+            .serialize_compressed(&mut nova_vp_serialized)
+            .unwrap();
+
+    // serialize g16_vk and g16_pk
+    // (for simplicity, example is all the way up here bc decider_pp used/moved later in the proving)
+    let mut g16_vk_serialized = Vec::new();
+        (decider_pp.clone().0).serialize_uncompressed(&mut g16_vk_serialized).unwrap();
+    let mut g16_pk_serialized = Vec::new();
+        (decider_vp.clone().snark_vp).serialize_uncompressed(&mut g16_pk_serialized).unwrap();
+    
+    // write all serialized parameters to output files
+    let mut file_g16_vk = File::create("g16_vk_output.json").unwrap();
+        file_g16_vk.write_all(&g16_vk_serialized).unwrap();
+        println!("g16_vk written to g16_vk_output.json");
+    let mut file_g16_pk = File::create("g16_pk_output.json").unwrap();
+        file_g16_pk.write_all(&g16_pk_serialized).unwrap();
+        println!("g16_pk written to g16_pk_output.json");
+    let mut file_nova_pp = File::create("nova_pp_output.json").unwrap();
+        file_nova_pp.write_all(&nova_pp_serialized).unwrap();
+        println!("nova_pp written to nova_pp_output.json");
+    let mut file_nova_vp = File::create("nova_vp_output.json").unwrap();
+        file_nova_vp.write_all(&nova_vp_serialized).unwrap();
+        println!("nova_vp written to nova_vp_output.json");
 
     // println!("{}", "decider_pp:");
     // println!("{:?}", decider_pp);
@@ -319,6 +366,10 @@ fn main() {
     println!("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
     println!("🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉");
 
+
+    // example of serializing the decider_vp, proof, and public_inputs 
+    // (and printing them to use for verifier testing)
+
     let mut decider_vp_serialized = vec![];
         decider_vp
             .serialize_compressed(&mut decider_vp_serialized)
@@ -348,5 +399,28 @@ fn main() {
         println!("{:?}", decider_vp_serialized);
         println!("{:?}", proof_serialized);
         println!("{:?}", public_inputs_serialized);
+
+        // getting serialized decider_vp and decider_pp serizlied verisons
+        // println!("{}", "decider_pp:");
+        // println!("{:?}", decider_pp);
+        // println!("{}", "\n");
+
+        // println!("{}", "decider_vp.pp_hash");
+        // println!("{:?}", decider_vp.pp_hash);
+        // println!("{}", "\n");
+
+        // println!("{}", "decider_vp.snark_vp");
+        // println!("{:?}", decider_vp.snark_vp);
+        // println!("{}", "\n");
+
+        // println!("{}", "decider_vp.cs_vp");
+        // println!("{:?}", decider_vp.cs_vp);
+        // println!("{}", "\n");
+        // let pp = (g16_pk, nova_pp.cs_pp);
+
+        // decider_pp.0; // g16_pk which should implement serialize trait
+        // decider_pp.1;
+
+        
 
 }
