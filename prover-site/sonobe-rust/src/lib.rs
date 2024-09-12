@@ -9,8 +9,7 @@ extern {
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
-
-use ark_groth16::Groth16;
+use ark_groth16::{Groth16, VerifyingKey, ProvingKey};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 
 use num_bigint::BigInt;
@@ -19,11 +18,13 @@ use ark_ff::BigInteger256;
 
 use std::path::PathBuf;
 
+use folding_schemes::commitment::CommitmentScheme;
 use folding_schemes::{
     commitment::{kzg::KZG, pedersen::Pedersen},
     folding::nova::{
-        decider_eth::{prepare_calldata, Decider as DeciderEth},
+        decider_eth::{prepare_calldata, Decider as DeciderEth, VerifierParam},
         Nova, PreprocessorParam,
+        ProverParams, VerifierParams,
     },
     frontend::{circom::CircomFCircuit, FCircuit},
     transcript::poseidon::poseidon_canonical_config,
@@ -33,7 +34,6 @@ use folding_schemes::{
 use std::fs;
 use serde::Deserialize;
 use std::collections::HashMap;
-
 #[derive(Debug, Deserialize)]
 struct Frog {
     frogId: String,
@@ -82,6 +82,8 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
         Groth16<Bn254>,
         N,
     >;
+
+    // Decider<C1, GC1, C2, GC2, FC, CS1, CS2, S, FS>
 
     let poseidon_config = poseidon_canonical_config::<Fr>();
     let mut rng = rand::rngs::OsRng;
@@ -163,35 +165,41 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     // prepare the Decider prover & verifier params
     // TODO: manually calculate decider_pp and decider_vp from nova_pp, nova_vp, g16_vk, g16_pk
 
-    let nova_pp_deserialized = NovaProverParams::<
-        Projective,
-        Projective2,
+    let nova_pp_deserialized = ProverParams::<
+        G1,
+        G2,
         KZG<'static, Bn254>,
-        Pedersen<Projective2>,
+        Pedersen<G2>,
         >::deserialize_compressed(
             &mut nova_pp_serialized.as_slice()
         )
         .unwrap();
-    let nova_vp_deserialized = NovaVerifierParams::<
-            Projective,
-            Projective2,
+    let nova_vp_deserialized = VerifierParams::<
+            G1,
+            G2,
             KZG<'static, Bn254>,
-            Pedersen<Projective2>,
+            Pedersen<G2>,
         >::deserialize_compressed(
             &mut nova_vp_serialized.as_slice()
         )
         .unwrap();
-    let g16_vk_deserialized = Groth16::ProvingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice());
-    let g16_pk_deserialized = Groth16::VerifyingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice());
+    let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice()).unwrap();
+    let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice()).unwrap();
 
     // let pp_hash = nova_vp.pp_hash();
     // let pp = (g16_pk, nova_pp.cs_pp);
     // let vp = (pp_hash, g16_vk, nova_vp.cs_vp);
     // Ok((pp, vp))
 
-    let decider_pp = (g16_pk_deserialized, nova_pp_deserialized.cs_pp)
-    let pp_hash = nova_vp_deserialized.pp_hash();
-    let decider_vp = (pp_hash, g16_vk_deserialized, nova_vp_deserialized.cs_vp);
+    let decider_pp = (g16_pk_deserialized, nova_pp_deserialized.cs_pp);
+    let pp_hash = nova_vp_deserialized.pp_hash().unwrap();
+    let decider_vp: VerifierParam<G1, 
+            <KZG<'static, Bn254> as CommitmentScheme<G1>>::VerifierParams, 
+            <Groth16<Bn254> as ark_snark::SNARK<Fr>>::VerifyingKey> = VerifierParam {
+        pp_hash,
+        snark_vp: g16_vk_deserialized,
+        cs_vp: nova_vp_deserialized.cs_vp,
+    };
 
     // let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
     alert("prepared the Decider prover & verifier params!");
@@ -205,10 +213,8 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
 
     alert("finished folding!"); // works up to here in browser 8/23 12:17PM
 
-    let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
-    println!("generated Decider proof: {:?}", start.elapsed());
-
+    alert("generated decider proof!");
 
     // serialize the verifier_params, proof and public inputs
     let mut decider_vp_serialized = vec![];
