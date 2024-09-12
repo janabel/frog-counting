@@ -84,7 +84,8 @@ use core::marker::PhantomData;
 // use ethereum_types::U256;
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 
-use ark_groth16::Groth16;
+// use ark_groth16::Groth16;
+use ark_groth16::{Groth16, VerifyingKey, ProvingKey};
 // use ark_groth16::{Groth16, Proof};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 
@@ -101,6 +102,7 @@ use folding_schemes::{
     folding::nova::{
         decider_eth::{prepare_calldata, Decider as DeciderEth, VerifierParam, Proof},
         Nova, PreprocessorParam,
+        ProverParams, VerifierParams,
     },
     frontend::{circom::CircomFCircuit, FCircuit},
     transcript::poseidon::poseidon_canonical_config,
@@ -292,40 +294,32 @@ fn main() {
 
     // serialize g16_vk and g16_pk
     // (for simplicity, example is all the way up here bc decider_pp used/moved later in the proving)
-    let mut g16_vk_serialized = Vec::new();
-        (decider_pp.clone().0).serialize_uncompressed(&mut g16_vk_serialized).unwrap();
     let mut g16_pk_serialized = Vec::new();
-        (decider_vp.clone().snark_vp).serialize_uncompressed(&mut g16_pk_serialized).unwrap();
+        (decider_pp.clone().0).serialize_compressed(&mut g16_pk_serialized).unwrap();
+    let mut g16_vk_serialized = Vec::new();
+        (decider_vp.clone().snark_vp).serialize_compressed(&mut g16_vk_serialized).unwrap();
     
     // write all serialized parameters to output files
-    let mut file_g16_vk = File::create("g16_vk_output.json").unwrap();
+    let mut file_g16_vk = File::create("./serialized_outputs/g16_vk_output.bin").unwrap();
         file_g16_vk.write_all(&g16_vk_serialized).unwrap();
-        println!("g16_vk written to g16_vk_output.json");
-    let mut file_g16_pk = File::create("g16_pk_output.json").unwrap();
+        println!("g16_vk written to g16_vk_output.bin");
+    let mut file_g16_pk = File::create("./serialized_outputs/g16_pk_output.bin").unwrap();
         file_g16_pk.write_all(&g16_pk_serialized).unwrap();
-        println!("g16_pk written to g16_pk_output.json");
-    let mut file_nova_pp = File::create("nova_pp_output.json").unwrap();
+        println!("g16_pk written to g16_pk_output.bin");
+    let mut file_nova_pp = File::create("./serialized_outputs/nova_pp_output.bin").unwrap();
         file_nova_pp.write_all(&nova_pp_serialized).unwrap();
-        println!("nova_pp written to nova_pp_output.json");
-    let mut file_nova_vp = File::create("nova_vp_output.json").unwrap();
+        println!("nova_pp written to nova_pp_output.bin");
+    let mut file_nova_vp = File::create("./serialized_outputs/nova_vp_output.bin").unwrap();
         file_nova_vp.write_all(&nova_vp_serialized).unwrap();
-        println!("nova_vp written to nova_vp_output.json");
+        println!("nova_vp written to nova_vp_output.bin");
 
-    // println!("{}", "decider_pp:");
-    // println!("{:?}", decider_pp);
-    // println!("{}", "\n");
+    // try immediately deserializing to see if it's a consistency issue????
+    // ok it works, i just flipped the vk and pk ...
+    // let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice()).unwrap();
+    //     println!("succesfully deserialized g16_pk");
 
-    // println!("{}", "decider_vp.pp_hash");
-    // println!("{:?}", decider_vp.pp_hash);
-    // println!("{}", "\n");
-
-    // println!("{}", "decider_vp.snark_vp");
-    // println!("{:?}", decider_vp.snark_vp);
-    // println!("{}", "\n");
-
-    // println!("{}", "decider_vp.cs_vp");
-    // println!("{:?}", decider_vp.cs_vp);
-    // println!("{}", "\n");
+    // let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice()).unwrap();
+    // println!("succesfully deserialized g16_vk");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -400,27 +394,5 @@ fn main() {
         println!("{:?}", proof_serialized);
         println!("{:?}", public_inputs_serialized);
 
-        // getting serialized decider_vp and decider_pp serizlied verisons
-        // println!("{}", "decider_pp:");
-        // println!("{:?}", decider_pp);
-        // println!("{}", "\n");
-
-        // println!("{}", "decider_vp.pp_hash");
-        // println!("{:?}", decider_vp.pp_hash);
-        // println!("{}", "\n");
-
-        // println!("{}", "decider_vp.snark_vp");
-        // println!("{:?}", decider_vp.snark_vp);
-        // println!("{}", "\n");
-
-        // println!("{}", "decider_vp.cs_vp");
-        // println!("{:?}", decider_vp.cs_vp);
-        // println!("{}", "\n");
-        // let pp = (g16_pk, nova_pp.cs_pp);
-
-        // decider_pp.0; // g16_pk which should implement serialize trait
-        // decider_pp.1;
-
-        
-
+    
 }
