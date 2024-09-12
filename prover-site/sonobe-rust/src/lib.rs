@@ -61,7 +61,13 @@ struct Frog {
 }
 
 #[wasm_bindgen]
-pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
+pub fn frog_nova(r1cs_bytes: Vec<u8>,
+    wasm_bytes: Vec<u8>,
+    frogs_js: JsValue,
+    nova_pp_serialized: Vec<u8>,
+    nova_vp_serialized: Vec<u8>,
+    g16_vk_serialized: Vec<u8>,
+    g16_pk_serialized: Vec<u8>) {
 
     pub type N =
         Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
@@ -80,11 +86,9 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     let poseidon_config = poseidon_canonical_config::<Fr>();
     let mut rng = rand::rngs::OsRng;
 
-
     println!("Start frog_nova");
 
     let frogs_str = frogs_js.as_string().unwrap(); // String
-
 
     // Deserialize JSON string into Vec<Frog>
     let frogs: Vec<Frog> = serde_json::from_str(&frogs_str).expect("Failed to deserialize JSON");
@@ -145,21 +149,52 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let f_circuit_params = (r1cs_bytes.into(), wasm_bytes.into(), 3, 22);
     let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
-
     alert("created circuit!");
-
-    
 
     // prepare the Nova prover & verifier params
     let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
     let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap();
-
     alert("prepared nova prover and verifier params!");
 
     // initialize the folding scheme engine, in our case we use Nova
     let mut nova = N::init(&nova_params, f_circuit.clone(), z_0).unwrap();
-
     alert("initialized folding scheme!");
+
+    // prepare the Decider prover & verifier params
+    // TODO: manually calculate decider_pp and decider_vp from nova_pp, nova_vp, g16_vk, g16_pk
+
+    let nova_pp_deserialized = NovaProverParams::<
+        Projective,
+        Projective2,
+        KZG<'static, Bn254>,
+        Pedersen<Projective2>,
+        >::deserialize_compressed(
+            &mut nova_pp_serialized.as_slice()
+        )
+        .unwrap();
+    let nova_vp_deserialized = NovaVerifierParams::<
+            Projective,
+            Projective2,
+            KZG<'static, Bn254>,
+            Pedersen<Projective2>,
+        >::deserialize_compressed(
+            &mut nova_vp_serialized.as_slice()
+        )
+        .unwrap();
+    let g16_vk_deserialized = Groth16::ProvingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice());
+    let g16_pk_deserialized = Groth16::VerifyingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice());
+
+    // let pp_hash = nova_vp.pp_hash();
+    // let pp = (g16_pk, nova_pp.cs_pp);
+    // let vp = (pp_hash, g16_vk, nova_vp.cs_vp);
+    // Ok((pp, vp))
+
+    let decider_pp = (g16_pk_deserialized, nova_pp_deserialized.cs_pp)
+    let pp_hash = nova_vp_deserialized.pp_hash();
+    let decider_vp = (pp_hash, g16_vk_deserialized, nova_vp_deserialized.cs_vp);
+
+    // let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    alert("prepared the Decider prover & verifier params!");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -170,40 +205,10 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>, wasm_bytes: Vec<u8>, frogs_js: JsValue) {
 
     alert("finished folding!"); // works up to here in browser 8/23 12:17PM
 
-    rng = rand::rngs::OsRng;
-
-    alert("rng again");
-
-    // let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
-    decider_vp = VerifierParam::<
-                    Projective,
-                    KZG<'static, Bn254>,
-                    <Groth16<Bn254> as SNARK<Fr>>::VerifyingKey,
-                >::deserialize_compressed(&mut decider_vp_serialized.as_slice()).unwrap();
-    decider_pp = PreprocessorParam::deserialize_compressed(&mut decider_pp_serialized.as_slice()).unwrap();
-
-    alert("decider_pp and decider_vp");
-
-    // decider proof generation
+    let start = Instant::now();
     let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
-    alert("generated Decider proof");
+    println!("generated Decider proof: {:?}", start.elapsed());
 
-    // decider proof verification
-    let verified = D::verify(
-        decider_vp.clone(),
-        nova.i.clone(),
-        nova.z_0.clone(),
-        nova.z_i.clone(),
-        &nova.U_i,
-        &nova.u_i,
-        &proof,
-    )
-    .unwrap();
-
-    alert(&format!("Decider proof verified: {:?}", verified));
-
-    // The rest of this test will serialize the data and deserialize it back, and use it to
-    // verify the proof:
 
     // serialize the verifier_params, proof and public inputs
     let mut decider_vp_serialized = vec![];
