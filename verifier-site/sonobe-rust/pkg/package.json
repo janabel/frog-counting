@@ -1,0 +1,25 @@
+{
+  "name": "sonobe-rust",
+  "type": "module",
+  "collaborators": [
+    "Claire Zhang <czhang2718@gmail.com>",
+    "Janabel"
+  ],
+  "description": "A sample project with wasm-pack for frog-counting",
+  "version": "0.1.0",
+  "license": "MIT/Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janabel/POD-counting"
+  },
+  "files": [
+    "sonobe_rust_bg.wasm",
+    "sonobe_rust.js",
+    "sonobe_rust.d.ts"
+  ],
+  "main": "sonobe_rust.js",
+  "types": "sonobe_rust.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
