@@ -34,6 +34,16 @@ use folding_schemes::{
 use std::fs;
 use serde::Deserialize;
 use std::collections::HashMap;
+
+// RNG: we'll need to use a deterministic seed on both proof and verification
+// (because parameter preprocessing and prove/verify depend on it)
+// let's just set seed to 0 for now
+// need an rng that supports initializing from a seed ==> chacha20rng
+// it also implements RngCore and CryptoRng traits (which are required by nova/decider) yay :)
+use rand_chacha::ChaCha20Rng;
+use rand::SeedableRng;
+
+
 #[derive(Debug, Deserialize)]
 struct Frog {
     frogId: String,
@@ -83,10 +93,11 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
         N,
     >;
 
-    // Decider<C1, GC1, C2, GC2, FC, CS1, CS2, S, FS>
+    // Decider<C1, GC1, C2, GC2, FC, CS1, CS2, S, FS> commented here for type references
 
     let poseidon_config = poseidon_canonical_config::<Fr>();
-    let mut rng = rand::rngs::OsRng;
+    // let mut rng = rand::rngs::OsRng;
+    let mut rng = ChaCha20Rng::from_seed([0u8; 32]); // need to use deterministic rng because downloading parameters (generated from same rng + seed)
 
     println!("Start frog_nova");
 
@@ -153,18 +164,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
     alert("created circuit!");
 
-    // prepare the Nova prover & verifier params
-    let nova_preprocess_params = PreprocessorParam::new(poseidon_config, f_circuit.clone());
-    let nova_params = N::preprocess(&mut rng, &nova_preprocess_params).unwrap();
-    alert("prepared nova prover and verifier params!");
-
-    // initialize the folding scheme engine, in our case we use Nova
-    let mut nova = N::init(&nova_params, f_circuit.clone(), z_0).unwrap();
-    alert("initialized folding scheme!");
-
-    // prepare the Decider prover & verifier params
-    // TODO: manually calculate decider_pp and decider_vp from nova_pp, nova_vp, g16_vk, g16_pk
-
+    // deserialize parameters
     let nova_pp_deserialized = ProverParams::<
         G1,
         G2,
@@ -174,6 +174,11 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
             &mut nova_pp_serialized.as_slice()
         )
         .unwrap();
+
+    alert("deserialized nova_pp");
+    web_sys::console::log_1(&format!("nova_pp_deserialized: {:?}", nova_pp_deserialized).into());
+
+
     let nova_vp_deserialized = VerifierParams::<
             G1,
             G2,
@@ -183,37 +188,59 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
             &mut nova_vp_serialized.as_slice()
         )
         .unwrap();
+
+    alert("deserialized nova_vp");
+    web_sys::console::log_1(&format!("nova_vp_deserialized: {:?}", nova_vp_deserialized).into());
+
     let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice()).unwrap();
+    alert("deserialized g16_vk");
+    web_sys::console::log_1(&format!("g16_vk_deserialized: {:?}", g16_vk_deserialized).into());
+
+
     let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice()).unwrap();
+    alert("deserialized g16_pk"); // runs up to here as of 9/12 11:14 PM
 
-    // let pp_hash = nova_vp.pp_hash();
-    // let pp = (g16_pk, nova_pp.cs_pp);
-    // let vp = (pp_hash, g16_vk, nova_vp.cs_vp);
-    // Ok((pp, vp))
+            // let pp_hash = nova_vp.pp_hash();
+            // let pp = (g16_pk, nova_pp.cs_pp);
+            // let vp = (pp_hash, g16_vk, nova_vp.cs_vp);
+            // Ok((pp, vp))
 
-    let decider_pp = (g16_pk_deserialized, nova_pp_deserialized.cs_pp);
-    let pp_hash = nova_vp_deserialized.pp_hash().unwrap();
+    let nova_params = (nova_pp_deserialized, nova_vp_deserialized);
+    alert("created nova_params");
+    web_sys::console::log_1(&format!("nova_params: {:?}", nova_params).into());
+
+    let mut nova = N::init(&nova_params, f_circuit.clone(), z_0).unwrap();
+    alert("initialized nova from the deserialized parameters");
+
+    // TODO - find cleaner way to avoid ownership issues
+    // (problem is functions expect certain types D: so it's not immediately &s everywhere)
+    let decider_pp = (g16_pk_deserialized, (nova_params.0).cs_pp);
+    alert("prepared decider_pp!");
+    web_sys::console::log_1(&format!("decider_pp: {:?}", decider_pp).into());
+
+    let pp_hash = (nova_params.1).pp_hash().unwrap();
     let decider_vp: VerifierParam<G1, 
             <KZG<'static, Bn254> as CommitmentScheme<G1>>::VerifierParams, 
             <Groth16<Bn254> as ark_snark::SNARK<Fr>>::VerifyingKey> = VerifierParam {
         pp_hash,
         snark_vp: g16_vk_deserialized,
-        cs_vp: nova_vp_deserialized.cs_vp,
+        cs_vp: (nova_params.1).cs_vp,
     };
 
     // let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
-    alert("prepared the Decider prover & verifier params!");
+    alert("prepared decider_vp!");
+    web_sys::console::log_1(&format!("decider_vp: {:?}", decider_vp).into());
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
-        nova.prove_step(rng, external_inputs_at_step.clone(), None)
+        nova.prove_step(rng.clone(), external_inputs_at_step.clone(), None)
             .unwrap();  
         alert(&format!("Nova::prove_step {}", i));
     }
 
     alert("finished folding!"); // works up to here in browser 8/23 12:17PM
 
-    let proof = D::prove(rng, decider_pp, nova.clone()).unwrap();
+    let proof = D::prove(rng.clone(), decider_pp, nova.clone()).unwrap();
     alert("generated decider proof!");
 
     // serialize the verifier_params, proof and public inputs
@@ -252,5 +279,5 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     alert(&format!("public_inputs_serialized: {:?}", public_inputs_serialized));
     web_sys::console::log_1(&format!("public_inputs_serialized: {:?}", public_inputs_serialized).into());
 
-    alert("🎉");
+    alert("🎉🎉🎉🎉🎉🎉🎉🎉🎉 RAHHHHHH");
 }
