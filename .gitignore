@@ -24,6 +24,7 @@ hello-wasm/static/keccak-circuit/package.json
 hello-wasm/static/keccak-circuit/node_modules
 hello-wasm/static/keccak-circuit/keccak-chain.sym
 target
+prover-site/sonobe-rust/logged_outputs.txt
 
 # some debugging stuff
 temp/
@@ -43,3 +44,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
