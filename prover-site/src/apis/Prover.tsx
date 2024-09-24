@@ -1,6 +1,7 @@
 // import { SerializedPCD } from "@pcd/pcd-types";
 // import { ZupassFolderContent } from "@pcd/zupass-client";
-import { React, ReactNode, useMemo, useState } from "react";
+// import { React, ReactNode, useMemo, useState } from "react";
+import { ReactNode } from "react";
 import { TryIt } from "../components/TryIt";
 // import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 // import { ZUPASS_URL } from "../constants";
