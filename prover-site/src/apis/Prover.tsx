@@ -1,80 +1,53 @@
-import { SerializedPCD } from "@pcd/pcd-types";
-import { ZupassFolderContent } from "@pcd/zupass-client";
+// import { SerializedPCD } from "@pcd/pcd-types";
+// import { ZupassFolderContent } from "@pcd/zupass-client";
 import { React, ReactNode, useMemo, useState } from "react";
 import { TryIt } from "../components/TryIt";
-import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
-import { ZUPASS_URL } from "../constants";
-import { parseFrog } from "../utils/parseData";
+// import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
+// import { ZUPASS_URL } from "../constants";
+// import { parseFrog } from "../utils/parseData";
 import { createProof } from "../utils/runSonobe";
+import frogData from "../assets/frog_inputs_4.json";
 
 export function Prover(): ReactNode {
-  const { z, connected } = useEmbeddedZupass();
-  const [list, setList] = useState<ZupassFolderContent[]>([]);
+  // const { z, connected } = useEmbeddedZupass();
+  // const [list, setList] = useState<ZupassFolderContent[]>([]);
 
-  async function getID() {
-    const rootList = await z.fs.list("/");
-    const semaphoreIdentityID = (
-      rootList.find(
-        (i) => i.type === "pcd" && i.pcdType === "semaphore-identity-pcd"
-      ) as { id: string }
-    )?.id;
-    if (semaphoreIdentityID) {
-      const identityPCD = await z.fs.get(semaphoreIdentityID);
-      const [trapdoor, nullifier] = JSON.parse(
-        JSON.parse(identityPCD.pcd).identity
-      );
-      console.log("trappdoor, nullifier", { trapdoor, nullifier });
-      return [trapdoor, nullifier];
-    }
+  interface Frog {
+    frogId: string;
+    biome: string;
+    rarity: string;
+    temperament: string;
+    jump: string;
+    speed: string;
+    intelligence: string;
+    beauty: string;
+    timestampSigned: string;
+    ownerSemaphoreId: string;
+    frogSignerPubkeyAx: string;
+    frogSignerPubkeyAy: string;
+    semaphoreIdentityTrapdoor: string;
+    semaphoreIdentityNullifier: string;
+    watermark: string;
+    frogSignatureR8x: string;
+    frogSignatureR8y: string;
+    frogSignatureS: string;
+    externalNullifier: string;
+    reservedField1: string;
+    reservedField2: string;
+    reservedField3: string;
   }
 
   async function readData() {
-    const result = await getID();
-    const [semaphoreIDtrapdoor, semaphoreIDnullifier] = result;
-
-    const frogPCDList = await z.fs.list("FrogCrypto");
-    const promises = frogPCDList.map(async (frogPCD: Object) => {
-      const frog = await z.fs.get(frogPCD.id);
-      console.log("frog", frog);
-      const result = await parseFrog(
-        frog,
-        semaphoreIDtrapdoor,
-        semaphoreIDnullifier
-      );
-      return result;
-    });
-
-    const circuitInputs = await Promise.all(promises);
-
-    const transformedCircuitInputs: { [key: string]: { [key: string]: any } } =
-      {};
-
-    circuitInputs.forEach((item, index) => {
-      transformedCircuitInputs[(index + 1).toString()] = item; // Adding 1 to make keys start from 1
-    });
-
-    console.log(transformedCircuitInputs);
-
-    // console.log("circuitInputs", circuitInputs);
-    setList([transformedCircuitInputs]);
-    console.log(
-      "stringify of circuit inputs",
-      JSON.stringify(transformedCircuitInputs)
-    );
-    // console.log(transformedCircuitInputs);
-    createProof(circuitInputs);
+    const frogsArray: Frog[] = Object.values(frogData);
+    console.log("frogsArray", frogsArray);
+    createProof(frogsArray);
   }
 
-  return !connected ? null : (
+  return (
     <div>
       <div className="prose">
         <div>
-          <TryIt onClick={readData} label="Generate Circuit Inputs + Prove" />
-          {list.length > 0 && (
-            <pre className="whitespace-pre-wrap">
-              {JSON.stringify(list, null, 2)}
-            </pre>
-          )}
+          <TryIt onClick={readData} label="generate inputs + prove" />
         </div>
       </div>
     </div>

@@ -185,7 +185,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     println!("Start frog_nova");
 
     let start = get_current_time_in_millis();
-        let frogs_str = frogs_js.as_string().unwrap(); // String
+        let frogs_str = frogs_js.as_string().unwrap(); // frogs_js should already be sorted!!
         let frogs: Vec<Frog> = serde_json::from_str(&frogs_str).expect("Failed to deserialize JSON");
         let external_inputs: Vec<Vec<Fr>> = frogs.iter()
         .map(|frog| frog_to_fr_vector(frog))
@@ -280,7 +280,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
         
         let end = get_current_time_in_millis();
         let elapsed = end - start;
-        // alert("initialized nova from the deserialized parameters"); // WORKS IN BROWSER UP TO HERE AS OF 9/13 10:44 PM
+        // alert("initialized nova from the deserialized parameters");
          web_sys::console::log_1(&format!("initialized nova: {:?}", elapsed).into());
 
     // // TODO - find cleaner way to avoid ownership issues
@@ -327,7 +327,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
 
         let end_outer = get_current_time_in_millis();
         let elapsed_outer = end_outer - start_outer;
-        // alert("finished folding!"); // works up to here in browser 8/23 12:17PM
+        // alert("finished folding!"); // works up to here in browser 9/24 4:30PM
         web_sys::console::log_1(&format!("finished folding: {:?}", elapsed).into());
 
     let start = get_current_time_in_millis();
