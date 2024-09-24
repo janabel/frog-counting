@@ -1,0 +1,1 @@
+Rc<(dyn Fn(usize, Vec<ark_ff::Fp<MontBackend<ark_bn254::FrConfig, 4>, 4>>, Vec<ark_ff::Fp<MontBackend<ark_bn254::FrConfig, 4>, 4>>) -> Result<Vec<ark_ff::Fp<MontBackend<ark_bn254::FrConfig, 4>, 4>>, folding_schemes::Error> + 'static)>

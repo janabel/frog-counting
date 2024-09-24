@@ -1,0 +1,1 @@
+ark_r1cs_std::groups::curves::short_weierstrass::ProjectiveVar<ark_bn254::g1::Config, ark_r1cs_std::fields::fp::FpVar<ark_ff::Fp<MontBackend<ark_bn254::FqConfig, 4>, 4>>>

@@ -1,0 +1,1 @@
+&Result<folding_schemes::folding::nova::decider_eth::Proof<ark_ec::models::short_weierstrass::group::Projective<ark_bn254::g1::Config>, KZG<'static, ark_ec::models::bn::Bn<ark_bn254::Config>>, Groth16<ark_ec::models::bn::Bn<ark_bn254::Config>>>, folding_schemes::Error>

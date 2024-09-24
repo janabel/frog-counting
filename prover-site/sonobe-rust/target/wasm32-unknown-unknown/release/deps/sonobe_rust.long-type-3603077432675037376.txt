@@ -1,0 +1,1 @@
+ark_r1cs_std::groups::curves::short_weierstrass::ProjectiveVar<GrumpkinConfig, ark_r1cs_std::fields::fp::FpVar<ark_ff::Fp<MontBackend<ark_bn254::FrConfig, 4>, 4>>>
