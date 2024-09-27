@@ -215,7 +215,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
             G2,
             KZG<'static, Bn254>,
             Pedersen<G2>,
-            >::deserialize_compressed_unchecked(
+            >::deserialize_uncompressed_unchecked(
                 &mut nova_pp_serialized.as_slice()
             )
             .unwrap();
@@ -232,7 +232,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
                 G2,
                 KZG<'static, Bn254>,
                 Pedersen<G2>,
-            >::deserialize_compressed_unchecked(
+            >::deserialize_uncompressed_unchecked(
                 &mut nova_vp_serialized.as_slice()
             )
             .unwrap();
@@ -244,7 +244,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
          web_sys::console::log_1(&format!("deserialized nova_vp: {:?}", elapsed).into());
 
     let start = get_current_time_in_millis();
-        let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_compressed_unchecked(&mut g16_vk_serialized.as_slice()).unwrap();
+        let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_uncompressed_unchecked(&mut g16_vk_serialized.as_slice()).unwrap();
         
         let end = get_current_time_in_millis();
         let elapsed = end - start;
@@ -253,7 +253,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
          web_sys::console::log_1(&format!("deserialized g16_vk: {:?}", elapsed).into());
 
     let start = get_current_time_in_millis();
-        let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed_unchecked(&mut g16_pk_serialized.as_slice()).unwrap();
+        let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_uncompressed_unchecked(&mut g16_pk_serialized.as_slice()).unwrap();
         
         let end = get_current_time_in_millis();
         let elapsed = end - start;
