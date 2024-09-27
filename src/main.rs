@@ -243,49 +243,34 @@ fn main() {
     let mut nova_pp_serialized = vec![];
         nova_params
             .0
-            .serialize_compressed(&mut nova_pp_serialized)
+            .serialize_uncompressed(&mut nova_pp_serialized)
             .unwrap();
         let mut nova_vp_serialized = vec![];
         nova_params
             .1
-            .serialize_compressed(&mut nova_vp_serialized)
+            .serialize_uncompressed(&mut nova_vp_serialized)
             .unwrap();
 
     // serialize g16_vk and g16_pk
     // (for simplicity, example is all the way up here bc decider_pp used/moved later in the proving)
     let mut g16_pk_serialized = Vec::new();
-        (decider_pp.clone().0).serialize_compressed(&mut g16_pk_serialized).unwrap();
+        (decider_pp.clone().0).serialize_uncompressed(&mut g16_pk_serialized).unwrap();
     let mut g16_vk_serialized = Vec::new();
-        (decider_vp.clone().snark_vp).serialize_compressed(&mut g16_vk_serialized).unwrap();
+        (decider_vp.clone().snark_vp).serialize_uncompressed(&mut g16_vk_serialized).unwrap();
     
     // write all serialized parameters to output files
-    let mut file_g16_vk = File::create("./serialized_outputs/g16_vk_output.bin").unwrap();
+    let mut file_g16_vk = File::create("./serialized_outputs/uncompressed/g16_vk_output.bin").unwrap();
         file_g16_vk.write_all(&g16_vk_serialized).unwrap();
         println!("g16_vk written to g16_vk_output.bin");
-    let mut file_g16_pk = File::create("./serialized_outputs/g16_pk_output.bin").unwrap();
+    let mut file_g16_pk = File::create("./serialized_outputs/uncompressed/g16_pk_output.bin").unwrap();
         file_g16_pk.write_all(&g16_pk_serialized).unwrap();
         println!("g16_pk written to g16_pk_output.bin");
-    let mut file_nova_pp = File::create("./serialized_outputs/nova_pp_output.bin").unwrap();
+    let mut file_nova_pp = File::create("./serialized_outputs/uncompressed/nova_pp_output.bin").unwrap();
         file_nova_pp.write_all(&nova_pp_serialized).unwrap();
         println!("nova_pp written to nova_pp_output.bin");
-    let mut file_nova_vp = File::create("./serialized_outputs/nova_vp_output.bin").unwrap();
+    let mut file_nova_vp = File::create("./serialized_outputs/uncompressed/nova_vp_output.bin").unwrap();
         file_nova_vp.write_all(&nova_vp_serialized).unwrap();
         println!("nova_vp written to nova_vp_output.bin");
-
-    // let mut file_rng = File::create("./serialized_outputs/rng_output.bin").unwrap();
-    //     let mut state = vec![0u8; rng.get_state().len()];
-    //     rng.fill_bytes(&mut state);
-    //     let serialized_rng_state = serde_json::to_string(&state).unwrap();
-    //     file_rng.write_all(serialized_rng_state.as_bytes()).unwrap();
-    //     println!("rng state written to rng_output.bin");
-
-    // try immediately deserializing to see if it's a consistency issue????
-    // ok it works, i just flipped the vk and pk ...
-    // let g16_pk_deserialized: ProvingKey<Bn254> = ProvingKey::deserialize_compressed(&mut g16_pk_serialized.as_slice()).unwrap();
-    //     println!("succesfully deserialized g16_pk");
-
-    // let g16_vk_deserialized: VerifyingKey<Bn254> = VerifyingKey::deserialize_compressed(&mut g16_vk_serialized.as_slice()).unwrap();
-    // println!("succesfully deserialized g16_vk");
 
     // run n steps of the folding iteration
     for (i, external_inputs_at_step) in external_inputs.iter().enumerate() {
@@ -332,26 +317,26 @@ fn main() {
 
     let mut decider_vp_serialized = vec![];
         decider_vp
-            .serialize_compressed(&mut decider_vp_serialized)
+            .serialize_uncompressed(&mut decider_vp_serialized)
             .unwrap();
         let mut proof_serialized = vec![];
-        proof.serialize_compressed(&mut proof_serialized).unwrap();
+        proof.serialize_uncompressed(&mut proof_serialized).unwrap();
         // serialize the public inputs in a single packet
         let mut public_inputs_serialized = vec![];
         nova.i
-            .serialize_compressed(&mut public_inputs_serialized)
+            .serialize_uncompressed(&mut public_inputs_serialized)
             .unwrap();
         nova.z_0
-            .serialize_compressed(&mut public_inputs_serialized)
+            .serialize_uncompressed(&mut public_inputs_serialized)
             .unwrap();
         nova.z_i
-            .serialize_compressed(&mut public_inputs_serialized)
+            .serialize_uncompressed(&mut public_inputs_serialized)
             .unwrap();
         nova.U_i
-            .serialize_compressed(&mut public_inputs_serialized)
+            .serialize_uncompressed(&mut public_inputs_serialized)
             .unwrap();
         nova.u_i
-            .serialize_compressed(&mut public_inputs_serialized)
+            .serialize_uncompressed(&mut public_inputs_serialized)
             .unwrap();
 
         println!("{}", "succesfully serialized proof and decider_vp");
