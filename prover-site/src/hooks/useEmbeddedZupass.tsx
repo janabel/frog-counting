@@ -1,6 +1,5 @@
 // import { Zapp, ZupassAPI, connect } from "@pcd/zupass-client";
 import { connect, Zapp } from "@parcnet-js/app-connector";
-
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { EmbeddedZupassState } from "../constants";
 
