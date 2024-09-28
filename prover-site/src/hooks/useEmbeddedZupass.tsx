@@ -1,4 +1,6 @@
-import { Zapp, ZupassAPI, connect } from "@pcd/zupass-client";
+// import { Zapp, ZupassAPI, connect } from "@pcd/zupass-client";
+import { connect, Zapp } from "@parcnet-js/app-connector";
+
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { EmbeddedZupassState } from "../constants";
 
@@ -14,7 +16,7 @@ type EmbeddedZupass =
     }
   | {
       state: EmbeddedZupassState.CONNECTED;
-      z: ZupassAPI;
+      z: unknown;
       ref: React.RefObject<HTMLDivElement>;
     };
 
@@ -57,7 +59,7 @@ export function EmbeddedZupassProvider({
 type UseEmbeddedZupass =
   | {
       connected: true;
-      z: ZupassAPI;
+      z: unknown;
     }
   | {
       connected: false;

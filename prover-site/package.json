@@ -14,6 +14,7 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@parcnet-js/app-connector": "^0.0.7",
     "@pcd/gpc-pcd": "^0.0.6",
     "@pcd/pcd-types": "^0.11.4",
     "@pcd/pod-pcd": "^0.1.5",
