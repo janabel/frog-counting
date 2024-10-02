@@ -15,7 +15,10 @@ const clientUrl = "http://localhost:3000";
 const z = await connect(myZapp, element, clientUrl);
 
 const queryResult = await z.pod.query({
-  frogID: { type: "string" },
+  parseEntries: {
+    greeting: { type: "string" },
+    magic_number: { type: "int" },
+  },
 });
 
 console.log(queryResult);
