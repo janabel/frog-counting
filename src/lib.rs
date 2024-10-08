@@ -9,8 +9,9 @@
 // mod test_json_parse;
 // mod main_copy;
 mod utils;
-mod main2;
-mod main_IVC_ser;
-mod main_IVC_ser_pedersen;
-mod main_IVC_deser_verify;
+// mod main2;
+mod main_params_ser;
+// mod main_IVC_ser;
+// mod main_IVC_ser_pedersen;
+// mod main_IVC_deser_verify;
 
