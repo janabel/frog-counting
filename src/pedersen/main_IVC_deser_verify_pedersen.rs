@@ -2,11 +2,11 @@
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
-// use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
-// use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
+use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
+use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 // use pasta curves b/c no more onchain stuff
-use ark_pallas::{constraints::GVar, Affine, Fr, Projective as G1};
-use ark_vesta::{constraints::GVar as GVar2, Projective as G2};
+// use ark_pallas::{constraints::GVar, Affine, Fr, Projective as G1};
+// use ark_vesta::{constraints::GVar as GVar2, Projective as G2};
 
 use folding_schemes::commitment::CommitmentScheme;
 use folding_schemes::{
@@ -111,10 +111,10 @@ fn main() {
         println!("created nova_params: {:?}", start.elapsed());
 
     let start = Instant::now();
-        let verify_result = N::verify(nova_params.1.clone(), ivc_proof.clone()).unwrap();
-        println!("verify_result = {:?}", verify_result);
-        // assert!(N::verify(nova_params.1.clone(), ivc_proof.clone()).is_ok());
-        // println!("verify ivc_proof: {:?}", start.elapsed());
+        // let verify_result = N::verify(nova_params.1.clone(), ivc_proof.clone()).unwrap();
+        // println!("verify_result = {:?}", verify_result);
+        assert!(N::verify(nova_params.1.clone(), ivc_proof.clone()).is_ok());
+        println!("verify ivc_proof: {:?}", start.elapsed());
 
     println!("whole thing took this long: {:?}", start_total.elapsed());
 

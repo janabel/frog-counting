@@ -4,6 +4,9 @@ use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
 use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
 use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
+// use pasta curves b/c no more onchain stuff
+// use ark_pallas::{constraints::GVar, Affine, Fr, Projective as G1};
+// use ark_vesta::{constraints::GVar as GVar2, Projective as G2};
 
 use folding_schemes::commitment::CommitmentScheme;
 use folding_schemes::{

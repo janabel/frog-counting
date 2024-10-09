@@ -3,11 +3,11 @@
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
-// use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
-// use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
+use ark_bn254::{constraints::GVar, Bn254, Fr, G1Projective as G1};
+use ark_grumpkin::{constraints::GVar as GVar2, Projective as G2};
 // use pasta curves b/c no more onchain stuff
-use ark_pallas::{constraints::GVar, Affine, Fr, Projective as G1};
-use ark_vesta::{constraints::GVar as GVar2, Projective as G2};
+// use ark_pallas::{constraints::GVar, Affine, Fr, Projective as G1};
+// use ark_vesta::{constraints::GVar as GVar2, Projective as G2};
 
 use num_bigint::BigInt;
 use num_traits::Num;
@@ -135,12 +135,12 @@ fn read_binary_file(path: &str) -> Vec<u8> {
 
 fn main() {
 
+    let start_total = Instant::now();
+
     let nova_pp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_pp_output_pedersen.bin");
     let nova_vp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_vp_output_pedersen.bin");
 
     println!("{}", "succesfully read serialized nova params!");
-
-    let start_total = Instant::now();
 
     let start = Instant::now();
     let file_path = "./src/frog_inputs (4).json";
@@ -255,7 +255,7 @@ fn main() {
         assert!(ivc_proof
             .serialize_with_mode(&mut writer, ark_serialize::Compress::No)
             .is_ok());
-        println!("serialized nova ivc_proof: {:?}", writer);
+        // println!("serialized nova ivc_proof: {:?}", writer);
         println!("serializing nova ivc_proof took this long: {:?}", start.elapsed());
 
     let mut file_ivc_proof_ser = File::create("./serialized_outputs/nova_ivc_proof_pedersen.bin").unwrap();
