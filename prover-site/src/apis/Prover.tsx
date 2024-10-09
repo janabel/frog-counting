@@ -1,4 +1,5 @@
 import { SerializedPCD } from "@pcd/pcd-types";
+import * as p from "@parcnet-js/podspec";
 // import { ZupassFolderContent } from "@pcd/zupass-client";
 import { React, ReactNode, useMemo, useState } from "react";
 import { TryIt } from "../components/TryIt";
@@ -13,10 +14,25 @@ export function Prover(): ReactNode {
 
   async function getID() {
     // const rootList = await z.fs.list("/");
-    console.log("z", z.toString());
-    const rootList = await z.pod.query({
+    // console.log("z", z.toString());
+
+    // const frogEntriesSpec = p.entries({
+    //   // frogID: { type: "string" },
+    // });
+    // const frogPodSpec = p.pod({ entries: frogEntriesSpec.schema });
+    // frogPodSpec.query(z.pod.collection("FrogCrypto"));
+
+    console.log(
+      "z.pod.collection(FrogWhisperer)",
+      z.pod.collection("FrogWhisperer")
+    ); // returns a parcentPODcollection wrapper, which also implements a query function
+
+    // const validOwners = [{ type: "string", value: "0" }];
+
+    const rootList = await z.pod.collection("FrogWhisperer").query({
       entries: {
-        frogID: { type: "string" },
+        // owner: { type: "string", isMemberOf: validOwners },
+        owner: { type: "string" },
       },
     });
     console.log("rootList", rootList);

@@ -23,9 +23,6 @@ importers:
       '@parcnet-js/app-connector':
         specifier: 1.0.0
         version: 1.0.0(typescript@5.5.4)
-      '@parcnet-js/podspec':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@pcd/gpc-pcd':
         specifier: ^0.0.6
         version: 0.0.6

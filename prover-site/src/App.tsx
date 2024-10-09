@@ -4,13 +4,21 @@ import { Prover } from "./apis/Prover";
 import { ZUPASS_URL } from "./constants";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Header } from "./components/Header";
-import { useEffect, useState } from "react";
 import { Zapp } from "@parcnet-js/app-connector";
 
 const zapp: Zapp = {
-  name: "test-client",
-  permissions: ["read", "write"],
+  name: "Frog-Counting Zapp",
+  permissions: {
+    REQUEST_PROOF: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    SIGN_POD: {},
+    READ_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    INSERT_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    DELETE_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    READ_PUBLIC_IDENTIFIERS: {},
+  },
 };
+
+console.log("testing zapp setup", zapp);
 
 function App() {
   const zupassUrl = localStorage.getItem("zupassUrl") || ZUPASS_URL;
