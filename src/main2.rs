@@ -174,7 +174,7 @@ fn main() {
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let start = Instant::now();
         let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 22);
-        let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
+        let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params.clone()).unwrap();
         println!("created circuit!: {:?}", start.elapsed());
 
     pub type N =
@@ -243,8 +243,11 @@ fn main() {
             G2,
             KZG<'static, Bn254>,
             Pedersen<G2>,
-            >::deserialize_compressed_unchecked(
-                &mut nova_pp_serialized.as_slice()
+            >::deserialize_with_mode(
+                &mut nova_pp_serialized.as_slice(),
+                ark_serialize::Compress::No,
+                ark_serialize::Validate::No,
+                // (), // fcircuit_params
             )
             .unwrap();
         println!("deserialized nova_pp: {:?}", start.elapsed());
@@ -255,8 +258,13 @@ fn main() {
                 G2,
                 KZG<'static, Bn254>,
                 Pedersen<G2>,
-            >::deserialize_compressed_unchecked(
-                &mut nova_vp_serialized.as_slice()
+                false,
+            >::deserialize_with_mode::<GVar, GVar2, CircomFCircuit<Fr>, _>(
+                &mut nova_vp_serialized.as_slice(),
+                ark_serialize::Compress::No,
+                ark_serialize::Validate::No,
+                f_circuit_params,
+                // (), // fcircuit_params
             )
             .unwrap();
         println!("deserialized nova_vp: {:?}", start.elapsed());

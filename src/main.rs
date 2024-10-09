@@ -222,7 +222,7 @@ fn main() {
     println!("{}", "initialized folding scheme!");
 
     // prepare the Decider prover & verifier params
-    let (decider_pp, decider_vp) = D::preprocess(&mut rng, &nova_params, nova.clone()).unwrap();
+    let (decider_pp, decider_vp) = D::preprocess(&mut rng, nova_params.clone(), nova.clone()).unwrap();
     // println!("generated decider_pp: {:?}", decider_pp);
     println!("generated decider_vp: {:?}", decider_vp);
 
