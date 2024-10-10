@@ -17,7 +17,12 @@ template frogIVC () {
     signal input external_inputs[22];
     signal output ivc_output[3];
 
-    component frogVerify = EdDSAFrogPCD();
+    // EdDSAFrogPCD: Claim being proved:
+    // 1. The owner owns the frog: the owner's semaphore identity matches the
+    // frog's ownerSemaphoreId. And the owner's identity will be kept private.
+    // 2. The frog data is signed by a signer with the specified EdDSA pubkey.
+    // 3. Additionally a nullfier is calculated.
+    component frogVerify = EdDSAFrogPCD(); // 
     frogVerify.frogId <== external_inputs[0];
     frogVerify.timestampSigned <== external_inputs[1];
     frogVerify.ownerSemaphoreId <== external_inputs[2];
@@ -41,14 +46,25 @@ template frogIVC () {
     frogVerify.reservedField2 <== external_inputs[20];
     frogVerify.reservedField3 <== external_inputs[21];
 
-    signal frogMessageHashSmall;
-    frogMessageHashSmall <== frogVerify.frogMessageHashSmall;
-    signal frogMessageHashBig;
-    frogMessageHashBig <== frogVerify.frogMessageHashBig;
+    // need to also check that the public key of the signature corresponds to official FrogCrypto public key
+    // so that user cannot sign/put their own frogs into FrogCrypto
+
+    component checkFrogSignerPubkeyAx = IsEqual();
+    checkFrogSignerPubkeyAx.in[0] <== external_inputs[3];
+    checkFrogSignerPubkeyAx.in[1] <== 6827523554590803092735941342538027861463307969735104848636744652918854385131;
+
+    component checkFrogSignerPubkeyAy = IsEqual();
+    checkFrogSignerPubkeyAy.in[0] <== external_inputs[4];
+    checkFrogSignerPubkeyAy.in[1] <== 19079678029343997910757768128548387074703138451525650455405633694648878915541;
 
     // now check that old ivc_output < new frogMessageHash. just check strictly < b/c javascript will do dedup for us.
     // do a lessThan check bc greater than circuit is just using the lessThan circuit. to be as direct as possible.
     // compute (ivc_input[1] < frogMessageHashBig)  OR (frogMessageHashBig = ivc_input[1] AND ivc_input[0] < frogMessageHashSmall)
+    
+    signal frogMessageHashSmall;
+    frogMessageHashSmall <== frogVerify.frogMessageHashSmall;
+    signal frogMessageHashBig;
+    frogMessageHashBig <== frogVerify.frogMessageHashBig;
 
     component bigLessThan = LessThan(130);
     bigLessThan.in[0] <== ivc_input[1];
