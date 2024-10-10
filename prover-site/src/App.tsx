@@ -7,13 +7,13 @@ import { Header } from "./components/Header";
 import { Zapp } from "@parcnet-js/app-connector";
 
 const zapp: Zapp = {
-  name: "Frog-Counting Zapp",
+  name: "froge",
   permissions: {
-    REQUEST_PROOF: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    REQUEST_PROOF: { collections: ["FrogCrypto", "FrogWhisperer", "/"] },
     SIGN_POD: {},
-    READ_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
-    INSERT_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
-    DELETE_POD: { collections: ["FrogCrypto", "FrogWhisperer"] },
+    READ_POD: { collections: ["FrogCrypto", "FrogWhisperer", "/"] },
+    INSERT_POD: { collections: ["FrogCrypto", "FrogWhisperer", "/"] },
+    DELETE_POD: { collections: ["FrogCrypto", "FrogWhisperer", "/"] },
     READ_PUBLIC_IDENTIFIERS: {},
   },
 };
