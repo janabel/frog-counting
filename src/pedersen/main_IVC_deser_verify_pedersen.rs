@@ -21,7 +21,7 @@ use folding_schemes::{
     Decider, FoldingScheme,
 };
 
-use folding_schemes::TestPrint;
+use folding_schemes::folding::TestPrint;
 
 use std::path::PathBuf;
 use std::time::Instant;
@@ -43,8 +43,8 @@ fn main() {
 
     TestPrint::test_print();
 
-    let nova_pp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_pp_output_pedersen.bin");
-    let nova_vp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_vp_output_pedersen.bin");
+    let nova_pp_serialized = read_binary_file("./serialized_outputs/uncompressed_IVCProof_only/nova_pp_output_pedersen.bin");
+    let nova_vp_serialized = read_binary_file("./serialized_outputs/uncompressed_IVCProof_only/nova_vp_output_pedersen.bin");
     println!("{}", "succesfully read nova serialized params!");
 
     let ivc_proof_serialized = read_binary_file("./serialized_outputs/nova_ivc_proof_pedersen.bin");

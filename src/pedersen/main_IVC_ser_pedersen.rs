@@ -137,8 +137,8 @@ fn main() {
 
     let start_total = Instant::now();
 
-    let nova_pp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_pp_output_pedersen.bin");
-    let nova_vp_serialized = read_binary_file("./serialized_outputs/uncompressed_new/nova_vp_output_pedersen.bin");
+    let nova_pp_serialized = read_binary_file("./serialized_outputs/uncompressed_IVCProof_only/nova_pp_output_pedersen.bin");
+    let nova_vp_serialized = read_binary_file("./serialized_outputs/uncompressed_IVCProof_only/nova_vp_output_pedersen.bin");
 
     println!("{}", "succesfully read serialized nova params!");
 

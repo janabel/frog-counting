@@ -82,10 +82,10 @@ fn main() {
             .unwrap();
     
     // write all serialized parameters to output files
-    let mut file_nova_pp = File::create("./serialized_outputs/uncompressed_new/nova_pp_output.bin").unwrap();
+    let mut file_nova_pp = File::create("./serialized_outputs/uncompressed_IVCProof_only/nova_pp_output.bin").unwrap();
         file_nova_pp.write_all(&nova_pp_serialized).unwrap();
         println!("nova_pp written to nova_pp_output.bin");
-    let mut file_nova_vp = File::create("./serialized_outputs/uncompressed_new/nova_vp_output.bin").unwrap();
+    let mut file_nova_vp = File::create("./serialized_outputs/uncompressed_IVCProof_only/nova_vp_output.bin").unwrap();
         file_nova_vp.write_all(&nova_vp_serialized).unwrap();
         println!("nova_vp written to nova_vp_output.bin");
 
