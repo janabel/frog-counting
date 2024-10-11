@@ -12,9 +12,9 @@ node_modules
 package-lock.json
 
 # circuit builds
-circuits/build/
-circuits/powersOfTau28_hez_final_20.ptau
-circuits/ptau
+# circuits/build/
+# circuits/powersOfTau28_hez_final_14.ptau
+# circuits/ptau
 
 # some cargo rust stuff
 Cargo.lock
