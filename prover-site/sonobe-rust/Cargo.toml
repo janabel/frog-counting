@@ -9,15 +9,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-path = "src/prove.rs"
-
-## serializes nova params using new serializations, KZG commits
-# to run:
-# cargo run --bin serialize_params --release -- --nocapture
-
-[[bin]]
-name = "serialize_params"
-path = "src/serialize_params.rs"
+path = "src/lib.rs"
 
 [dependencies]
 serde-wasm-bindgen = "0.2"
@@ -46,8 +38,8 @@ num-bigint = "0.4.3"
 # folding-schemes = { path="./sonobe/folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
 # folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe",  branch = "feat/wasm-IO-compat", package = "folding-schemes", version = "0.1.0", default-features = false, features = ["parallel", "wasm"] }
 # folding-schemes = { git = "https://github.com/czhang2718/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "nova-decider-serialization", default-features = false }
-folding-schemes = { git = "https://github.com/janabel/sonobe", package = "folding-schemes", branch="ivc-proofs", features=["light-test"]} # for debugging pedersen ivc_proof.verify
-# folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", features = ["parallel", "wasm"], branch = "ivc-proofs", default-features = false }
+# folding-schemes = { git = "https://github.com/janabel/sonobe", package = "folding-schemes", branch="ivc-proofs", features=["parallel", "wasm"], default-feature=false} # for debugging pedersen ivc_proof.verify
+folding-schemes = { git = "https://github.com/privacy-scaling-explorations/sonobe", package = "folding-schemes", branch="main", features = ["parallel", "wasm"], default-features = false }
 
 serde = "1.0.198"
 serde_json = "1.0.116"
