@@ -14,7 +14,7 @@ template frogIVC () {
     // frogMsgHash = frogMsgHash_small_old + 2^128 * frogMsgHash_big_old
     // ivc_input = [frogMsgHash_small_old, frogMsgHash_big_old, frogCounter];
     signal input ivc_input[3];
-    signal input external_inputs[22];
+    signal input external_inputs[21];
     signal output ivc_output[3];
 
     // EdDSAFrogPCD: Claim being proved:
@@ -35,16 +35,17 @@ template frogIVC () {
     frogVerify.ownerSemaphoreId <== external_inputs[9];
     frogVerify.frogSignerPubkeyAx <== external_inputs[10];
     frogVerify.frogSignerPubkeyAy <== external_inputs[11];
-    frogVerify.semaphoreIdentityTrapdoor <== external_inputs[12];
-    frogVerify.semaphoreIdentityNullifier <== external_inputs[13];
-    frogVerify.watermark <== external_inputs[14];
-    frogVerify.frogSignatureR8x <== external_inputs[15];
-    frogVerify.frogSignatureR8y <== external_inputs[16];
-    frogVerify.frogSignatureS <== external_inputs[17];
-    frogVerify.externalNullifier <== external_inputs[18];
-    frogVerify.reservedField1 <== external_inputs[19];
-    frogVerify.reservedField2 <== external_inputs[20];
-    frogVerify.reservedField3 <== external_inputs[21];
+    // frogVerify.semaphoreIdentityTrapdoor <== external_inputs[12];
+    // frogVerify.semaphoreIdentityNullifier <== external_inputs[13];
+    frogVerify.semaphoreIdentityCommitment <== external_inputs[12];
+    frogVerify.watermark <== external_inputs[13];
+    frogVerify.frogSignatureR8x <== external_inputs[14];
+    frogVerify.frogSignatureR8y <== external_inputs[15];
+    frogVerify.frogSignatureS <== external_inputs[16];
+    frogVerify.externalNullifier <== external_inputs[17];
+    frogVerify.reservedField1 <== external_inputs[18];
+    frogVerify.reservedField2 <== external_inputs[19];
+    frogVerify.reservedField3 <== external_inputs[20];
 
     // need to also check that the public key of the signature corresponds to official FrogCrypto public key
     // so that user cannot sign/put their own frogs into FrogCrypto

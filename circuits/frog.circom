@@ -39,8 +39,9 @@ template EdDSAFrogPCD () {
     signal input frogSignatureS;
 
     // Owner's Semaphore identity, private
-    signal input semaphoreIdentityNullifier;
-    signal input semaphoreIdentityTrapdoor;
+    // signal input semaphoreIdentityNullifier;
+    // signal input semaphoreIdentityTrapdoor;
+    signal input semaphoreIdentityCommitment;
 
     // External nullifier, used to tie together nullifiers within a single category. 
     signal input externalNullifier;
@@ -99,15 +100,16 @@ template EdDSAFrogPCD () {
     );
 
     // Verify semaphore private identity matches the frog owner semaphore ID.
-    signal semaphoreSecret <== Poseidon(2)([
-        semaphoreIdentityNullifier,
-        semaphoreIdentityTrapdoor
-    ]);
-    signal semaphoreIdentityCommitment <== Poseidon(1)([semaphoreSecret]);
+    // signal semaphoreSecret <== Poseidon(2)([
+    //     semaphoreIdentityNullifier,
+    //     semaphoreIdentityTrapdoor
+    // ]);
+    // signal semaphoreIdentityCommitment <== Poseidon(1)([semaphoreSecret]);
     ownerSemaphoreId === semaphoreIdentityCommitment;
 
     // Calculate nullifier
-    signal output nullifierHash <== Poseidon(2)([externalNullifier, semaphoreIdentityNullifier]);
+    // signal output nullifierHash <== Poseidon(2)([externalNullifier, semaphoreIdentityNullifier]);
+    signal output nullifierHash <== Poseidon(2)([externalNullifier, semaphoreIdentityCommitment]);
 
     // Dummy constraint on watermark to make sure it can't be compiled out.
     signal watermarkSquared <== watermark * watermark;

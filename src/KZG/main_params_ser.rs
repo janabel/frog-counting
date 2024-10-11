@@ -50,7 +50,7 @@ fn main() {
     );
 
     // (r1cs_path, wasm_path, state_len, external_inputs_len)
-    let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 22);
+    let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 21);
     let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
 
     println!("{}", "created circuit!");
@@ -84,9 +84,9 @@ fn main() {
     // write all serialized parameters to output files
     let mut file_nova_pp = File::create("./serialized_outputs/uncompressed_IVCProof_only/nova_pp_output.bin").unwrap();
         file_nova_pp.write_all(&nova_pp_serialized).unwrap();
-        println!("nova_pp written to nova_pp_output.bin");
+        println!("nova_pp written to uncompressed_IVCProof_only/nova_pp_output.bin");
     let mut file_nova_vp = File::create("./serialized_outputs/uncompressed_IVCProof_only/nova_vp_output.bin").unwrap();
         file_nova_vp.write_all(&nova_vp_serialized).unwrap();
-        println!("nova_vp written to nova_vp_output.bin");
+        println!("nova_vp written to uncompressed_IVCProof_only/nova_vp_output.bin");
 
 }

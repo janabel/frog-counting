@@ -56,7 +56,7 @@ fn main() {
 
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let start = Instant::now();
-        let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 22);
+        let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 21);
         println!("created circuit params!: {:?}", start.elapsed());
 
     pub type N =

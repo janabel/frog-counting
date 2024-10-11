@@ -58,8 +58,7 @@ struct Frog {
     ownerSemaphoreId: String,
     frogSignerPubkeyAx: String,
     frogSignerPubkeyAy: String,
-    semaphoreIdentityTrapdoor: String,
-    semaphoreIdentityNullifier: String,
+    semaphoreIdentityCommitment: String,
     watermark: String,
     frogSignatureR8x: String,
     frogSignatureR8y: String,
@@ -110,8 +109,7 @@ fn frog_to_fr_vector(frog: &Frog) -> Vec<Fr> {
         str_to_fr(&frog.ownerSemaphoreId),
         str_to_fr(&frog.frogSignerPubkeyAx),
         str_to_fr(&frog.frogSignerPubkeyAy),
-        str_to_fr(&frog.semaphoreIdentityTrapdoor),
-        str_to_fr(&frog.semaphoreIdentityNullifier),
+        str_to_fr(&frog.semaphoreIdentityCommitment),
         str_to_fr(&frog.watermark),
         str_to_fr(&frog.frogSignatureR8x),
         str_to_fr(&frog.frogSignatureR8y),
@@ -143,7 +141,7 @@ fn main() {
     println!("{}", "succesfully read serialized nova params!");
 
     let start = Instant::now();
-    let file_path = "./src/frog_inputs (4).json";
+    let file_path = "./src/frog_inputs_v4.json";
     let contents = fs::read_to_string(file_path);
         let frogs: HashMap<String, Frog> = serde_json::from_str(&contents.unwrap()).unwrap();
 
@@ -172,7 +170,7 @@ fn main() {
 
     // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
     let start = Instant::now();
-        let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 22);
+        let f_circuit_params = (r1cs_path.into(), wasm_path.into(), 3, 21);
         let f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params.clone()).unwrap();
         println!("created circuit!: {:?}", start.elapsed());
 
