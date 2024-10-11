@@ -184,35 +184,49 @@ fn main() {
     // TRYING UNCHECKED SERIALIZATION -- it worked!
     
     let start = Instant::now();
-        let nova_pp_deserialized = ProverParams::<
-            G1,
-            G2,
-            Pedersen<G1>,
-            Pedersen<G2>,
-            >::deserialize_with_mode(
-                &mut nova_pp_serialized.as_slice(),
-                ark_serialize::Compress::No,
-                ark_serialize::Validate::No,
-                // (), // fcircuit_params
-            )
-            .unwrap();
+        let nova_pp_deserialized = N::pp_deserialize_with_mode(
+            &mut nova_pp_serialized.as_slice(),
+            ark_serialize::Compress::No,
+            ark_serialize::Validate::No,
+            f_circuit_params.clone(), // f_circuit_params 
+        )
+        .unwrap();
+        // let nova_pp_deserialized = ProverParams::<
+        //     G1,
+        //     G2,
+        //     Pedersen<G1>,
+        //     Pedersen<G2>,
+        //     >::deserialize_with_mode(
+        //         &mut nova_pp_serialized.as_slice(),
+        //         ark_serialize::Compress::No,
+        //         ark_serialize::Validate::No,
+        //         // (), // fcircuit_params
+        //     )
+        //     .unwrap();
         println!("deserialized nova_pp: {:?}", start.elapsed());
 
     let start = Instant::now();
-        let nova_vp_deserialized = VerifierParams::<
-                G1,
-                G2,
-                Pedersen<G1>,
-                Pedersen<G2>,
-                false,
-            >::deserialize_with_mode::<GVar, GVar2, CircomFCircuit<Fr>, _>(
-                &mut nova_vp_serialized.as_slice(),
-                ark_serialize::Compress::No,
-                ark_serialize::Validate::No,
-                f_circuit_params,
-                // (), // fcircuit_params
-            )
-            .unwrap();
+        let nova_vp_deserialized = N::vp_deserialize_with_mode(
+            &mut nova_vp_serialized.as_slice(),
+            ark_serialize::Compress::No,
+            ark_serialize::Validate::No,
+            f_circuit_params.clone(), // f_circuit_params 
+        )
+        .unwrap();
+        // let nova_vp_deserialized = VerifierParams::<
+        //         G1,
+        //         G2,
+        //         Pedersen<G1>,
+        //         Pedersen<G2>,
+        //         false,
+        //     >::deserialize_with_mode::<GVar, GVar2, CircomFCircuit<Fr>, _>(
+        //         &mut nova_vp_serialized.as_slice(),
+        //         ark_serialize::Compress::No,
+        //         ark_serialize::Validate::No,
+        //         f_circuit_params,
+        //         // (), // fcircuit_params
+        //     )
+        //     .unwrap();
         println!("deserialized nova_vp: {:?}", start.elapsed());
 
     println!("{}", "successfully serialized all params!");
