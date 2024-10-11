@@ -30,45 +30,23 @@ export async function createProof(circuitInputs: object) {
     console.log("circuit inputs:", JSON.stringify(circuitInputs));
 
     const nova_pp_serialized_res = await readSerializedData(
-      "/serialized_outputs/nova_pp_serialized.bin"
+      "/serialized_outputs/uncompressed_IVCProof_only/nova_pp_output.bin"
     );
     console.log("nova_pp_serialized_res", nova_pp_serialized_res);
     console.log("nova_pp_serialized_res length", nova_pp_serialized_res.length);
 
     const nova_vp_serialized_res = await readSerializedData(
-      "/serialized_outputs/nova_vp_serialized.bin"
+      "/serialized_outputs/uncompressed_IVCProof_only/nova_vp_output.bin"
     );
     console.log("nova_vp_serialized_res", nova_vp_serialized_res);
     console.log("nova_vp_serialized_res length", nova_vp_serialized_res.length);
-
-    const g16_pk_serialized_res = await readSerializedData(
-      "/serialized_outputs/g16_pk_serialized.bin"
-    );
-    console.log("g16_pk_serialized_res", g16_pk_serialized_res);
-    console.log("g16_pk_serialized_res length", g16_pk_serialized_res.length);
-
-    const g16_vk_serialized_res = await readSerializedData(
-      "/serialized_outputs/g16_vk_serialized.bin"
-    );
-    console.log("g16_vk_serialized_res", g16_vk_serialized_res);
-    console.log("g16_vk_serialized_res length", g16_vk_serialized_res.length);
-
-    // frog_nova(r1cs_bytes: Uint8Array,
-    // wasm_bytes: Uint8Array,
-    // frogs_js: any,
-    // nova_pp_serialized: Uint8Array,
-    // nova_vp_serialized: Uint8Array,
-    // g16_vk_serialized: Uint8Array,
-    // g16_pk_serialized: Uint8Array) {...}
 
     frog_nova(
       r1cs_res,
       wasm_res,
       JSON.stringify(circuitInputs),
       nova_pp_serialized_res,
-      nova_vp_serialized_res,
-      g16_vk_serialized_res,
-      g16_pk_serialized_res
+      nova_vp_serialized_res
     );
 
     console.log("succesfully ran frog_nova WAHOOO???");
