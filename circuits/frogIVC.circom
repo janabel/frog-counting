@@ -14,7 +14,7 @@ template frogIVC () {
     // frogMsgHash = frogMsgHash_small_old + 2^128 * frogMsgHash_big_old
     // ivc_input = [frogMsgHash_small_old, frogMsgHash_big_old, frogCounter];
     signal input ivc_input[3];
-    signal input external_inputs[22];
+    signal input external_inputs[21];
     signal output ivc_output[3];
 
     // EdDSAFrogPCD: Claim being proved:
