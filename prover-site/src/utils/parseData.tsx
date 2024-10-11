@@ -54,9 +54,10 @@ function extractSignerPublicKeyCoordinates(base64PubKey: string): {
   };
 }
 
+// use while waiting for zupass
 export async function parseFrogPOD(
   frogPOD: object,
-  semaphoreIDCommitment: BigInt
+  semaphoreIdentityCommitment: BigInt
 ) {
   // dummy test pods have all entries already formatted correctly
 
@@ -75,7 +76,7 @@ export async function parseFrogPOD(
     ownerSemaphoreId: entries.ownerSemaphoreId.value,
     frogSignerPubkeyAx: entries.frogSignerPubkeyAx.value,
     frogSignerPubkeyAy: entries.frogSignerPubkeyAy.value,
-    semaphoreIDCommitment: semaphoreIDCommitment.toString(),
+    semaphoreIdentityCommitment: semaphoreIdentityCommitment.toString(),
     watermark: entries.watermark.value,
     frogSignatureR8x: entries.frogSignatureR8x.value,
     frogSignatureR8y: entries.frogSignatureR8y.value,
@@ -89,7 +90,7 @@ export async function parseFrogPOD(
 
 export async function parseFrog(
   rawJSON: object,
-  semaphoreIDCommitment: BigInt
+  semaphoreIdentityCommitment: BigInt
 ) {
   assert(rawJSON.type == "eddsa-frog-pcd");
   const frogPCD = rawJSON.pcd;
@@ -116,7 +117,8 @@ export async function parseFrog(
     ),
     frogSignerPubkeyAx: hexToBigInt(pcdJSON.claim.publicKey[0]).toString(),
     frogSignerPubkeyAy: hexToBigInt(pcdJSON.claim.publicKey[1]).toString(),
-    semaphoreIDCommitment: semaphoreIDCommitment.toString(),
+    semaphoreIdentityTrapdoor: hexToBigInt(semaphoreIDtrapdoor).toString(),
+    semaphoreIdentityNullifier: hexToBigInt(semaphoreIDnullifier).toString(),
     watermark: "2718",
     frogSignatureR8x: frogSignatureR8x,
     frogSignatureR8y: frogSignatureR8y,

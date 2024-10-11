@@ -46,7 +46,7 @@ export function Prover(): ReactNode {
 
   async function readData() {
     // first make test frogs to insert to FrogCryptoTest
-    await makeTestFrogs();
+    // await makeTestFrogs(); // only run once
     console.log("made test frogs!");
 
     // then get semaphore ID commitment
@@ -75,32 +75,19 @@ export function Prover(): ReactNode {
     const circuitInputs = await Promise.all(promises);
     console.log("circuitInputs", circuitInputs);
 
-    // maps each frogPCD in the array to a parsed version
-    // const promises = frogPCDList.map(async (frogPCD: object) => {
-    //   console.log("frogPCD", frogPCD);
-    // const frog = await z.fs.get(frogPCD.id);
-    // console.log("frog", frog);
-    // const result = await parseFrog(frog, semaphoreIDCommitment);
-    // return result;
-    // });
-
-    // const circuitInputs = await Promise.all(promises);
-    // console.log("circuitInputs", circuitInputs);
-
     // adding indices for frogs to be able to maintain an order (hashmap passed into sonobe has none on its own, but incorrect order => folding fails)
-    // const transformedCircuitInputs: { [key: string]: { [key: string]: any } } =
-    //   {};
-    // circuitInputs.forEach((item, index) => {
-    //   transformedCircuitInputs[(index + 1).toString()] = item; // Adding 1 to make keys start from 1
-    // });
+    const transformedCircuitInputs: { [key: string]: { [key: string]: any } } =
+      {};
+    circuitInputs.forEach((item, index) => {
+      transformedCircuitInputs[(index + 1).toString()] = item; // Adding 1 to make keys start from 1
+    });
 
-    // console.log("circuitInputs", circuitInputs);
-    // setList([transformedCircuitInputs]);
-    // console.log(
-    //   "stringify of circuit inputs",
-    //   JSON.stringify(transformedCircuitInputs)
-    // );
-    // console.log(transformedCircuitInputs);
+    console.log("circuitInputs", circuitInputs);
+    console.log(
+      "stringify of circuit inputs",
+      JSON.stringify(transformedCircuitInputs)
+    );
+    console.log(transformedCircuitInputs);
     // createProof(circuitInputs);
   }
 
