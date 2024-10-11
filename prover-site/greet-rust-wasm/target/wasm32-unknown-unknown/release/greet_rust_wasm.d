@@ -1,1 +1,0 @@
-/mnt/c/Users/czhan/OneDrive/Documents/progcrypto24/zapp-template/greet-rust-wasm/target/wasm32-unknown-unknown/release/greet_rust_wasm.wasm: /mnt/c/Users/czhan/OneDrive/Documents/progcrypto24/zapp-template/greet-rust-wasm/src/lib.rs
