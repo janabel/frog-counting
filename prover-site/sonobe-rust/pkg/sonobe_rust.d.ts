@@ -1,19 +1,18 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-* @param {Uint8Array} r1cs_bytes
-* @param {Uint8Array} wasm_bytes
-* @param {any} frogs_js
-* @param {Uint8Array} nova_pp_serialized
-* @param {Uint8Array} nova_vp_serialized
-* @param {Uint8Array} g16_vk_serialized
-* @param {Uint8Array} g16_pk_serialized
-*/
-export function frog_nova(r1cs_bytes: Uint8Array, wasm_bytes: Uint8Array, frogs_js: any, nova_pp_serialized: Uint8Array, nova_vp_serialized: Uint8Array, g16_vk_serialized: Uint8Array, g16_pk_serialized: Uint8Array): void;
+ * @param {Uint8Array} r1cs_bytes
+ * @param {Uint8Array} wasm_bytes
+ * @param {any} frogs_js
+ * @param {Uint8Array} nova_pp_serialized
+ * @param {Uint8Array} nova_vp_serialized
+ * @returns {Uint8Array}
+ */
+export function frog_nova(r1cs_bytes: Uint8Array, wasm_bytes: Uint8Array, frogs_js: any, nova_pp_serialized: Uint8Array, nova_vp_serialized: Uint8Array): Uint8Array;
 /**
-* A struct representing an aborted instruction execution, with a message
-* indicating the cause.
-*/
+ * A struct representing an aborted instruction execution, with a message
+ * indicating the cause.
+ */
 export class WasmerRuntimeError {
   free(): void;
 }
@@ -22,11 +21,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly frog_nova: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number) => void;
+  readonly frog_nova: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => void;
   readonly __wbg_wasmerruntimeerror_free: (a: number, b: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
+  readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 

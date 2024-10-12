@@ -151,7 +151,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     frogs_js: JsValue,
     nova_pp_serialized: Vec<u8>,
     nova_vp_serialized: Vec<u8>,
-    ) {
+    ) -> Vec<u8> {
 
     set_panic_hook();
     // alert("panic hook set!");
@@ -169,10 +169,17 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
 
     let start = get_current_time_in_millis();
         let frogs_str = frogs_js.as_string().unwrap(); // String
-        let frogs: Vec<Frog> = serde_json::from_str(&frogs_str).expect("Failed to deserialize JSON");
-        let external_inputs: Vec<Vec<Fr>> = frogs.iter()
-        .map(|frog| frog_to_fr_vector(frog))
-        .collect();
+        // let frogs: Vec<Frog> = serde_json::from_str(&frogs_str).expect("Failed to deserialize JSON");
+        let frogs: HashMap<String, Frog> = serde_json::from_str(&frogs_str).unwrap();
+        let mut external_inputs: Vec<Vec<Fr>> = Vec::new();
+        let n = frogs.len();
+        for i in 1..=n {
+            let i_string = i.to_string();
+            let frog = &frogs[&i_string];
+            let frog_fr_vector = frog_to_fr_vector(frog);
+            external_inputs.push(frog_fr_vector)
+        }
+        
         let end = get_current_time_in_millis();
         let elapsed = end - start;
         // alert("external_inputs created");
@@ -184,7 +191,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     let start = get_current_time_in_millis();
         // (r1cs_bytes, wasm_bytes, state_len, external_inputs_len)
         let f_circuit_params = (r1cs_bytes.into(), wasm_bytes.into(), 3, 21);
-        let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params).unwrap();
+        let mut f_circuit = CircomFCircuit::<Fr>::new(f_circuit_params.clone()).unwrap();
         
         let end = get_current_time_in_millis();
         let elapsed = end - start;
@@ -201,7 +208,7 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
             f_circuit_params.clone(), // f_circuit_params 
         )
         .unwrap();
-    
+
         let end = get_current_time_in_millis();
         let elapsed = end - start;
         // alert("deserialized nova_pp");
@@ -262,18 +269,22 @@ pub fn frog_nova(r1cs_bytes: Vec<u8>,
     let start = get_current_time_in_millis();
         
     // now serialize just the IVCProof
+    let ivc_proof = nova.ivc_proof();
 
-    // let start = get_current_time_in_millis();
-    //     let mut proof_serialized = vec![];
-    //     proof.serialize_compressed(&mut proof_serialized).unwrap();
-    //     let end = get_current_time_in_millis();
-    //     let elapsed = end - start;
-    //     // alert(&format!("proof_serialized: {:?}", proof_serialized));
-    //     web_sys::console::log_1(&format!("proof_serialized: {:?}", proof_serialized).into());
-    //     web_sys::console::log_1(&format!("proof_serialized: {:?}", elapsed).into());
+    let start = get_current_time_in_millis();
+        let mut proof_serialized = vec![];
+        ivc_proof.serialize_with_mode(&mut proof_serialized, ark_serialize::Compress::No).unwrap();
+
+        let end = get_current_time_in_millis();
+        let elapsed = end - start;
+        // alert(&format!("proof_serialized: {:?}", proof_serialized));
+        web_sys::console::log_1(&format!("serialized proof: {:?}", elapsed).into());
+        web_sys::console::log_1(&format!("proof_serialized: {:?}", proof_serialized).into());
 
     let end_total = get_current_time_in_millis();
     let elapsed_total = end_total - start_total;
-    web_sys::console::log_1(&format!("WHOLE THING TOOK: {:?}", elapsed).into());
-    alert("🎉🎉🎉🎉🎉🎉🎉🎉🎉 RAHHHHHH");
+    web_sys::console::log_1(&format!("WHOLE THING TOOK: {:?}", elapsed_total).into());
+    alert("🎉 Created proof!");
+
+    return proof_serialized;
 }

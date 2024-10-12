@@ -41,7 +41,7 @@ export async function createProof(circuitInputs: object) {
     console.log("nova_vp_serialized_res", nova_vp_serialized_res);
     console.log("nova_vp_serialized_res length", nova_vp_serialized_res.length);
 
-    frog_nova(
+    const ivc_proof = frog_nova(
       r1cs_res,
       wasm_res,
       JSON.stringify(circuitInputs),
@@ -50,6 +50,7 @@ export async function createProof(circuitInputs: object) {
     );
 
     console.log("succesfully ran frog_nova WAHOOO???");
+    return ivc_proof;
   } catch (e) {
     console.error("Error from Rust:", e);
   }

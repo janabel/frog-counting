@@ -11,9 +11,12 @@ import { parseFrog, parseFrogPOD } from "../utils/parseData";
 import { createProof } from "../utils/runSonobe";
 // import test frogs
 import { testFrog1, testFrog2, testFrog3 } from "../testfrogs";
+import { buildEddsa, buildPoseidon } from "circomlibjs";
 
 export function Prover(): ReactNode {
   const { z, connected } = useEmbeddedZupass();
+  const [ivc_proof, setIvcProof] = useState(new Uint8Array([]));
+
   // const [list, setList] = useState<ZupassFolderContent[]>([]);
 
   async function makeTestFrogs() {
@@ -39,15 +42,40 @@ export function Prover(): ReactNode {
     return;
   }
 
+  async function computePoseidonHash(inputArray) {
+    const poseidon = await buildPoseidon();
+    const hash = poseidon.F.toString(poseidon(inputArray));
+    return hash;
+  }
+
+  async function getFrogHashInput(parsedFrog) {
+    console.log("parsedFrog length", parsedFrog.length);
+    return [
+      BigInt(parsedFrog.frogId),
+      BigInt(parsedFrog.biome),
+      BigInt(parsedFrog.rarity),
+      BigInt(parsedFrog.temperament),
+      BigInt(parsedFrog.jump),
+      BigInt(parsedFrog.speed),
+      BigInt(parsedFrog.intelligence),
+      BigInt(parsedFrog.beauty),
+      BigInt(parsedFrog.timestampSigned),
+      BigInt(parsedFrog.ownerSemaphoreId),
+      BigInt(parsedFrog.reservedField1),
+      BigInt(parsedFrog.reservedField2),
+      BigInt(parsedFrog.reservedField3),
+    ];
+  }
+
   async function getID() {
-    const semaphoreIDCommitment = await z.identity.getSemaphoreV4Commitment();
+    const semaphoreIDCommitment = await z.identity.getSemaphoreV3Commitment();
     return semaphoreIDCommitment;
   }
 
-  async function readData() {
+  async function processProofInputs() {
     // first make test frogs to insert to FrogCryptoTest
     // await makeTestFrogs(); // only run once
-    console.log("made test frogs!");
+    // console.log("made test frogs!");
 
     // then get semaphore ID commitment
     const semaphoreIDCommitment = await getID();
@@ -63,44 +91,89 @@ export function Prover(): ReactNode {
       })
     );
 
-    console.log("frogPCDList", frogPODList);
+    // console.log("frogPCDList", frogPODList);
 
     const promises = frogPODList.map(async (frogPOD: object) => {
-      console.log("frogPOD", frogPOD);
+      // console.log("frogPOD", frogPOD);
       const result = await parseFrogPOD(frogPOD, semaphoreIDCommitment);
-      console.log("parsedFrogPOD: ", result);
+      // console.log("parsedFrogPOD: ", result);
       return result;
     });
 
-    const circuitInputs = await Promise.all(promises);
-    console.log("circuitInputs", circuitInputs);
+    const parsedFrogs = await Promise.all(promises);
 
-    // adding indices for frogs to be able to maintain an order (hashmap passed into sonobe has none on its own, but incorrect order => folding fails)
-    const transformedCircuitInputs: { [key: string]: { [key: string]: any } } =
-      {};
-    circuitInputs.forEach((item, index) => {
-      transformedCircuitInputs[(index + 1).toString()] = item; // Adding 1 to make keys start from 1
-    });
+    console.log("parsedFrogs", parsedFrogs);
 
-    console.log("circuitInputs", circuitInputs);
-    console.log(
-      "stringify of circuit inputs",
-      JSON.stringify(transformedCircuitInputs)
+    // sort frogs now
+    // create an array of [frogMsgHash, parsedfrog]
+    let frogHash_and_frog_array = await Promise.all(
+      parsedFrogs.map(async (parsedFrog) => {
+        const frogHashInput = await getFrogHashInput(parsedFrog);
+        const frogMsgHash = await computePoseidonHash(frogHashInput);
+        return [frogMsgHash, parsedFrog];
+      })
     );
-    console.log(transformedCircuitInputs);
-    // createProof(circuitInputs);
+    console.log("initial frogHash_and_frog_array", frogHash_and_frog_array);
+    // sort frogs by message hash
+    frogHash_and_frog_array.sort((a, b) => a[0] - b[0]);
+    console.log("sorted frogHash_and_frog_array", frogHash_and_frog_array);
+    // remove the message hashes
+    const sortedFrogArray = frogHash_and_frog_array.map((item) => item[1]);
+    // add indices (needed when passing into sonobe to maintain order of hashmap -> external_inputs)
+    const sortedFrogJson = sortedFrogArray.reduce(
+      (accumulator, currentValue, index) => {
+        accumulator[index + 1] = currentValue;
+        return accumulator;
+      },
+      {}
+    );
+
+    console.log("sortedFrogJson", sortedFrogJson);
+
+    // return parsedFrogs;
+    return sortedFrogJson;
   }
+
+  async function prove() {
+    const circuitInputs = await processProofInputs();
+    const ivc_proof = await createProof(circuitInputs);
+    setIvcProof(ivc_proof);
+    console.log("ivc_proof", ivc_proof);
+  }
+
+  const downloadBinFile = (uint8Array: Uint8Array, fileName: string) => {
+    // Create a Blob from the Uint8Array
+    const blob = new Blob([uint8Array], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return !connected ? null : (
     <div>
       <div className="prose">
         <div>
-          <TryIt onClick={readData} label="Generate Circuit Inputs + Prove" />
+          <TryIt onClick={prove} label="Generate Circuit Inputs + Prove" />
           {/* {list.length > 0 && (
             <pre className="whitespace-pre-wrap">
               {JSON.stringify(list, null, 2)}
             </pre>
           )} */}
+          {ivc_proof.length > 0 && (
+            <>
+              <pre className="whitespace-pre-wrap">{"🎉 Created proof!"}</pre>
+              <TryIt
+                onClick={() => downloadBinFile(ivc_proof, "ivc_proof.bin")}
+                label="Download proof"
+              />
+            </>
+          )}
+          {/* <pre className="whitespace-pre-wrap">{"hi"}</pre> */}
         </div>
       </div>
     </div>

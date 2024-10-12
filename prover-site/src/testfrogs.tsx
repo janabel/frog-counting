@@ -15,7 +15,7 @@ export const testFrog1: PODEntries = {
   ownerSemaphoreId: {
     type: "string",
     value:
-      "16900317739984313123151401564016026184213974271747575439963283112075081788820",
+      "21711510168635182051334357427785411794318044815986410056285364391413272857225",
   },
   frogSignerPubkeyAx: {
     type: "string",
@@ -92,7 +92,7 @@ export const testFrog2: PODEntries = {
   ownerSemaphoreId: {
     type: "string",
     value:
-      "16900317739984313123151401564016026184213974271747575439963283112075081788820",
+      "21711510168635182051334357427785411794318044815986410056285364391413272857225",
   },
   frogSignerPubkeyAx: {
     type: "string",
@@ -169,7 +169,7 @@ export const testFrog3: PODEntries = {
   ownerSemaphoreId: {
     type: "string",
     value:
-      "16900317739984313123151401564016026184213974271747575439963283112075081788820", // jbel's own semaphore v4 ID (idcommitment)
+      "21711510168635182051334357427785411794318044815986410056285364391413272857225", // jbel's own semaphore v3 ID (idcommitment)
   },
   frogSignerPubkeyAx: {
     type: "string",
