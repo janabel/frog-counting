@@ -6,41 +6,50 @@ import { useState } from "react";
 import { stringToByteArray } from "../parseStringtoBytes.js";
 import init, { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
 
+async function readSerializedData(path: string) {
+  const file_path = path;
+  const response = await fetch(file_path);
+  const bytes = await response.arrayBuffer();
+  const res = new Uint8Array(bytes);
+  // console.log("result from path " + path, res);
+  return res;
+}
+
 export function VerifyRust() {
+  const [fileData, setFileData] = useState<Uint8Array>(new Uint8Array([]));
   const [verifyStatus, setVerifyStatus] = useState(false);
 
-  // todo - clean up react so that no longer using getElementById.
-  // e.g. have vkey_element be a state X, and userinput takes in prop function = setX
-  const verify = async () => {
-    const vkey_element = document.getElementById(
-      "vkey-input"
-    ) as HTMLInputElement | null;
-    const public_signals_element = document.getElementById(
-      "public-signals-input"
-    ) as HTMLInputElement | null;
-    const proof_element = document.getElementById(
-      "proof-input"
-    ) as HTMLInputElement | null;
-
-    if (!vkey_element || !public_signals_element || !proof_element) {
-      console.log("please provide vkey, public signals, and proof!");
-      return;
+  // helper function for file upload
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const arrayBuffer = e.target?.result;
+        if (arrayBuffer) {
+          const uint8Array = new Uint8Array(arrayBuffer as ArrayBuffer);
+          setFileData(uint8Array);
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
+  };
 
-    const vkey_input = stringToByteArray(vkey_element.value);
-    const public_signals_input = stringToByteArray(
-      public_signals_element.value
-    );
-    const proof_input = stringToByteArray(proof_element.value);
-
-    console.log(vkey_input);
-    console.log(proof_input);
-
+  // call verifyRust from sonobe
+  const verify = async () => {
     await init();
+
+    const r1cs_res = await readSerializedData("/frogIVC.r1cs");
+    const wasm_res = await readSerializedData("/frogIVC.wasm");
+    const nova_pp_res = await readSerializedData("/nova_pp_output.bin");
+    const nova_vp_res = await readSerializedData("/nova_vp_output.bin");
+    // const r1cs_res = await readSerializedData("/frogIVC.r1cs");
+    const ivc_proof = fileData;
+    console.log("read in data/params");
 
     // trying to verify the proof, throws an error if groth16.verify throws and error
     try {
-      verifyRust(vkey_input, proof_input, public_signals_input);
+      verifyRust(r1cs_res, wasm_res, ivc_proof, nova_pp_res, nova_vp_res);
       setVerifyStatus(true);
     } catch (error) {
       console.log("Error verifying proof...", error);
@@ -50,7 +59,14 @@ export function VerifyRust() {
 
   return (
     <div className="flex flex-col gap-4 my-4">
-      <div id="verify-box">
+      <input type="file" onChange={handleFileUpload} accept=".bin" />
+      <div>
+        <button className="btn btn-primary" onClick={verify}>
+          Verify Proof
+        </button>
+        {verifyStatus ? <h1>Proof was verified!</h1> : <h1></h1>}
+      </div>
+      {/* <div id="verify-box">
         <h1 className="text-xl font-bold mb-2">Verify Proof</h1>
         <UserInput id="vkey-input" placeholder="Verification key" />
         <UserInput id="public-signals-input" placeholder="Public signals" />
@@ -61,10 +77,8 @@ export function VerifyRust() {
             Verify Proof
           </button>
         </div>
-
         {verifyStatus ? <h1>Proof was verified!</h1> : <h1></h1>}
-      </div>
-
+      </div> */}
       <div id="pod-issuer-box">
         {verifyStatus ? <IssuePOD></IssuePOD> : <div></div>}
       </div>
