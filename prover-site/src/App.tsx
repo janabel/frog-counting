@@ -29,9 +29,7 @@ function App() {
         <Navbar />
         <div className="container mx-auto my-4 p-4">
           <Header />
-          <div className="flex flex-col gap-4 my-4">
-            <Prover />
-          </div>
+          <Prover />
         </div>
       </EmbeddedZupassProvider>
     </ChakraProvider>
