@@ -1,20 +1,14 @@
 import { SerializedPCD } from "@pcd/pcd-types";
+import { POD } from "@pcd/pod";
 // import { ZupassFolderContent } from "@pcd/zupass-client";
 import { ReactNode, useMemo, useState } from "react";
 // import { TryIt } from "./TryIt";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 import { ZUPASS_URL } from "../constants";
-import { POD } from "@pcd/pod";
-// import { v4 as uuid } from "uuid";
-import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
 
 export interface AddToZupassProps {
   pod: POD;
 }
-
-// pcd =
-// type
-// pcd: {id, other stuff (maybe pcds)}
 
 export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
   const { z, connected } = useEmbeddedZupass();
@@ -25,26 +19,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
     return localStorage.getItem("zupassUrl") || ZUPASS_URL;
   }, []);
 
-  console.log("POD content", pod.content);
-  console.log("POD signature", pod.signature);
-  console.log("POD signerPublicKey", pod.signerPublicKey);
-  console.log("POD (content)ID", pod.contentID);
-  console.log("pod object type", typeof pod);
-
-  // time to convert POD to PCD to put into zupass...
-  const podPCD = new PODPCD(pod.contentID.toString(), pod);
-  // type: string;
-  //   claim: PODPCDClaim;
-  //   proof: PODPCDProof;
-  //   id: string;
-  console.log("podPCD claim", podPCD.claim);
-
-  // const newPOD = new PODPCD(uuid(), pod);
-
-  let serializedPodPCD: SerializedPCD;
-  PODPCDPackage.serialize(podPCD).then((result) => {
-    serializedPodPCD = result;
-  });
+  console.log("frogwhisperer pod", pod);
 
   return !connected ? null : (
     <div className="flex flex-col gap-4 my-4">
@@ -57,7 +32,8 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
           className="btn btn-primary"
           onClick={async () => {
             try {
-              await z.fs.put("/FrogWhisperer", serializedPodPCD);
+              await z.pod.collection("FrogWhisperer").insert(pod);
+              // await z.fs.put("/FrogWhisperer", serializedPodPCD);
               setPCDAdded(true);
             } catch (e) {
               console.log(e);

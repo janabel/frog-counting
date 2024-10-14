@@ -8,10 +8,18 @@ import { ZUPASS_URL } from "./constants";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Header } from "./components/Header";
 // import { LuAlignVerticalJustifyCenter } from "react-icons/lu";
+import { Zapp } from "@parcnet-js/app-connector";
 
-const zapp = {
-  name: "test-client",
-  permissions: ["read", "write"],
+const zapp: Zapp = {
+  name: "Frog Whisperer Issuer",
+  permissions: {
+    REQUEST_PROOF: { collections: ["FrogWhisperer", "/"] },
+    SIGN_POD: {},
+    READ_POD: { collections: ["FrogWhisperer", "/"] },
+    INSERT_POD: { collections: ["FrogWhisperer", "/"] },
+    DELETE_POD: { collections: ["FrogWhisperer", "/"] },
+    READ_PUBLIC_IDENTIFIERS: {},
+  },
 };
 
 function App() {

@@ -1,9 +1,6 @@
 import React from "react";
 import { IssuePOD } from "./IssuePOD";
-import { UserInput } from "./UserInput";
 import { useState } from "react";
-// import { groth16 } from "snarkjs";
-import { stringToByteArray } from "../parseStringtoBytes.js";
 import init, { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
 
 async function readSerializedData(path: string) {
@@ -43,7 +40,6 @@ export function VerifyRust() {
     const wasm_res = await readSerializedData("/frogIVC.wasm");
     const nova_pp_res = await readSerializedData("/nova_pp_output.bin");
     const nova_vp_res = await readSerializedData("/nova_vp_output.bin");
-    // const r1cs_res = await readSerializedData("/frogIVC.r1cs");
     const ivc_proof = fileData;
     console.log("read in data/params");
 
@@ -66,19 +62,7 @@ export function VerifyRust() {
         </button>
         {verifyStatus ? <h1>Proof was verified!</h1> : <h1></h1>}
       </div>
-      {/* <div id="verify-box">
-        <h1 className="text-xl font-bold mb-2">Verify Proof</h1>
-        <UserInput id="vkey-input" placeholder="Verification key" />
-        <UserInput id="public-signals-input" placeholder="Public signals" />
-        <UserInput id="proof-input" placeholder="Groth16 proof" />
 
-        <div>
-          <button className="btn btn-primary" onClick={verify}>
-            Verify Proof
-          </button>
-        </div>
-        {verifyStatus ? <h1>Proof was verified!</h1> : <h1></h1>}
-      </div> */}
       <div id="pod-issuer-box">
         {verifyStatus ? <IssuePOD></IssuePOD> : <div></div>}
       </div>

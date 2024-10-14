@@ -1,21 +1,15 @@
 // import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 // import { ArgumentTypeName } from "@pcd/pcd-types";
 // import { SerializedPCD } from "@pcd/pcd-types";
+import { PODStringValue } from "@pcd/pod";
+import { POD, PODEntries } from "@pcd/pod";
+import * as p from "@parcnet-js/podspec";
 import frogWhispererImg from "../assets/frogwhisperer.png";
 import { Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import {
-  POD,
-  //   PODContent,
-  PODEntries,
-  //   deserializePODEntries,
-  //   podEntriesFromSimplifiedJSON,
-  //   podEntriesToSimplifiedJSON,
-  //   serializePODEntries,
-} from "@pcd/pod";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
-import { ZupassAPI } from "@pcd/zupass-client";
 import { AddToZupass } from "./AddToZupass";
+// import { ZupassAPI } from "@pcd/zupass-client";
 
 // const pcdPod = await import('@pcd/pod');
 // import { Identity } from "@semaphore-protocol/identity";
@@ -27,32 +21,29 @@ import { AddToZupass } from "./AddToZupass";
 // export function IssuePOD({ verifier_status }: issuePODProps) {
 
 export function IssuePOD() {
-  const { z, connected } = useEmbeddedZupass() as {
-    z: ZupassAPI;
-    connected: boolean;
-  };
+  const { z, connected } = useEmbeddedZupass();
   const [pod, setPOD] = useState<POD>();
   const [loading, setLoading] = useState(true);
-  const [semaphoreIDcommit, setIDCommit] = useState(0n);
+  const [semaphoreIDCommitment, setIDCommit] = useState(0n);
   const [error, setError] = useState<unknown>(null);
 
   const generatePOD = async () => {
     try {
       // first, fetch user semaphore id
-      const semaphoreIDCommitment = await z.identity.getIdentityCommitment();
+      const semaphoreIDCommitment = await z.identity.getSemaphoreV3Commitment();
       setIDCommit(semaphoreIDCommitment); // Update state with fetched data
       console.log("semaphoreIDCommitment", semaphoreIDCommitment);
 
       // then, construct rest of POD
       // if all else successful and loading = false (i.e. successfully got user ID), proceed to generate full POD
       // get public signals from user input to verifier
-      const public_signals_val = (
-        document.getElementById("public-signals-input") as HTMLInputElement
-      )?.value;
+      // const public_signals_val = (
+      //   document.getElementById("public-signals-input") as HTMLInputElement
+      // )?.value;
+      const public_signals_val = "hi";
 
-      const sampleEntries: PODEntries = {
+      const frogWhispererEntries: PODEntries = {
         public_signals: { type: "string", value: public_signals_val },
-        someNumber: { type: "int", value: -123n },
         zupass_display: { type: "string", value: "collectable" },
         zupass_image_url: {
           type: "string",
@@ -66,21 +57,16 @@ export function IssuePOD() {
         },
         owner: {
           type: "string",
-          value: semaphoreIDcommit.toString(),
+          value: semaphoreIDCommitment.toString(),
         },
       };
-      console.log("Sample entries", sampleEntries);
-      // PODs are signed using EdDSA signatures, which are easy to check in a
-      // ZK circuit.  Our private keys can be any 32 bytes encoded as Base64 or hex.
-      const privateKey = "ASNFZ4mrze8BI0VniavN7wEjRWeJq83vASNFZ4mrze8"; // dummy private key for our app, will use later.
 
-      // Signing a POD is usually performed in a single step like this.  No need
-      // to go through the PODContent class.
-      setPOD(POD.sign(sampleEntries, privateKey));
+      const frogWhispererPOD = await z.pod.sign(frogWhispererEntries);
+      setPOD(frogWhispererPOD);
 
       setLoading(false);
     } catch (err: unknown) {
-      setError(err); // Handle errors
+      setError(err);
       setLoading(false);
     }
   };
