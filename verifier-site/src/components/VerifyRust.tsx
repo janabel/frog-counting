@@ -15,6 +15,7 @@ async function readSerializedData(path: string) {
 export function VerifyRust() {
   const [fileData, setFileData] = useState<Uint8Array>(new Uint8Array([]));
   const [verifyStatus, setVerifyStatus] = useState(false);
+  const [numFrogs, setNumFrogs] = useState(0n);
 
   // helper function for file upload
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +46,10 @@ export function VerifyRust() {
 
     // trying to verify the proof, throws an error if groth16.verify throws and error
     try {
-      verifyRust(r1cs_res, wasm_res, ivc_proof, nova_pp_res, nova_vp_res);
+      const numFrogs = BigInt(
+        verifyRust(r1cs_res, wasm_res, ivc_proof, nova_pp_res, nova_vp_res)
+      );
+      setNumFrogs(numFrogs);
       setVerifyStatus(true);
     } catch (error) {
       console.log("Error verifying proof...", error);
@@ -60,11 +64,18 @@ export function VerifyRust() {
         <button className="btn btn-primary" onClick={verify}>
           Verify Proof
         </button>
-        {verifyStatus ? <h1>Proof was verified!</h1> : <h1></h1>}
+        {verifyStatus ? (
+          <>
+            <h1>Proof was verified!</h1>
+            <h1>You have: {numFrogs.toString()} frogs</h1>
+          </>
+        ) : (
+          <h1></h1>
+        )}
       </div>
 
       <div id="pod-issuer-box">
-        {verifyStatus ? <IssuePOD></IssuePOD> : <div></div>}
+        {verifyStatus ? <IssuePOD numFrogs={numFrogs}></IssuePOD> : <div></div>}
       </div>
     </div>
   );

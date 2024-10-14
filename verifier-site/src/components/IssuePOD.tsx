@@ -20,30 +20,32 @@ import { AddToZupass } from "./AddToZupass";
 // }
 // export function IssuePOD({ verifier_status }: issuePODProps) {
 
-export function IssuePOD() {
+interface issuePODProps {
+  numFrogs: bigint;
+}
+
+export function IssuePOD({ numFrogs }: issuePODProps) {
   const { z, connected } = useEmbeddedZupass();
   const [pod, setPOD] = useState<POD>();
   const [loading, setLoading] = useState(true);
   const [semaphoreIDCommitment, setIDCommit] = useState(0n);
   const [error, setError] = useState<unknown>(null);
+  const frogThreshold = 3n;
+  const enoughFrogs = numFrogs >= frogThreshold;
+
+  async function getID() {
+    const semaphoreIDCommitment = await z.identity.getSemaphoreV3Commitment();
+    setIDCommit(semaphoreIDCommitment);
+    console.log("semaphoreIDCommitment", semaphoreIDCommitment);
+  }
 
   const generatePOD = async () => {
     try {
       // first, fetch user semaphore id
-      const semaphoreIDCommitment = await z.identity.getSemaphoreV3Commitment();
-      setIDCommit(semaphoreIDCommitment); // Update state with fetched data
-      console.log("semaphoreIDCommitment", semaphoreIDCommitment);
-
-      // then, construct rest of POD
-      // if all else successful and loading = false (i.e. successfully got user ID), proceed to generate full POD
-      // get public signals from user input to verifier
-      // const public_signals_val = (
-      //   document.getElementById("public-signals-input") as HTMLInputElement
-      // )?.value;
-      const public_signals_val = "hi";
+      getID();
 
       const frogWhispererEntries: PODEntries = {
-        public_signals: { type: "string", value: public_signals_val },
+        num_frogs: { type: "int", value: numFrogs },
         zupass_display: { type: "string", value: "collectable" },
         zupass_image_url: {
           type: "string",
@@ -72,7 +74,8 @@ export function IssuePOD() {
   };
 
   useEffect(() => {
-    if (loading) {
+    if (loading && enoughFrogs) {
+      // only generate frog whisperer POD if user has enough frogs
       generatePOD();
     } else {
       return;
@@ -102,19 +105,28 @@ export function IssuePOD() {
 
   // otherwise, POD is ready to render
   return (
-    <div className="flex flex-col gap-4 my-4">
-      <div>
-        <h1 className="text-xl font-bold mb-2">
-          ‧₊˚Congratulations, you are now a Frog Whisperer ‧₊˚
+    <>
+      {enoughFrogs ? (
+        <div className="flex flex-col gap-4 my-4">
+          <div>
+            <h1 className="text-xl font-bold mb-2">
+              ‧₊˚Congratulations, you are now a Frog Whisperer ‧₊˚
+            </h1>
+            <img
+              src={frogWhispererImg}
+              alt="Frog Whisperer Image"
+              style={{ width: "300px", height: "auto" }}
+            />
+            {/* <pre>[POD displayed here]</pre> */}
+          </div>
+          {pod ? <AddToZupass pod={pod}></AddToZupass> : <></>}
+        </div>
+      ) : (
+        <h1>
+          You must have at least {frogThreshold.toString()} frogs to get a
+          FrogWhisperer POD!
         </h1>
-        <img
-          src={frogWhispererImg}
-          alt="Frog Whisperer Image"
-          style={{ width: "300px", height: "auto" }}
-        />
-        {/* <pre>[POD displayed here]</pre> */}
-      </div>
-      {pod ? <AddToZupass pod={pod}></AddToZupass> : <></>}
-    </div>
+      )}
+    </>
   );
 }

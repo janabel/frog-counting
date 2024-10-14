@@ -6,8 +6,9 @@
  * @param {Uint8Array} ivc_proof_serialized
  * @param {Uint8Array} nova_pp_serialized
  * @param {Uint8Array} nova_vp_serialized
+ * @returns {string}
  */
-export function verifyRust(r1cs_bytes: Uint8Array, wasm_bytes: Uint8Array, ivc_proof_serialized: Uint8Array, nova_pp_serialized: Uint8Array, nova_vp_serialized: Uint8Array): void;
+export function verifyRust(r1cs_bytes: Uint8Array, wasm_bytes: Uint8Array, ivc_proof_serialized: Uint8Array, nova_pp_serialized: Uint8Array, nova_vp_serialized: Uint8Array): string;
 /**
  * A struct representing an aborted instruction execution, with a message
  * indicating the cause.
@@ -20,11 +21,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly verifyRust: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => void;
+  readonly verifyRust: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;
   readonly __wbg_wasmerruntimeerror_free: (a: number, b: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
+  readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 

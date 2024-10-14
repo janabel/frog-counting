@@ -193,19 +193,33 @@ function passArray8ToWasm0(arg, malloc) {
  * @param {Uint8Array} ivc_proof_serialized
  * @param {Uint8Array} nova_pp_serialized
  * @param {Uint8Array} nova_vp_serialized
+ * @returns {string}
  */
 export function verifyRust(r1cs_bytes, wasm_bytes, ivc_proof_serialized, nova_pp_serialized, nova_vp_serialized) {
-    const ptr0 = passArray8ToWasm0(r1cs_bytes, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passArray8ToWasm0(wasm_bytes, wasm.__wbindgen_malloc);
-    const len1 = WASM_VECTOR_LEN;
-    const ptr2 = passArray8ToWasm0(ivc_proof_serialized, wasm.__wbindgen_malloc);
-    const len2 = WASM_VECTOR_LEN;
-    const ptr3 = passArray8ToWasm0(nova_pp_serialized, wasm.__wbindgen_malloc);
-    const len3 = WASM_VECTOR_LEN;
-    const ptr4 = passArray8ToWasm0(nova_vp_serialized, wasm.__wbindgen_malloc);
-    const len4 = WASM_VECTOR_LEN;
-    wasm.verifyRust(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+    let deferred6_0;
+    let deferred6_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(r1cs_bytes, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArray8ToWasm0(wasm_bytes, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        const ptr2 = passArray8ToWasm0(ivc_proof_serialized, wasm.__wbindgen_malloc);
+        const len2 = WASM_VECTOR_LEN;
+        const ptr3 = passArray8ToWasm0(nova_pp_serialized, wasm.__wbindgen_malloc);
+        const len3 = WASM_VECTOR_LEN;
+        const ptr4 = passArray8ToWasm0(nova_vp_serialized, wasm.__wbindgen_malloc);
+        const len4 = WASM_VECTOR_LEN;
+        wasm.verifyRust(retptr, ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        deferred6_0 = r0;
+        deferred6_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred6_0, deferred6_1, 1);
+    }
 }
 
 function handleError(f, args) {
