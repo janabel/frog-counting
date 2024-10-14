@@ -40,6 +40,10 @@ use std::collections::HashMap;
 use std::panic::{self, AssertUnwindSafe};
 use web_sys::console;
 
+use ark_ff::PrimeField;
+// use ark_ff::fields::{Fp256, MontBackend, MontConfig}
+// use ark_bn254::FqConfig;
+
 ////////////////////////////////////////////////////////////////
 
 #[wasm_bindgen]
@@ -54,12 +58,20 @@ fn get_current_time_in_millis() -> f64 {
     performance.now()
 }
 
+fn scalar_to_javascript(fq_element: Fr) -> String {
+    let bigint_rep = fq_element.into_bigint();
+    bigint_rep.to_string()
+}
+
 #[wasm_bindgen]
 pub fn verifyRust(r1cs_bytes: Vec<u8>, 
     wasm_bytes: Vec<u8>,
     ivc_proof_serialized: Vec<u8>, 
     nova_pp_serialized: Vec<u8>, 
-    nova_vp_serialized: Vec<u8>) {
+    nova_vp_serialized: Vec<u8>) 
+    // -> Vec<G1::ScalarField> 
+    -> String 
+    {
 
     pub type N =
         Nova<G1, GVar, G2, GVar2, CircomFCircuit<Fr>, KZG<'static, Bn254>, Pedersen<G2>, false>;
@@ -130,5 +142,15 @@ pub fn verifyRust(r1cs_bytes: Vec<u8>,
     let elapsed_total = end_total - start_total;
 
     web_sys::console::log_1(&format!("whole thing took this long: {:?}", elapsed_total).into());
+
+    web_sys::console::log_1(&format!("end state for ivc z_i: {:?}", ivc_proof.z_i).into());
+    // let mut z_i2_serialized = Vec::new();
+    // (ivc_proof.z_i)[2].serialize(&mut serialized).unwrap(); // Serialize each scalar
+    
+    let z_i2_serialized = scalar_to_javascript((ivc_proof.z_i)[2]);
+    web_sys::console::log_1(&format!("end SERIALIZED state for ivc z_i: {:?}", z_i2_serialized).into());
+    return z_i2_serialized;
+
+    // return ivc_proof.z_i;
 
 }
