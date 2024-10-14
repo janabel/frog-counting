@@ -1,7 +1,9 @@
 import React from "react";
 import { IssuePOD } from "./IssuePOD";
 import { useState } from "react";
+import { Spinner } from "@chakra-ui/react";
 import init, { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
+import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass.js";
 
 async function readSerializedData(path: string) {
   const file_path = path;
@@ -13,7 +15,9 @@ async function readSerializedData(path: string) {
 }
 
 export function VerifyRust() {
+  const { z, connected } = useEmbeddedZupass();
   const [fileData, setFileData] = useState<Uint8Array>(new Uint8Array([]));
+  const [verifying, setVerifying] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState(false);
   const [numFrogs, setNumFrogs] = useState(0n);
 
@@ -35,6 +39,9 @@ export function VerifyRust() {
 
   // call verifyRust from sonobe
   const verify = async () => {
+    setVerifying(true);
+    console.log("set verifying to true....");
+
     await init();
 
     const r1cs_res = await readSerializedData("/frogIVC.r1cs");
@@ -58,25 +65,51 @@ export function VerifyRust() {
   };
 
   return (
-    <div className="flex flex-col gap-4 my-4">
-      <input type="file" onChange={handleFileUpload} accept=".bin" />
-      <div>
-        <button className="btn btn-primary" onClick={verify}>
-          Verify Proof
-        </button>
-        {verifyStatus ? (
-          <>
-            <h1>Proof was verified!</h1>
-            <h1>You have: {numFrogs.toString()} frogs</h1>
-          </>
-        ) : (
-          <h1></h1>
-        )}
-      </div>
+    <>
+      {connected ? (
+        <div className="flex flex-col gap-4 my-4">
+          <input type="file" onChange={handleFileUpload} accept=".bin" />
+          <div>
+            <button className="btn btn-primary" onClick={verify}>
+              Verify Proof
+            </button>
 
-      <div id="pod-issuer-box">
-        {verifyStatus ? <IssuePOD numFrogs={numFrogs}></IssuePOD> : <div></div>}
-      </div>
-    </div>
+            {verifying ? (
+              <>
+                {verifyStatus ? (
+                  <>
+                    <h1>Proof was verified!</h1>
+                    <h1>You have: {numFrogs.toString()} frogs</h1>
+
+                    <div id="pod-issuer-box">
+                      <IssuePOD numFrogs={numFrogs}></IssuePOD>{" "}
+                      {/* defer checking number of frogs to IssuePOD component*/}
+                    </div>
+                  </>
+                ) : (
+                  <h1>
+                    <p className="mb-4">Verifying proof...</p>
+                    <Spinner size="xl" />
+                  </h1>
+                )}
+              </>
+            ) : (
+              <></>
+            )}
+
+            {/* {verifyStatus ? (
+              <>
+                <h1>Proof was verified!</h1>
+                <h1>You have: {numFrogs.toString()} frogs</h1>
+              </>
+            ) : (
+              <h1></h1>
+            )} */}
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }
