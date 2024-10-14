@@ -1,5 +1,5 @@
 import React from "react";
-import { IssuePOD } from "./IssuePOD";
+import { IssuePOD } from "../components/IssuePOD.js";
 import { useState } from "react";
 import { Spinner } from "@chakra-ui/react";
 import init, { verifyRust } from "../../sonobe-rust/pkg/sonobe_rust.js";
@@ -68,6 +68,11 @@ export function VerifyRust() {
     <>
       {connected ? (
         <div className="flex flex-col gap-4 my-4">
+          <h1 className="text-xl font-bold mb-2">𓆏 Verify your proof 𓆏</h1>
+          <p>
+            Verify your frog-counting proof and get your Frog Whisperer POD
+            here!
+          </p>
           <input type="file" onChange={handleFileUpload} accept=".bin" />
           <div>
             <button className="btn btn-primary" onClick={verify}>
@@ -78,9 +83,8 @@ export function VerifyRust() {
               <>
                 {verifyStatus ? (
                   <>
-                    <h1>Proof was verified!</h1>
-                    <h1>You have: {numFrogs.toString()} frogs</h1>
-
+                    <p>Proof was verified!</p>
+                    <p>You have: {numFrogs.toString()} frogs</p>
                     <div id="pod-issuer-box">
                       <IssuePOD numFrogs={numFrogs}></IssuePOD>{" "}
                       {/* defer checking number of frogs to IssuePOD component*/}
@@ -96,15 +100,6 @@ export function VerifyRust() {
             ) : (
               <></>
             )}
-
-            {/* {verifyStatus ? (
-              <>
-                <h1>Proof was verified!</h1>
-                <h1>You have: {numFrogs.toString()} frogs</h1>
-              </>
-            ) : (
-              <h1></h1>
-            )} */}
           </div>
         </div>
       ) : (

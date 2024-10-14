@@ -1,6 +1,6 @@
 import { EmbeddedZupassProvider } from "./hooks/useEmbeddedZupass";
 import { Navbar } from "./components/Navbar";
-import { VerifyRust } from "./components/VerifyRust";
+import { VerifyRust } from "./apis/VerifyRust";
 // import { GPC } from "./apis/GPC";
 // import { FileSystem } from "./apis/FileSystem";
 import { ZUPASS_URL } from "./constants";
@@ -31,12 +31,7 @@ function App() {
         <Navbar />
         <div className="container mx-auto my-4 p-4">
           <Header />
-          <div className="flex flex-col gap-4 my-4">
-            {/* <FileSystem /> */}
-            <VerifyRust />
-            {/* <GPC />
-            <Identity /> */}
-          </div>
+          <VerifyRust />
         </div>
       </EmbeddedZupassProvider>
     </ChakraProvider>

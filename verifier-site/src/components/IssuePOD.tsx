@@ -105,13 +105,17 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
 
   // otherwise, POD is ready to render
   return (
-    <>
+    <div className="flex flex-col gap-4 my-4">
       {enoughFrogs ? (
         <div className="flex flex-col gap-4 my-4">
+          {/* <div> */}
+          {/* <div> */}
           <div>
             <h1 className="text-xl font-bold mb-2">
               ‧₊˚Congratulations, you are now a Frog Whisperer ‧₊˚
             </h1>
+          </div>
+          <div>
             <img
               src={frogWhispererImg}
               alt="Frog Whisperer Image"
@@ -127,6 +131,6 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
           FrogWhisperer POD!
         </h1>
       )}
-    </>
+    </div>
   );
 }
