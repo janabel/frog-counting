@@ -23,11 +23,13 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
 
   return !connected ? null : (
     <div className="flex flex-col gap-4 my-4">
-      <div>
-        <h1 className="text-xl font-bold mb-2">
-          Add your Frog Whisperer POD to Zupass
-        </h1>
+      {/* // <div> */}
+      {/* <div> */}
+      <h1 className="text-xl font-bold mb-2">
+        + Add your Frog Whisperer POD to Zupass +
+      </h1>
 
+      <div>
         <button
           className="btn btn-primary"
           onClick={async () => {
@@ -43,21 +45,21 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
           Add POD
         </button>
       </div>
-      <div>
-        {pcdAdded && (
-          <p>
-            PCD added!{" "}
-            <a
-              href={zupassUrl}
-              target="_blank"
-              style={{ color: "green", textDecoration: "underline" }}
-            >
-              View in Zupass
-            </a>
-            .
-          </p>
-        )}
-      </div>
+
+      {/* </div> */}
+      {pcdAdded && (
+        <p>
+          PCD added!{" "}
+          <a
+            href={zupassUrl}
+            target="_blank"
+            style={{ color: "green", textDecoration: "underline" }}
+          >
+            View in Zupass
+          </a>
+          .
+        </p>
+      )}
     </div>
   );
 }
