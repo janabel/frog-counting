@@ -1,7 +1,7 @@
 pragma circom 2.1.5;
 
-include "../circomlib/circuits/poseidon.circom";
-include "../circomlib/circuits/eddsaposeidon.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
+include "../node_modules/circomlib/circuits/eddsaposeidon.circom";
 
 // Claim being proved:
 // 1. The owner owns the frog: the owner's semaphore identity matches the
@@ -38,9 +38,10 @@ template EdDSAFrogPCD () {
     signal input frogSignatureR8y;
     signal input frogSignatureS;
 
-    // Owner's Semaphore identity, private
-    signal input semaphoreIdentityNullifier;
-    signal input semaphoreIdentityTrapdoor;
+    // // Owner's Semaphore identity, private
+    // signal input semaphoreIdentityNullifier;
+    // signal input semaphoreIdentityTrapdoor;
+    signal input semaphoreIdentityCommitment;
 
     // External nullifier, used to tie together nullifiers within a single category. 
     signal input externalNullifier;
@@ -98,17 +99,37 @@ template EdDSAFrogPCD () {
         frogMessageHash
     );
 
-    // Verify semaphore private identity matches the frog owner semaphore ID.
-    signal semaphoreSecret <== Poseidon(2)([
-        semaphoreIdentityNullifier,
-        semaphoreIdentityTrapdoor
-    ]);
-    signal semaphoreIdentityCommitment <== Poseidon(1)([semaphoreSecret]);
+    // // Verify semaphore private identity matches the frog owner semaphore ID.
+    // signal semaphoreSecret <== Poseidon(2)([
+    //     semaphoreIdentityNullifier,
+    //     semaphoreIdentityTrapdoor
+    // ]);
+    // signal semaphoreIdentityCommitment <== Poseidon(1)([semaphoreSecret]);
     ownerSemaphoreId === semaphoreIdentityCommitment;
 
     // Calculate nullifier
-    signal output nullifierHash <== Poseidon(2)([externalNullifier, semaphoreIdentityNullifier]);
+    signal output nullifierHash <== Poseidon(2)([externalNullifier, semaphoreIdentityCommitment]);
 
     // Dummy constraint on watermark to make sure it can't be compiled out.
     signal watermarkSquared <== watermark * watermark;
 }
+
+// component main { public [
+//     frogId,
+//     biome,
+//     rarity,
+//     temperament,
+//     jump,
+//     speed,
+//     intelligence,
+//     beauty,
+//     timestampSigned,
+//     ownerSemaphoreId,
+//     reservedField1,
+//     reservedField2,
+//     reservedField3,
+//     frogSignerPubkeyAx,
+//     frogSignerPubkeyAy,
+//     externalNullifier,
+//     watermark
+// ] } = EdDSAFrogPCD();

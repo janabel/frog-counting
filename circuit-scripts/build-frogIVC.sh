@@ -1,7 +1,7 @@
 #!/bin/bash
  
 CIRCUITS_DIR=../circuits
-PHASE1=../circuits/powersOfTau28_hez_final_20.ptau
+PHASE1=../circuits/ptau/powersOfTau28_hez_final_14.ptau
 BUILD_DIR=../circuits/build
 CIRCUIT_NAME=frogIVC
 PUBLIC_DIR=../public
