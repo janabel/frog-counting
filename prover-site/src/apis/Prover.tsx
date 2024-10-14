@@ -12,10 +12,12 @@ import { createProof } from "../utils/runSonobe";
 // import test frogs
 import { testFrog1, testFrog2, testFrog3 } from "../testfrogs";
 import { buildEddsa, buildPoseidon } from "circomlibjs";
+import { Spinner } from "@chakra-ui/react";
 
 export function Prover(): ReactNode {
   const { z, connected } = useEmbeddedZupass();
   const [ivc_proof, setIvcProof] = useState(new Uint8Array([]));
+  const [proving, setProving] = useState(false);
 
   // const [list, setList] = useState<ZupassFolderContent[]>([]);
 
@@ -135,6 +137,7 @@ export function Prover(): ReactNode {
   }
 
   async function prove() {
+    setProving(true);
     const circuitInputs = await processProofInputs();
     const ivc_proof = await createProof(circuitInputs);
     setIvcProof(ivc_proof);
@@ -155,27 +158,87 @@ export function Prover(): ReactNode {
   };
 
   return !connected ? null : (
-    <div>
-      <div className="prose">
-        <div>
-          <TryIt onClick={prove} label="Generate Circuit Inputs + Prove" />
-          {/* {list.length > 0 && (
-            <pre className="whitespace-pre-wrap">
-              {JSON.stringify(list, null, 2)}
-            </pre>
-          )} */}
-          {ivc_proof.length > 0 && (
-            <>
-              <pre className="whitespace-pre-wrap">{"🎉 Created proof!"}</pre>
+    <div className="flex flex-col gap-4 my-4">
+      <h1 className="text-xl font-bold mb-2">Count your frogs</h1>
+      <p>You are now connected to your Zupass account!</p>
+      <p>
+        Press the button below to generate a ZK Proof about how many frogs you
+        have in your FrogCrypto folder.
+      </p>
+
+      <div>
+        <TryIt onClick={prove} label="Fetch inputs and prove" />
+      </div>
+
+      <div>
+        {!proving ? null : (
+          <>
+            {ivc_proof.length > 0 ? (
+              <>
+                <p className="whitespace-pre-wrap">
+                  {"Created proof! ◝(ᵔᵕᵔ)◜"}
+                </p>
+                <div className="flex flex-col gap-4 my-4">
+                  <h1 className="text-xl font-bold mb-2">Download proof</h1>
+                  <p>
+                    {
+                      "Now press the button below to download your proof file, which you can upload and verify "
+                    }
+                    <a
+                      href="https://google.com"
+                      style={{ color: "green", textDecoration: "underline" }}
+                    >
+                      here
+                    </a>
+                    .
+                  </p>
+
+                  <div>
+                    <TryIt
+                      onClick={() =>
+                        downloadBinFile(ivc_proof, "ivc_proof.bin")
+                      }
+                      label="Download proof"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <p className="mb-4">Proving...</p>
+                <Spinner size="xl" />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {/* {ivc_proof.length > 0 && (
+        <>
+          <p className="whitespace-pre-wrap">{"Created proof! ◝(ᵔᵕᵔ)◜"}</p>
+          <div className="flex flex-col gap-4 my-4">
+            <h1 className="text-xl font-bold mb-2">Download proof</h1>
+            <p>
+              {
+                "Now press the button below to download your proof file, which you can upload and verify "
+              }
+              <a
+                href="https://google.com"
+                style={{ color: "green", textDecoration: "underline" }}
+              >
+                here
+              </a>
+              .
+            </p>
+
+            <div>
               <TryIt
                 onClick={() => downloadBinFile(ivc_proof, "ivc_proof.bin")}
                 label="Download proof"
               />
-            </>
-          )}
-          {/* <pre className="whitespace-pre-wrap">{"hi"}</pre> */}
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )} */}
     </div>
   );
 }
