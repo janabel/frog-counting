@@ -1,16 +1,15 @@
-import { SerializedPCD } from "@pcd/pcd-types";
-import { POD } from "@pcd/pod";
-// import { ZupassFolderContent } from "@pcd/zupass-client";
+// import { POD } from "@pcd/pod";
+import { PODData } from "@parcnet-js/podspec";
+
 import { ReactNode, useMemo, useState } from "react";
-// import { TryIt } from "./TryIt";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 import { ZUPASS_URL } from "../constants";
 
 export interface AddToZupassProps {
-  pod: POD;
+  podData: PODData;
 }
 
-export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
+export function AddToZupass({ podData }: AddToZupassProps): ReactNode {
   const { z, connected } = useEmbeddedZupass();
   // const [list, setList] = useState<ZupassFolderContent[]>([]);
   // const [pcd, setPCD] = useState<SerializedPCD>();
@@ -19,7 +18,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
     return localStorage.getItem("zupassUrl") || ZUPASS_URL;
   }, []);
 
-  console.log("frogwhisperer pod", pod);
+  console.log("frogwhisperer pod", podData);
 
   return !connected ? null : (
     <div className="flex flex-col gap-4 my-4">
@@ -34,7 +33,7 @@ export function AddToZupass({ pod }: AddToZupassProps): ReactNode {
           className="btn btn-primary"
           onClick={async () => {
             try {
-              await z.pod.collection("FrogWhisperer").insert(pod);
+              await z.pod.collection("FrogWhisperer").insert(podData);
               // await z.fs.put("/FrogWhisperer", serializedPodPCD);
               setPCDAdded(true);
             } catch (e) {

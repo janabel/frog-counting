@@ -21,6 +21,8 @@ export function VerifyRust() {
   const [verifyStatus, setVerifyStatus] = useState(false);
   const [numFrogs, setNumFrogs] = useState(0n);
 
+  console.log("typeof z", typeof z);
+
   // helper function for file upload
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -78,7 +80,8 @@ export function VerifyRust() {
             <button className="btn btn-primary" onClick={verify}>
               Verify Proof
             </button>
-
+          </div>
+          <div>
             {verifying ? (
               <>
                 {verifyStatus ? (

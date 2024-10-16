@@ -1,24 +1,10 @@
-// import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
-// import { ArgumentTypeName } from "@pcd/pcd-types";
-// import { SerializedPCD } from "@pcd/pcd-types";
-import { PODStringValue } from "@pcd/pod";
-import { POD, PODEntries } from "@pcd/pod";
-import * as p from "@parcnet-js/podspec";
+import { PODEntries } from "@pcd/pod";
+import { PODData } from "@parcnet-js/podspec";
 import frogWhispererImg from "../assets/frogwhisperer.png";
 import { Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
 import { AddToZupass } from "./AddToZupass";
-// import { ZupassAPI } from "@pcd/zupass-client";
-
-// const pcdPod = await import('@pcd/pod');
-// import { Identity } from "@semaphore-protocol/identity";
-// import { v4 as uuid } from "uuid";
-
-// interface issuePODProps {
-//   verifier_status: boolean;
-// }
-// export function IssuePOD({ verifier_status }: issuePODProps) {
 
 interface issuePODProps {
   numFrogs: bigint;
@@ -26,7 +12,7 @@ interface issuePODProps {
 
 export function IssuePOD({ numFrogs }: issuePODProps) {
   const { z, connected } = useEmbeddedZupass();
-  const [pod, setPOD] = useState<POD>();
+  const [podData, setPODData] = useState<PODData>();
   const [loading, setLoading] = useState(true);
   const [semaphoreIDCommitment, setIDCommit] = useState(0n);
   const [error, setError] = useState<unknown>(null);
@@ -42,10 +28,15 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
   const generatePOD = async () => {
     try {
       // first, fetch user semaphore id
-      getID();
+      const currentDateTime = new Date().toLocaleString();
 
       const frogWhispererEntries: PODEntries = {
         num_frogs: { type: "int", value: numFrogs },
+        owner: {
+          type: "string",
+          value: semaphoreIDCommitment.toString(),
+        },
+        timestamp_signed: { type: "string", value: currentDateTime },
         zupass_display: { type: "string", value: "collectable" },
         zupass_image_url: {
           type: "string",
@@ -57,14 +48,10 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
           type: "string",
           value: "gotta catch 'em all",
         },
-        owner: {
-          type: "string",
-          value: semaphoreIDCommitment.toString(),
-        },
       };
 
       const frogWhispererPOD = await z.pod.sign(frogWhispererEntries);
-      setPOD(frogWhispererPOD);
+      setPODData(frogWhispererPOD);
 
       setLoading(false);
     } catch (err: unknown) {
@@ -74,13 +61,15 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
   };
 
   useEffect(() => {
-    if (loading && enoughFrogs) {
+    getID();
+
+    if (loading && enoughFrogs && semaphoreIDCommitment != 0n) {
       // only generate frog whisperer POD if user has enough frogs
       generatePOD();
     } else {
       return;
     }
-  }, [loading]);
+  }, [semaphoreIDCommitment]);
 
   if (!connected) {
     return (
@@ -123,7 +112,7 @@ export function IssuePOD({ numFrogs }: issuePODProps) {
             />
             {/* <pre>[POD displayed here]</pre> */}
           </div>
-          {pod ? <AddToZupass pod={pod}></AddToZupass> : <></>}
+          {podData ? <AddToZupass podData={podData}></AddToZupass> : <></>}
         </div>
       ) : (
         <h1>

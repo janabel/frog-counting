@@ -1,13 +1,9 @@
 import { EmbeddedZupassProvider } from "./hooks/useEmbeddedZupass";
 import { Navbar } from "./components/Navbar";
 import { VerifyRust } from "./apis/VerifyRust";
-// import { GPC } from "./apis/GPC";
-// import { FileSystem } from "./apis/FileSystem";
 import { ZUPASS_URL } from "./constants";
-// import { Identity } from "./apis/Identity";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Header } from "./components/Header";
-// import { LuAlignVerticalJustifyCenter } from "react-icons/lu";
 import { Zapp } from "@parcnet-js/app-connector";
 
 const zapp: Zapp = {
