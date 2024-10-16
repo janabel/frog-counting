@@ -1,57 +1,51 @@
-import { SerializedPCD } from "@pcd/pcd-types";
-import { PODStringValue } from "@pcd/pod";
-import { POD, PODEntries } from "@pcd/pod";
+import { PODData } from "@parcnet-js/podspec";
 import * as p from "@parcnet-js/podspec";
-// import { ZupassFolderContent } from "@pcd/zupass-client"; // OUTDATED!
-import { React, ReactNode, useMemo, useState } from "react";
+import { ReactNode, useState } from "react";
 import { TryIt } from "../components/TryIt";
 import { useEmbeddedZupass } from "../hooks/useEmbeddedZupass";
-import { ZUPASS_URL } from "../constants";
-import { parseFrog, parseFrogPOD } from "../utils/parseData";
+import { parseFrogPOD, frogPOD } from "../utils/parseData";
 import { createProof } from "../utils/runSonobe";
-// import test frogs
-import { testFrog1, testFrog2, testFrog3 } from "../testfrogs";
-import { buildEddsa, buildPoseidon } from "circomlibjs";
+// import { testFrog1, testFrog2, testFrog3 } from "../testfrogs";
+import { buildPoseidon } from "circomlibjs";
 import { Spinner } from "@chakra-ui/react";
+
+type frogTuple = [bigint, frogPOD];
 
 export function Prover(): ReactNode {
   const { z, connected } = useEmbeddedZupass();
   const [ivc_proof, setIvcProof] = useState(new Uint8Array([]));
   const [proving, setProving] = useState(false);
 
-  // const [list, setList] = useState<ZupassFolderContent[]>([]);
+  // async function makeTestFrogs() {
+  //   // add test frogs to Collections/FrogCryptoTest folder while we wait for zupass team to migrate FrogCrypto over to Collections
 
-  async function makeTestFrogs() {
-    // add test frogs to Collections/FrogCryptoTest folder while we wait for zupass team to migrate FrogCrypto over to Collections
+  //   // console.log("Sample entries", sampleEntries);
+  //   const signedTestFrog1POD = await z.pod.sign(testFrog1);
+  //   const signedTestFrog2POD = await z.pod.sign(testFrog2);
+  //   const signedTestFrog3POD = await z.pod.sign(testFrog3);
 
-    // console.log("Sample entries", sampleEntries);
-    const signedTestFrog1POD = await z.pod.sign(testFrog1);
-    const signedTestFrog2POD = await z.pod.sign(testFrog2);
-    const signedTestFrog3POD = await z.pod.sign(testFrog3);
+  //   console.log("signedTestFrog1POD", signedTestFrog1POD);
+  //   console.log("signedTestFrog2POD", signedTestFrog2POD);
+  //   console.log("signedTestFrog3POD", signedTestFrog3POD);
 
-    console.log("signedTestFrog1POD", signedTestFrog1POD);
-    console.log("signedTestFrog2POD", signedTestFrog2POD);
-    console.log("signedTestFrog3POD", signedTestFrog3POD);
+  //   await z.pod.collection("FrogCryptoTest").insert(signedTestFrog1POD);
+  //   await z.pod.collection("FrogCryptoTest").insert(signedTestFrog2POD);
+  //   await z.pod.collection("FrogCryptoTest").insert(signedTestFrog3POD);
 
-    await z.pod.collection("FrogCryptoTest").insert(signedTestFrog1POD);
-    await z.pod.collection("FrogCryptoTest").insert(signedTestFrog2POD);
-    await z.pod.collection("FrogCryptoTest").insert(signedTestFrog3POD);
+  //   console.log(
+  //     "should have added testFrog1, testFrog2, testFrog3 to folder Collections/FrogCryptoTest"
+  //   );
 
-    console.log(
-      "should have added testFrog1, testFrog2, testFrog3 to folder Collections/FrogCryptoTest"
-    );
+  //   return;
+  // }
 
-    return;
-  }
-
-  async function computePoseidonHash(inputArray) {
+  async function computePoseidonHash(inputArray: Array<bigint>) {
     const poseidon = await buildPoseidon();
     const hash = poseidon.F.toString(poseidon(inputArray));
     return hash;
   }
 
-  async function getFrogHashInput(parsedFrog) {
-    console.log("parsedFrog length", parsedFrog.length);
+  async function getFrogHashInput(parsedFrog: frogPOD) {
     return [
       BigInt(parsedFrog.frogId),
       BigInt(parsedFrog.biome),
@@ -74,7 +68,19 @@ export function Prover(): ReactNode {
     return semaphoreIDCommitment;
   }
 
-  async function processProofInputs() {
+  function createSortedFrogJson(frogArray: frogPOD[]): {
+    [key: number]: frogPOD;
+  } {
+    return frogArray.reduce<{ [key: number]: frogPOD }>(
+      (accumulator, currentValue, index) => {
+        accumulator[index + 1] = currentValue;
+        return accumulator;
+      },
+      {}
+    );
+  }
+
+  async function processProofInputs(): Promise<object> {
     // first make test frogs to insert to FrogCryptoTest
     // await makeTestFrogs(); // only run once
     // console.log("made test frogs!");
@@ -95,7 +101,7 @@ export function Prover(): ReactNode {
 
     // console.log("frogPCDList", frogPODList);
 
-    const promises = frogPODList.map(async (frogPOD: object) => {
+    const promises = frogPODList.map(async (frogPOD: PODData) => {
       // console.log("frogPOD", frogPOD);
       const result = await parseFrogPOD(frogPOD, semaphoreIDCommitment);
       // console.log("parsedFrogPOD: ", result);
@@ -108,31 +114,29 @@ export function Prover(): ReactNode {
 
     // sort frogs now
     // create an array of [frogMsgHash, parsedfrog]
-    let frogHash_and_frog_array = await Promise.all(
-      parsedFrogs.map(async (parsedFrog) => {
+    const frogHash_and_frog_array: Array<frogTuple> = await Promise.all(
+      parsedFrogs.map(async (parsedFrog: frogPOD) => {
         const frogHashInput = await getFrogHashInput(parsedFrog);
         const frogMsgHash = await computePoseidonHash(frogHashInput);
         return [frogMsgHash, parsedFrog];
       })
     );
+
     console.log("initial frogHash_and_frog_array", frogHash_and_frog_array);
     // sort frogs by message hash
-    frogHash_and_frog_array.sort((a, b) => a[0] - b[0]);
+    frogHash_and_frog_array.sort((a: frogTuple, b: frogTuple) =>
+      Number(a[0] - b[0])
+    );
     console.log("sorted frogHash_and_frog_array", frogHash_and_frog_array);
     // remove the message hashes
-    const sortedFrogArray = frogHash_and_frog_array.map((item) => item[1]);
-    // add indices (needed when passing into sonobe to maintain order of hashmap -> external_inputs)
-    const sortedFrogJson = sortedFrogArray.reduce(
-      (accumulator, currentValue, index) => {
-        accumulator[index + 1] = currentValue;
-        return accumulator;
-      },
-      {}
+    const sortedFrogArray = frogHash_and_frog_array.map(
+      (item: frogTuple) => item[1]
     );
+
+    const sortedFrogJson = createSortedFrogJson(sortedFrogArray);
 
     console.log("sortedFrogJson", sortedFrogJson);
 
-    // return parsedFrogs;
     return sortedFrogJson;
   }
 
@@ -140,8 +144,12 @@ export function Prover(): ReactNode {
     setProving(true);
     const circuitInputs = await processProofInputs();
     const ivc_proof = await createProof(circuitInputs);
-    setIvcProof(ivc_proof);
-    console.log("ivc_proof", ivc_proof);
+    if (ivc_proof) {
+      setIvcProof(ivc_proof);
+      console.log("ivc_proof", ivc_proof);
+    } else {
+      console.log("ivc_proof was undefined");
+    }
   }
 
   const downloadBinFile = (uint8Array: Uint8Array, fileName: string) => {
@@ -185,7 +193,7 @@ export function Prover(): ReactNode {
                       "Now press the button below to download your proof file, which you can upload and verify "
                     }
                     <a
-                      href="https://google.com"
+                      href="https://frog-whisperer-exchange-jmsi17vt5-janabels-projects.vercel.app/"
                       style={{ color: "green", textDecoration: "underline" }}
                     >
                       here
@@ -212,91 +220,6 @@ export function Prover(): ReactNode {
           </>
         )}
       </div>
-      {/* {ivc_proof.length > 0 && (
-        <>
-          <p className="whitespace-pre-wrap">{"Created proof! ◝(ᵔᵕᵔ)◜"}</p>
-          <div className="flex flex-col gap-4 my-4">
-            <h1 className="text-xl font-bold mb-2">Download proof</h1>
-            <p>
-              {
-                "Now press the button below to download your proof file, which you can upload and verify "
-              }
-              <a
-                href="https://google.com"
-                style={{ color: "green", textDecoration: "underline" }}
-              >
-                here
-              </a>
-              .
-            </p>
-
-            <div>
-              <TryIt
-                onClick={() => downloadBinFile(ivc_proof, "ivc_proof.bin")}
-                label="Download proof"
-              />
-            </div>
-          </div>
-        </>
-      )} */}
     </div>
   );
 }
-
-// // TODO: get semaphoreID pod with from new parcnetwrapper types
-// const semaphoreIdentityID = (
-//   rootList.find(
-//     (i) => i.type === "pcd" && i.pcdType === "semaphore-identity-pcd"
-//   ) as { id: string }
-// )?.id;
-// if (semaphoreIdentityID) {
-//   const identityPCD = await z.fs.get(semaphoreIdentityID);
-//   const [trapdoor, nullifier] = JSON.parse(
-//     JSON.parse(identityPCD.pcd).identity
-//   );
-//   console.log("trappdoor, nullifier", { trapdoor, nullifier });
-//   return [trapdoor, nullifier];
-// }
-
-// console.log(
-//   "z.pod.collection(FrogWhisperer)",
-//   z.pod.collection("FrogWhisperer")
-// ); // returns a parcentPODcollection wrapper, which also implements a query function
-
-// trying to query for pods...
-
-// testing with FrogWhisperer Folder
-// const validOwners = [{ type: "string", value: "0" }] as PODStringValue[];
-// owner: { type: "string"},
-// public_signals: { type: "string" },
-// someNumber: { type: "int" },
-// zupass_display: { type: "string" },
-// zupass_image_url: { type: "string" },
-// zupass_title: { type: "string" },
-// zupass_description: { type: "string" },
-
-// // trying to add a pod to folder
-
-// const sampleEntries: PODEntries = {
-//   entry1: { type: "string", value: "hi1" },
-//   entry2: { type: "string", value: "hi2" },
-//   zupass_title: {
-//     type: "string",
-//     value: "testing add from parcnet-js praying",
-//   },
-//   zupass_display: { type: "string", value: "collectable" },
-//   zupass_image_url: {
-//     type: "string",
-//     value:
-//       "https://upload.wikimedia.org/wikipedia/commons/6/64/Zhuangzi.gif",
-//   },
-//   zupass_description: {
-//     type: "string",
-//     value: "testing...",
-//   },
-// };
-// console.log("Sample entries", sampleEntries);
-// const signedPOD = await z.pod.sign(sampleEntries);
-// console.log("signedPOD", signedPOD);
-// await z.pod.collection("FrogWhisperer").insert(signedPOD);
-// console.log("should have added signedPOD to folder FrogWhisperer");

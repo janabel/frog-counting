@@ -1,6 +1,4 @@
-import { PODStringValue } from "@pcd/pod";
-import { POD, PODEntries } from "@pcd/pod";
-import * as p from "@parcnet-js/podspec";
+import { PODEntries } from "@pcd/pod";
 
 export const testFrog1: PODEntries = {
   frogId: { type: "string", value: "6" },
