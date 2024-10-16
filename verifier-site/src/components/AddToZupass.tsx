@@ -32,10 +32,16 @@ export function AddToZupass({ podData }: AddToZupassProps): ReactNode {
         <button
           className="btn btn-primary"
           onClick={async () => {
+            if (pcdAdded) {
+              // if already added, exit
+              alert("You can only add this POD once!");
+              return;
+            }
+
             try {
+              setPCDAdded(true);
               await z.pod.collection("FrogWhisperer").insert(podData);
               // await z.fs.put("/FrogWhisperer", serializedPodPCD);
-              setPCDAdded(true);
             } catch (e) {
               console.log(e);
             }
