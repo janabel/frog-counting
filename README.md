@@ -37,7 +37,7 @@ Folding schemes are one approach to Incrementally Verifiable Computation (IVC), 
 
 ![folding-diagram](https://camo.githubusercontent.com/e1bc3ebf5522471b6ea702146cb687e66aa5e8c272a121371d53905d33eebc97/68747470733a2f2f707269766163792d7363616c696e672d6578706c6f726174696f6e732e6769746875622e696f2f736f6e6f62652d646f63732f696d67732f666f6c64696e672d6d61696e2d696465612d6469616772616d2e706e67)
 
-In this case, our intermediate state is the number of PODs we have verified so far (essentially a counter for the frog PODs). The function $F$ is a binary check for each frog POD; $F$ evaluates to $1$ if the frog POD valid and $0$ otherwise. The external witnesses $w_i$ are the frog PODs themselves that $F$ checks.
+In this case, our intermediate state is the number of PODs we have verified so far (essentially a counter for the frog PODs). The function $F$ is a binary check for each frog POD; $F$ adds $1$ to the ongoing state if the frog POD valid and $0$ (or really, the proof just breaks) otherwise. The external witnesses $w_i$ are the frog PODs themselves that $F$ checks.
 
 With folding schemes, instead of having to prove the computation of all iterations of $F$ in a traditional SNARK, the folding scheme will batch together a random linear combination of the individual witnesses $w_i$. The prover can then feed this batched witness directly into a (modified) version of the original R1CS checks for $F$ to provide an uncheatable proof, thus shortening the proving time.
 
